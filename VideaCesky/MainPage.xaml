@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-
+        <Button Click="Button_Click" Content="Pokračuj" HorizontalAlignment="Center" />
     </Grid>
 </Page>

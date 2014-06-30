@@ -44,5 +44,10 @@ namespace VideaCesky
             // If you are using the NavigationHelper provided by some templates,
             // this event is handled for you.
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource("AP2ZxZ8Atc0", "zatím nic"));
+        }
     }
 }

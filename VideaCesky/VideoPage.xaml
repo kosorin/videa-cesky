@@ -1,0 +1,159 @@
+﻿<Page
+    x:Class="VideaCesky.VideoPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VideaCesky"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    ManipulationStarted="ControlsGrid_ManipulationStarted" 
+    ManipulationCompleted="ControlsGrid_ManipulationCompleted" 
+    ManipulationDelta="ControlsGrid_ManipulationDelta"
+    ManipulationMode="TranslateX" 
+    Tapped="Page_Tapped">
+    
+    <Page.Resources>
+        <local:TimeSpanConverter x:Key="TimeSpanConverter" />
+
+        <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
+            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            <Setter Property="FontSize" Value="24" />
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                <GradientStop Color="Red"/>
+                <GradientStop Color="#FF23FF00" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <MediaElement Name="VideoMediaElement" 
+                      AutoPlay="False" 
+                      MediaOpened="VideoMediaElement_MediaOpened" 
+                      MediaEnded="VideoMediaElement_MediaEnded" />
+        <StackPanel Background="#99000000" 
+                    VerticalAlignment="Bottom">
+            <StackPanel.Resources>
+
+
+                <Storyboard x:Name="HideSliderStoryboard">
+                    <DoubleAnimation Storyboard.TargetName="WAT"
+                             Storyboard.TargetProperty="Height"
+                                     From="100"
+                             To="0"
+                             Duration="0:0:0.5">
+                    </DoubleAnimation>
+                </Storyboard>
+
+                <Storyboard x:Name="ShowSliderStoryboard" >
+                    <DoubleAnimation Storyboard.TargetName="WAT"
+                             Storyboard.TargetProperty="Height"
+                                     From="10"
+                             To="60"
+                             Duration="0:0:0.5">
+                    </DoubleAnimation>
+                </Storyboard>
+            </StackPanel.Resources>
+            <Border VerticalAlignment="Bottom"
+                    x:Name="WAT"
+                    Padding="20,5,20,0">
+                <TextBlock Foreground="White" 
+                           FontSize="30"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Center"
+                           TextWrapping="WrapWholeWords" TextAlignment="Center">
+                    Tady pak budou titulky.<LineBreak/>Test více řádků.
+                </TextBlock>
+            </Border>
+            <Grid x:Name="ControlsGrid"
+                  Background="#A9000000" 
+                  Height="60">
+
+                <Border Name="VideoSlider"
+                        HorizontalAlignment="Left"
+                        Width="0"
+                        Background="{ThemeResource PhoneAccentBrush}"
+                        Opacity="0.5"/>
+                <ToggleButton Name="PlayPauseButton"
+                              Unchecked="PlayPauseButton_Pause"
+                              Checked="PlayPauseButton_Play" 
+                              Margin="5,0"
+                              MinWidth="50" 
+                              MinHeight="50">
+                    <ToggleButton.Template>
+                        <ControlTemplate>
+                            <Grid Background="Transparent">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Checked">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="1" 
+                                                                 Duration="0:0:0.25"/>
+                                                <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0" 
+                                                                 Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0"
+                                                                 Duration="0:0:0.25"/>
+                                                <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="1" 
+                                                                 Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <TextBlock x:Name="PlayText" 
+                                           Style="{StaticResource RoundButtonStyle}"
+                                           Text="&#xe17E;&#xe102;" 
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock x:Name="PauseText" 
+                                           Style="{StaticResource RoundButtonStyle}"
+                                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                                           Text="&#xe17E;&#xe103;"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                </ToggleButton>
+                <TextBlock FontSize="20" 
+                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0">
+                    <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}" FontSize="36" Foreground="{ThemeResource PhoneForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
+                </TextBlock>
+                <Button Name="SettingsButton"
+                        Margin="5,0"
+                        MinWidth="50" 
+                        MinHeight="50" 
+                        HorizontalAlignment="Right">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Grid Background="Transparent">
+                                <TextBlock x:Name="PlayText" 
+                                           Style="{StaticResource RoundButtonStyle}"
+                                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                                           Text="&#xe17E;&#xe115;" 
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</Page>
