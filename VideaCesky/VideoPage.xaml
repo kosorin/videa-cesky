@@ -10,9 +10,8 @@
     ManipulationStarted="ControlsGrid_ManipulationStarted" 
     ManipulationCompleted="ControlsGrid_ManipulationCompleted" 
     ManipulationDelta="ControlsGrid_ManipulationDelta"
-    ManipulationMode="TranslateX" 
-    Tapped="Page_Tapped">
-    
+    ManipulationMode="TranslateX">
+
     <Page.Resources>
         <local:TimeSpanConverter x:Key="TimeSpanConverter" />
 
@@ -23,38 +22,45 @@
     </Page.Resources>
     <Grid>
         <Grid.Background>
-            <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-                <GradientStop Color="Red"/>
-                <GradientStop Color="#FF23FF00" Offset="1"/>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FFFFA93B"/>
+                <GradientStop Color="#FFFAFBAB" Offset="0.5"/>
+                <GradientStop Color="#FFADD2FF" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
         <MediaElement Name="VideoMediaElement" 
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
-                      MediaEnded="VideoMediaElement_MediaEnded" />
-        <StackPanel Background="#99000000" 
-                    VerticalAlignment="Bottom">
+                      MediaEnded="VideoMediaElement_MediaEnded" Tapped="VideoMediaElement_Tapped" />
+        <StackPanel x:Name="InfoStackPanel"
+                    Background="#99000000" 
+                    VerticalAlignment="Bottom" 
+                    RenderTransformOrigin="0.5,0.5">
             <StackPanel.Resources>
-
-
                 <Storyboard x:Name="HideSliderStoryboard">
-                    <DoubleAnimation Storyboard.TargetName="WAT"
-                             Storyboard.TargetProperty="Height"
-                                     From="100"
-                             To="0"
-                             Duration="0:0:0.5">
+                    <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+                                     Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                                     To="60"
+                                     Duration="0:0:0.15">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseOut" />
+                        </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
                 </Storyboard>
-
                 <Storyboard x:Name="ShowSliderStoryboard" >
-                    <DoubleAnimation Storyboard.TargetName="WAT"
-                             Storyboard.TargetProperty="Height"
-                                     From="10"
-                             To="60"
-                             Duration="0:0:0.5">
+                    <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+                                     Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                                     To="0"
+                                     Duration="0:0:0.15">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseIn" />
+                        </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
                 </Storyboard>
             </StackPanel.Resources>
+            <StackPanel.RenderTransform>
+                <CompositeTransform TranslateY="0"/>
+            </StackPanel.RenderTransform>
             <Border VerticalAlignment="Bottom"
                     x:Name="WAT"
                     Padding="20,5,20,0">
@@ -75,17 +81,35 @@
                         Width="0"
                         Background="{ThemeResource PhoneAccentBrush}"
                         Opacity="0.5"/>
+                <ProgressRing Name="LoadProgressRing"
+                              IsActive="True"
+                              HorizontalAlignment="Left"
+                              Margin="2,0" 
+                              Background="{x:Null}" />
                 <ToggleButton Name="PlayPauseButton"
                               Unchecked="PlayPauseButton_Pause"
                               Checked="PlayPauseButton_Play" 
                               Margin="5,0"
                               MinWidth="50" 
+                              IsEnabled="False"
                               MinHeight="50">
                     <ToggleButton.Template>
                         <ControlTemplate>
                             <Grid Background="Transparent">
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0" 
+                                                                 Duration="0:0:0.25"/>
+                                                <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0" 
+                                                                 Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </VisualState>
                                         <VisualState x:Name="Checked">
                                             <Storyboard>
                                                 <DoubleAnimation Storyboard.TargetName="PauseText"
@@ -135,6 +159,7 @@
                     <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}" FontSize="36" Foreground="{ThemeResource PhoneForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
                 </TextBlock>
                 <Button Name="SettingsButton"
+                        Visibility="Collapsed"
                         Margin="5,0"
                         MinWidth="50" 
                         MinHeight="50" 
@@ -154,6 +179,5 @@
                 </Button>
             </Grid>
         </StackPanel>
-
     </Grid>
 </Page>

@@ -34,6 +34,15 @@ namespace VideaCesky
         public VideoPage()
         {
             this.InitializeComponent();
+
+            Position = TimeSpan.Zero;
+            Duration = TimeSpan.Zero;
+
+            updateSliderTimer.Interval = TimeSpan.FromMilliseconds(1000F / 60F);
+            updateSliderTimer.Tick += updateSliderTimer_Tick;
+
+            autoHideSliderTimer.Interval = TimeSpan.FromSeconds(2.5);
+            autoHideSliderTimer.Tick += autoHideSliderTimer_Tick;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -43,17 +52,11 @@ namespace VideaCesky
             StatusBar statusBar = StatusBar.GetForCurrentView();
             await statusBar.HideAsync();
 
+            DataContext = this;
+
             videoSource = (VideoSource)e.Parameter;
             youtubeUri = await LoadVideo(videoSource.YoutubeId);
             AttachToMediaElement(youtubeUri);
-
-            timer.Interval = TimeSpan.FromMilliseconds(1000F / 60F);
-            timer.Tick += timer_Tick;
-
-            Position = TimeSpan.Zero;
-            Duration = TimeSpan.Zero;
-
-            DataContext = this;
         }
 
         protected async override void OnNavigatedFrom(NavigationEventArgs e)
@@ -145,15 +148,43 @@ namespace VideaCesky
         {
             ResetSlider();
             Duration = VideoMediaElement.NaturalDuration.TimeSpan;
+
+            ShowSlider();
+            autoHideSliderTimer.Stop();
+
+            LoadProgressRing.IsActive = false;
+            PlayPauseButton.IsEnabled = true;
         }
 
         private void VideoMediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
             VideoMediaElement.Stop();
-            timer.Stop();
+            updateSliderTimer.Stop();
 
             PlayPauseButton.IsChecked = false;
             ResetSlider();
+
+            ShowSlider();
+            autoHideSliderTimer.Stop();
+        }
+
+        private void VideoMediaElement_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (!LoadProgressRing.IsActive)
+            {
+                if (IsVisibleSlider)
+                {
+                    HideSlider();
+                }
+                else
+                {
+                    ShowSlider();
+                    if (PlayPauseButton.IsChecked ?? false)
+                    {
+                        autoHideSliderTimer.Start();
+                    }
+                }
+            }
         }
         #endregion
 
@@ -161,22 +192,28 @@ namespace VideaCesky
         private void PlayPauseButton_Pause(object sender, RoutedEventArgs e)
         {
             VideoMediaElement.Pause();
-            timer.Stop();
+            updateSliderTimer.Stop();
 
             UpdateSlider();
+
+            ShowSlider();
+            autoHideSliderTimer.Stop();
         }
 
         private void PlayPauseButton_Play(object sender, RoutedEventArgs e)
         {
             VideoMediaElement.Play();
-            timer.Start();
+            updateSliderTimer.Start();
 
             UpdateSlider();
+
+            autoHideSliderTimer.Start();
         }
         #endregion
 
         #region Slider ============================================================================
-        DispatcherTimer timer = new DispatcherTimer();
+        DispatcherTimer updateSliderTimer = new DispatcherTimer();
+        DispatcherTimer autoHideSliderTimer = new DispatcherTimer();
 
         private bool canAutoUpdateSlider = true;
 
@@ -191,9 +228,15 @@ namespace VideaCesky
             set { SetProperty(ref _isVisibleSlider, value); }
         }
 
-        void timer_Tick(object sender, object e)
+        void updateSliderTimer_Tick(object sender, object e)
         {
             UpdateSlider();
+        }
+
+        void autoHideSliderTimer_Tick(object sender, object e)
+        {
+            autoHideSliderTimer.Stop();
+            HideSlider();
         }
 
         private void UpdateSlider()
@@ -218,13 +261,29 @@ namespace VideaCesky
             Position = VideoMediaElement.Position;
         }
 
+        private void ShowSlider()
+        {
+            IsVisibleSlider = true;
+            ShowSliderStoryboard.Begin();
+        }
+
+        private void HideSlider()
+        {
+            IsVisibleSlider = false;
+            HideSliderStoryboard.Begin();
+        }
+
         private void ControlsGrid_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            ShowSlider();
+
             sliderDragPosition = VideoMediaElement.Position;
             canAutoUpdateSlider = false;
 
             playAfterDrag = PlayPauseButton.IsChecked ?? false;
             PlayPauseButton.IsChecked = false;
+
+            autoHideSliderTimer.Start();
         }
 
         private void ControlsGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -237,6 +296,8 @@ namespace VideaCesky
             {
                 PlayPauseButton.IsChecked = true;
             }
+
+            autoHideSliderTimer.Start();
         }
 
         private void ControlsGrid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -252,23 +313,8 @@ namespace VideaCesky
                 sliderDragPosition = Duration;
             }
             UpdateSlider(sliderDragPosition);
-        }
 
-        private void Page_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Debug.WriteLine("TAPPED: {0}", IsVisibleSlider);
-            if (!IsVisibleSlider)
-            {
-                IsVisibleSlider = true;
-                HideSliderStoryboard.Stop();
-                ShowSliderStoryboard.Begin();
-            }
-            else
-            {
-                IsVisibleSlider = false;
-                ShowSliderStoryboard.Stop();
-                HideSliderStoryboard.Begin();
-            }
+            autoHideSliderTimer.Start();
         }
         #endregion
     }
