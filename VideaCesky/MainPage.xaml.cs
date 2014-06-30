@@ -47,7 +47,7 @@ namespace VideaCesky
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(VideoPage), new VideoSource("AP2ZxZ8Atc0", "zatím nic"));
+            Frame.Navigate(typeof(VideoPage), new VideoSource("https://www.youtube.com/watch?v=KZYXOSvpYQ0", "http://www.videacesky.cz/autori/Pamis/titulky/BeatlesJimmy.srt"));
         }
     }
 }

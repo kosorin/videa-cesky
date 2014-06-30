@@ -1,4 +1,5 @@
 ﻿using MyToolkit.Multimedia;
+using MyToolkit.Networking;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,6 +44,9 @@ namespace VideaCesky
 
             autoHideSliderTimer.Interval = TimeSpan.FromSeconds(2.5);
             autoHideSliderTimer.Tick += autoHideSliderTimer_Tick;
+
+            VideoMediaElement.MarkerReached += VideoMediaElement_MarkerReached;
+            subtitleTimer.Tick += subtitleTimer_Tick;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -55,8 +59,11 @@ namespace VideaCesky
             DataContext = this;
 
             videoSource = (VideoSource)e.Parameter;
-            youtubeUri = await LoadVideo(videoSource.YoutubeId);
-            AttachToMediaElement(youtubeUri);
+            youtubeUri = await YouTube.GetVideoUriAsync(videoSource.YoutubeId, YouTubeQuality.Quality360P);
+            subtitles = await Subtitles.Download(videoSource.SubtitlesUri);
+
+            AttachVideo(youtubeUri);
+            AttachSubtitles(subtitles);
         }
 
         protected async override void OnNavigatedFrom(NavigationEventArgs e)
@@ -119,26 +126,42 @@ namespace VideaCesky
         public TimeSpan Position
         {
             get { return _position; }
-            set { SetProperty(ref _position, value); }
+            set
+            {
+                if (SetProperty(ref _position, value))
+                {
+                    OnPropertyChanged("PositionWidth");
+                }
+            }
         }
+
+        public int PositionWidth
+        {
+            get
+            {
+                double maxWidth = ControlsGrid.ActualWidth;
+                double videoPosition = Position.TotalSeconds / Duration.TotalSeconds;
+                return (int)(videoPosition * maxWidth);
+            }
+        }
+
+        private string _subtitle;
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { SetProperty(ref _subtitle, value); }
+        }
+
 
         private VideoSource videoSource;
 
         private YouTubeUri youtubeUri;
 
+        private Subtitles subtitles;
+
 
         #region MediaElement ======================================================================
-        private async Task<YouTubeUri> LoadVideo(string id, YouTubeQuality quality = YouTubeQuality.Quality360P)
-        {
-            YouTubeUri source = await YouTube.GetVideoUriAsync(id, quality);
-            if (source == null)
-            {
-                Debug.WriteLine("Chyba youtubu");
-            }
-            return source;
-        }
-
-        private void AttachToMediaElement(YouTubeUri video)
+        private void AttachVideo(YouTubeUri video)
         {
             VideoMediaElement.Source = video.Uri;
             VideoMediaElement.Position = TimeSpan.Zero;
@@ -186,9 +209,22 @@ namespace VideaCesky
                 }
             }
         }
+
+        private void VideoMediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
+        {
+            if (e.Marker.Type == "subtitle")
+            {
+                Subtitle sub = subtitles[Convert.ToInt32(e.Marker.Text)];
+                Subtitle = sub.Text;
+
+                subtitleTimer.Stop();
+                subtitleTimer.Interval = sub.End - sub.Start;
+                subtitleTimer.Start();
+            }
+        }
         #endregion
 
-        #region PlayPause ======================================================================
+        #region PlayPause =========================================================================
         private void PlayPauseButton_Pause(object sender, RoutedEventArgs e)
         {
             VideoMediaElement.Pause();
@@ -213,6 +249,7 @@ namespace VideaCesky
 
         #region Slider ============================================================================
         DispatcherTimer updateSliderTimer = new DispatcherTimer();
+
         DispatcherTimer autoHideSliderTimer = new DispatcherTimer();
 
         private bool canAutoUpdateSlider = true;
@@ -249,15 +286,14 @@ namespace VideaCesky
 
         private void UpdateSlider(TimeSpan position)
         {
-            double maxWidth = ControlsGrid.ActualWidth;
-            double videoPosition = position.TotalSeconds / VideoMediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            VideoSlider.Width = videoPosition * maxWidth;
+            //double maxWidth = ControlsGrid.ActualWidth;
+            //double videoPosition = position.TotalSeconds / VideoMediaElement.NaturalDuration.TimeSpan.TotalSeconds;
+            //VideoSlider.Width = videoPosition * maxWidth;
             Position = position;
         }
 
         private void ResetSlider()
         {
-            VideoSlider.Width = 0;
             Position = VideoMediaElement.Position;
         }
 
@@ -315,6 +351,29 @@ namespace VideaCesky
             UpdateSlider(sliderDragPosition);
 
             autoHideSliderTimer.Start();
+        }
+        #endregion
+
+        #region Subtitles =========================================================================
+        DispatcherTimer subtitleTimer = new DispatcherTimer();
+
+        private void subtitleTimer_Tick(object sender, object e)
+        {
+            Subtitle = null;
+        }
+
+        private void AttachSubtitles(Subtitles subtitles)
+        {
+            int i = 0;
+            foreach (Subtitle sub in subtitles)
+            {
+                VideoMediaElement.Markers.Add(new TimelineMarker()
+                {
+                    Time = sub.Start,
+                    Type = "subtitle",
+                    Text = (i++).ToString()
+                });
+            }
         }
         #endregion
     }

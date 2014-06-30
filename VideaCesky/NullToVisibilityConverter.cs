@@ -1,14 +1,14 @@
 ﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace VideaCesky
 {
-    public class TimeSpanConverter : IValueConverter
+    public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            TimeSpan timeSpan = (TimeSpan)value;
-            return timeSpan.ToString(timeSpan.Hours > 0 ? "hh':'mm':'ss" : "mm':'ss");
+            return value != null ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

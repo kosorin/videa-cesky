@@ -14,6 +14,7 @@
 
     <Page.Resources>
         <local:TimeSpanConverter x:Key="TimeSpanConverter" />
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
         <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
             <Setter Property="FontFamily" Value="Segoe UI Symbol" />
@@ -24,14 +25,18 @@
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FFFFA93B"/>
-                <GradientStop Color="#FFFAFBAB" Offset="0.5"/>
+                <GradientStop Color="#FFFAFBAB" Offset="0.3"/>
                 <GradientStop Color="#FFADD2FF" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
+        
+        <!--MediaPlayer-->
         <MediaElement Name="VideoMediaElement" 
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" Tapped="VideoMediaElement_Tapped" />
+        
+        <!--Info-->
         <StackPanel x:Name="InfoStackPanel"
                     Background="#99000000" 
                     VerticalAlignment="Bottom" 
@@ -61,26 +66,32 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform TranslateY="0"/>
             </StackPanel.RenderTransform>
-            <Border VerticalAlignment="Bottom"
-                    x:Name="WAT"
-                    Padding="20,5,20,0">
-                <TextBlock Foreground="White" 
+            
+            <!--Titulky-->
+            <Border VerticalAlignment="Bottom">
+                <TextBlock Name="SubtitleTextBox" 
+                           Foreground="White" 
                            FontSize="30"
+                           Margin="20,5,20,5"
                            VerticalAlignment="Bottom"
                            HorizontalAlignment="Center"
-                           TextWrapping="WrapWholeWords" TextAlignment="Center">
-                    Tady pak budou titulky.<LineBreak/>Test více řádků.
-                </TextBlock>
+                           TextWrapping="WrapWholeWords" 
+                           TextAlignment="Center"
+                           Text="{Binding Subtitle}"
+                           Visibility="{Binding Subtitle, Converter={StaticResource NullToVisibilityConverter}}"/>
             </Border>
+
+            <!--Slider-->
             <Grid x:Name="ControlsGrid"
                   Background="#A9000000" 
                   Height="60">
-
                 <Border Name="VideoSlider"
                         HorizontalAlignment="Left"
-                        Width="0"
+                        Width="{Binding PositionWidth}"
                         Background="{ThemeResource PhoneAccentBrush}"
                         Opacity="0.5"/>
+                
+                <!--Play/Pause-->
                 <ProgressRing Name="LoadProgressRing"
                               IsActive="True"
                               HorizontalAlignment="Left"
@@ -151,6 +162,8 @@
                         </ControlTemplate>
                     </ToggleButton.Template>
                 </ToggleButton>
+                
+                <!--Čas-->
                 <TextBlock FontSize="20" 
                            Foreground="{ThemeResource PhoneDisabledBrush}"
                            VerticalAlignment="Center" 
@@ -158,6 +171,8 @@
                            Margin="0,8,0,0">
                     <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}" FontSize="36" Foreground="{ThemeResource PhoneForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
                 </TextBlock>
+                
+                <!--Nastavení-->
                 <Button Name="SettingsButton"
                         Visibility="Collapsed"
                         Margin="5,0"
@@ -177,6 +192,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
+                
             </Grid>
         </StackPanel>
     </Grid>
