@@ -1,25 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
 namespace VideaCesky
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
@@ -29,29 +13,53 @@ namespace VideaCesky
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.
-        /// This parameter is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            // TODO: Prepare page for display here.
-
-            // TODO: If your application contains multiple pages, ensure that you are
-            // handling the hardware Back button by registering for the
-            // Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
-            // If you are using the NavigationHelper provided by some templates,
-            // this event is handled for you.
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(VideoPage), new VideoSource(
-                "Který X-Man je nejlepší?", 
+                "Který X-Man je nejlepší?",
                 "Člen komediální skupiny Suricate Julien Josselin a známý francouzský vlogger Cyprien o tom podiskutují v následujícím videu.",
                 "https://www.youtube.com/watch?v=pVMoi5weypI",
                 "http://www.videacesky.cz/autori/qetu/titulky/KteryX-Man.srt"));
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Odvážní válečníci – 2×05 – Želátko navždy",
+                "Mít doma želé skřítka, který tvoří toasty, musí být skvělé. Co se ale stane, když ho potká Catbug?",
+                "https://www.youtube.com/watch?v=839ptAhRI9I",
+                "http://www.videacesky.cz/autori/Erzika/titulky/OdvazniValecnici205.srt"));
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Je možná telepatie?",
+                "Je v dnešní době možné číst lidem myšlenky? A jak to bude vypadat v budoucnosti? Přesně na to se v následujícím videu zaměří americký fyzik Michio Kaku.",
+                "https://www.youtube.com/watch?v=OjcgT_oj3jQ",
+                "http://www.videacesky.cz/autori/qetu/titulky/Jemoznatelepatie.srt"));
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Google vyděrač",
+                "Google si pro veřejnost připravil zbrusu novou službu, Google vyděrač. Také se toužíte dozvědět, co s sebou přináší?",
+                "https://www.youtube.com/watch?v=ymkA1N3oFwg",
+                "www.videacesky.cz/autori/qetu/titulky/GooglevyderacEN.srt"));
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Whose Line Is It Anyway?: Zpravodajské panoptikum #5",
+                "V dnešním Zpravodajském panoptiku zazáří zejména Wayne jako zrychlená a zpomalená kazeta. Sekunduje mu Greg jako kapitán Kirk a Ryan jako rocková hvězda.",
+                "http://www.youtube.com/watch?v=O1YNH6ogm2k",
+                "http://www.videacesky.cz/autori/Jackolo/titulky/WLIIAZpravodajskePanoptikum5.srt"));
         }
     }
 }

@@ -6,23 +6,25 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     ManipulationStarted="ControlsGrid_ManipulationStarted" 
     ManipulationCompleted="ControlsGrid_ManipulationCompleted" 
     ManipulationDelta="ControlsGrid_ManipulationDelta"
     ManipulationMode="TranslateX">
 
     <Page.Resources>
+        <!--Konvertory-->
         <local:TimeSpanConverter x:Key="TimeSpanConverter" />
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
+        <!--Kulaté tlačítko-->
         <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
             <Setter Property="FontFamily" Value="Segoe UI Symbol" />
             <Setter Property="FontSize" Value="24" />
         </Style>
 
+        <!--Skrytí/zobrazení infa-->
         <Storyboard x:Name="HideSliderStoryboard">
-            <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+            <DoubleAnimation Storyboard.TargetName="BottomInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="60"
                              Duration="0:0:1.5">
@@ -30,7 +32,7 @@
                     <ExponentialEase EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="TitleBorder"
+            <DoubleAnimation Storyboard.TargetName="TopInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="-35"
                              Duration="0:0:1.5">
@@ -40,7 +42,7 @@
             </DoubleAnimation>
         </Storyboard>
         <Storyboard x:Name="ShowSliderStoryboard">
-            <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+            <DoubleAnimation Storyboard.TargetName="BottomInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="0"
                              Duration="0:0:0.15">
@@ -48,7 +50,7 @@
                     <ExponentialEase EasingMode="EaseIn" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="TitleBorder"
+            <DoubleAnimation Storyboard.TargetName="TopInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="0"
                              Duration="0:0:0.15">
@@ -57,41 +59,55 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
+
+        <!--Barvy-->
+        <SolidColorBrush x:Key="VideoForegroundBrush" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="VideoSubtleBrush" Color="#66FFFFFF"/>
+        <SolidColorBrush x:Key="VideoColorBrush" Color="{ThemeResource SystemColorControlAccentColor}"/>
+        <SolidColorBrush x:Key="VideoTitleBrush" Color="#CCFFFFFF"/>
+        <SolidColorBrush x:Key="VideoTitleBackgroundBrush" Color="{ThemeResource SystemColorControlAccentColor}" Opacity="0.5"/>
+        <SolidColorBrush x:Key="VideoSubtitleBrush" Color="White"/>
+        <SolidColorBrush x:Key="VideoSubtitleBackgroundBrush" Color="#99000000"/>
+        <SolidColorBrush x:Key="VideoSliderBackgroundBrush" Color="#D0000000"/>
+        <LinearGradientBrush x:Key="VideoBackgroundBrush"
+                             EndPoint="0.5,1" 
+                             StartPoint="0.5,0">
+            <GradientStop Color="#FFFFA93B"/>
+            <GradientStop Color="#FFFAFBAB" Offset="0.3"/>
+            <GradientStop Color="#FFADD2FF" Offset="1"/>
+        </LinearGradientBrush>
+
     </Page.Resources>
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FFFFA93B"/>
-                <GradientStop Color="#FFFAFBAB" Offset="0.3"/>
-                <GradientStop Color="#FFADD2FF" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-        
+    <Grid Background="{StaticResource VideoBackgroundBrush}">
         <!--MediaPlayer-->
         <MediaElement Name="VideoMediaElement" 
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
-                      MediaEnded="VideoMediaElement_MediaEnded" Tapped="VideoMediaElement_Tapped" />
-        <!--Popis-->
-        <Border x:Name="TitleBorder"
-                VerticalAlignment="Top"
-                Background="#99000000" 
-                RenderTransformOrigin="0.5,0.5" 
-                Height="35">
-            <Border.RenderTransform>
-                <CompositeTransform TranslateY="0"/>
-            </Border.RenderTransform>
-            <TextBlock Foreground="White"
-                       Opacity="0.8"
-                       FontSize="20"
-                       Margin="10,5,0,2"
-                       TextWrapping="NoWrap"
-                       Text="{Binding VideoSource.Title}" />
-        </Border>
+                      MediaEnded="VideoMediaElement_MediaEnded" 
+                      Tapped="VideoMediaElement_Tapped" />
         
-        <!--Info-->
-        <StackPanel x:Name="InfoStackPanel"
-                    Background="#99000000" 
+        <!--Horní info-->
+        <StackPanel x:Name="TopInfoStackPanel" 
+                    VerticalAlignment="Top"
+                    RenderTransformOrigin="0.5,0.5" >
+            <StackPanel.RenderTransform>
+                <CompositeTransform TranslateY="0"/>
+            </StackPanel.RenderTransform>
+            
+            <!--Popis-->
+            <Border Background="{StaticResource VideoTitleBackgroundBrush}" 
+                    Height="35">
+                <TextBlock Foreground="{StaticResource VideoTitleBrush}"
+                           FontSize="20"
+                           Margin="10,5,0,2"
+                           TextWrapping="NoWrap"
+                           Text="{Binding VideoSource.Title}" />
+            </Border>
+            
+        </StackPanel>
+
+        <!--Spodní info-->
+        <StackPanel x:Name="BottomInfoStackPanel"
                     VerticalAlignment="Bottom" 
                     RenderTransformOrigin="0.5,0.5">
             <StackPanel.RenderTransform>
@@ -99,9 +115,10 @@
             </StackPanel.RenderTransform>
 
             <!--Titulky-->
-            <Border VerticalAlignment="Bottom">
+            <Border VerticalAlignment="Bottom"
+                    Background="{StaticResource VideoSubtitleBackgroundBrush}">
                 <TextBlock Name="SubtitleTextBox" 
-                           Foreground="White" 
+                           Foreground="{StaticResource VideoSubtitleBrush}" 
                            FontSize="30"
                            Margin="20,5,20,5"
                            VerticalAlignment="Bottom"
@@ -114,19 +131,20 @@
 
             <!--Slider-->
             <Grid x:Name="ControlsGrid"
-                  Background="#A9000000" 
+                  Background="{StaticResource VideoSliderBackgroundBrush}" 
                   Height="60">
                 <Border Name="VideoSlider"
                         HorizontalAlignment="Left"
                         Width="{Binding PositionWidth}"
-                        Background="{ThemeResource PhoneAccentBrush}"
+                        Background="{StaticResource VideoColorBrush}"
                         Opacity="0.5"/>
-                
+
                 <!--Play/Pause-->
                 <ProgressRing Name="LoadProgressRing"
                               IsActive="True"
                               HorizontalAlignment="Left"
                               Margin="2,0" 
+                              Foreground="{StaticResource VideoColorBrush}"
                               Background="{x:Null}" />
                 <ToggleButton Name="PlayPauseButton"
                               Unchecked="PlayPauseButton_Pause"
@@ -180,12 +198,13 @@
                                 </VisualStateManager.VisualStateGroups>
                                 <TextBlock x:Name="PlayText" 
                                            Style="{StaticResource RoundButtonStyle}"
+                                           Foreground="{StaticResource VideoForegroundBrush}"
                                            Text="&#xe17E;&#xe102;" 
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
                                 <TextBlock x:Name="PauseText" 
                                            Style="{StaticResource RoundButtonStyle}"
-                                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                                           Foreground="{StaticResource VideoSubtleBrush}"
                                            Text="&#xe17E;&#xe103;"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
@@ -193,16 +212,18 @@
                         </ControlTemplate>
                     </ToggleButton.Template>
                 </ToggleButton>
-                
+
                 <!--Čas-->
                 <TextBlock FontSize="20" 
-                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                           Foreground="{StaticResource VideoSubtleBrush}"
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0">
-                    <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}" FontSize="36" Foreground="{ThemeResource PhoneForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
+                    <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}"
+                         FontSize="36" 
+                         Foreground="{StaticResource VideoForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
                 </TextBlock>
-                
+
                 <!--Nastavení-->
                 <Button Name="SettingsButton"
                         Visibility="Collapsed"
@@ -215,7 +236,7 @@
                             <Grid Background="Transparent">
                                 <TextBlock x:Name="PlayText" 
                                            Style="{StaticResource RoundButtonStyle}"
-                                           Foreground="{ThemeResource PhoneDisabledBrush}"
+                                           Foreground="{StaticResource VideoSubtleBrush}"
                                            Text="&#xe17E;&#xe115;" 
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
@@ -223,7 +244,7 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                
+
             </Grid>
         </StackPanel>
     </Grid>

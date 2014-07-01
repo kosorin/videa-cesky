@@ -8,7 +8,11 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Button Click="Button_Click" Content="Pokračuj" HorizontalAlignment="Center" />
-    </Grid>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button Click="Button_Click_1" Content="video 1" />
+        <Button Click="Button_Click_2" Content="video 2" />
+        <Button Click="Button_Click_3" Content="video 3" />
+        <Button Click="Button_Click_4" Content="video 4" />
+        <Button Click="Button_Click_5" Content="video 5" />
+    </StackPanel>
 </Page>
