@@ -72,20 +72,25 @@
         <LinearGradientBrush x:Key="VideoBackgroundBrush"
                              EndPoint="0.5,1" 
                              StartPoint="0.5,0">
-            <GradientStop Color="#FFFFA93B"/>
-            <GradientStop Color="#FFFAFBAB" Offset="0.3"/>
-            <GradientStop Color="#FFADD2FF" Offset="1"/>
+            <GradientStop Color="#FF333333"/>
+            <GradientStop Color="#FF222222" Offset="1"/>
         </LinearGradientBrush>
 
     </Page.Resources>
     <Grid Background="{StaticResource VideoBackgroundBrush}">
+        <Image Source="Assets/VideaCeskyLogo.png" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" >
+            <Image.RenderTransform>
+                <CompositeTransform ScaleX="0.7" ScaleY="0.7"/>
+            </Image.RenderTransform>
+        </Image>
+
         <!--MediaPlayer-->
         <MediaElement Name="VideoMediaElement" 
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" 
                       Tapped="VideoMediaElement_Tapped" />
-        
+
         <!--Horní info-->
         <StackPanel x:Name="TopInfoStackPanel" 
                     VerticalAlignment="Top"
@@ -93,7 +98,7 @@
             <StackPanel.RenderTransform>
                 <CompositeTransform TranslateY="0"/>
             </StackPanel.RenderTransform>
-            
+
             <!--Popis-->
             <Border Background="{StaticResource VideoTitleBackgroundBrush}" 
                     Height="35">
@@ -103,7 +108,7 @@
                            TextWrapping="NoWrap"
                            Text="{Binding VideoSource.Title}" />
             </Border>
-            
+
         </StackPanel>
 
         <!--Spodní info-->
