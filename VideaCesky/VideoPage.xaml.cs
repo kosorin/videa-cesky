@@ -184,6 +184,8 @@ namespace VideaCesky
 
             LoadProgressRing.IsActive = false;
             PlayPauseButton.IsEnabled = true;
+
+            PlayPauseButton.IsChecked = true;
         }
 
         private void VideoMediaElement_MediaEnded(object sender, RoutedEventArgs e)
