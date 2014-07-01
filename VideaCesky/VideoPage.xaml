@@ -46,7 +46,7 @@
                     <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
                                      Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                                      To="60"
-                                     Duration="0:0:0.15">
+                                     Duration="0:0:1.5">
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase EasingMode="EaseOut" />
                         </DoubleAnimation.EasingFunction>
