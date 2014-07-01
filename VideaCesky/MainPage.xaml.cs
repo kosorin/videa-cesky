@@ -50,7 +50,7 @@ namespace VideaCesky
                 "Google vyděrač",
                 "Google si pro veřejnost připravil zbrusu novou službu, Google vyděrač. Také se toužíte dozvědět, co s sebou přináší?",
                 "https://www.youtube.com/watch?v=ymkA1N3oFwg",
-                "www.videacesky.cz/autori/qetu/titulky/GooglevyderacEN.srt"));
+                "http://www.videacesky.cz/autori/qetu/titulky/GooglevyderacEN.srt"));
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)

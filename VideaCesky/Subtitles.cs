@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace VideaCesky
 {
@@ -16,6 +17,7 @@ namespace VideaCesky
         public async static Task<Subtitles> Download(string uri)
         {
             string srt = "";
+            bool isError = false;
             try
             {
                 HttpResponse response = await Http.GetAsync(uri);
@@ -24,10 +26,17 @@ namespace VideaCesky
             catch (OperationCanceledException)
             {
                 // TODO add your cancellation logic
+                isError = true;
             }
             catch (Exception)
             {
-                // TODO add your exception handling logic
+                isError = true;
+            }
+
+            if (isError)
+            {
+                MessageDialog messageDialog = new MessageDialog("Chyba při stahování titulků!");
+                await messageDialog.ShowAsync();
             }
             return Parse(srt);
         }

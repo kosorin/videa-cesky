@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -67,6 +68,12 @@ namespace VideaCesky
             OnPropertyChanged("VideoSource");
 
             youtubeUri = await YouTube.GetVideoUriAsync(VideoSource.YoutubeId, YouTubeQuality.Quality360P);
+            if (youtubeUri == null)
+            {
+                MessageDialog messageDialog = new MessageDialog("Chyba při načítání videa!");
+                await messageDialog.ShowAsync();
+                return;
+            }
             subtitles = await Subtitles.Download(VideoSource.SubtitlesUri);
 
             AttachVideo(youtubeUri);

@@ -64,8 +64,8 @@
         <SolidColorBrush x:Key="VideoForegroundBrush" Color="#FFFFFFFF"/>
         <SolidColorBrush x:Key="VideoSubtleBrush" Color="#66FFFFFF"/>
         <SolidColorBrush x:Key="VideoColorBrush" Color="{ThemeResource SystemColorControlAccentColor}"/>
-        <SolidColorBrush x:Key="VideoTitleBrush" Color="#CCFFFFFF"/>
-        <SolidColorBrush x:Key="VideoTitleBackgroundBrush" Color="{ThemeResource SystemColorControlAccentColor}" Opacity="0.5"/>
+        <SolidColorBrush x:Key="VideoTitleBrush" Color="#E0FFFFFF"/>
+        <SolidColorBrush x:Key="VideoTitleBackgroundBrush" Color="#B0000000"/>
         <SolidColorBrush x:Key="VideoSubtitleBrush" Color="White"/>
         <SolidColorBrush x:Key="VideoSubtitleBackgroundBrush" Color="#99000000"/>
         <SolidColorBrush x:Key="VideoSliderBackgroundBrush" Color="#D0000000"/>
