@@ -160,7 +160,6 @@ namespace VideaCesky
         }
         #endregion
 
-
         #region MediaElement ======================================================================
         private void AttachVideo(YouTubeUri video)
         {
@@ -319,8 +318,6 @@ namespace VideaCesky
 
             playAfterDrag = PlayPauseButton.IsChecked ?? false;
             PlayPauseButton.IsChecked = false;
-
-            autoHideSliderTimer.Start();
         }
 
         private void ControlsGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -350,8 +347,6 @@ namespace VideaCesky
                 sliderDragPosition = Duration;
             }
             UpdateSlider(sliderDragPosition);
-
-            autoHideSliderTimer.Start();
         }
         #endregion
 
