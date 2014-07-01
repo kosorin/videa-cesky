@@ -32,6 +32,12 @@ namespace VideaCesky
     public sealed partial class VideoPage : Page, INotifyPropertyChanged
     {
         #region Page
+        private VideoSource videoSource;
+
+        private YouTubeUri youtubeUri;
+
+        private Subtitles subtitles;
+
         public VideoPage()
         {
             this.InitializeComponent();
@@ -114,7 +120,7 @@ namespace VideaCesky
         }
         #endregion
 
-
+        #region Properties
         private TimeSpan _duration;
         public TimeSpan Duration
         {
@@ -151,13 +157,7 @@ namespace VideaCesky
             get { return _subtitle; }
             set { SetProperty(ref _subtitle, value); }
         }
-
-
-        private VideoSource videoSource;
-
-        private YouTubeUri youtubeUri;
-
-        private Subtitles subtitles;
+        #endregion
 
 
         #region MediaElement ======================================================================
