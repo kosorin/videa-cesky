@@ -20,6 +20,43 @@
             <Setter Property="FontFamily" Value="Segoe UI Symbol" />
             <Setter Property="FontSize" Value="24" />
         </Style>
+
+        <Storyboard x:Name="HideSliderStoryboard">
+            <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+                             Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                             To="60"
+                             Duration="0:0:1.5">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="TitleBorder"
+                             Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                             To="-35"
+                             Duration="0:0:1.5">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+        <Storyboard x:Name="ShowSliderStoryboard">
+            <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
+                             Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                             To="0"
+                             Duration="0:0:0.15">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="TitleBorder"
+                             Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
+                             To="0"
+                             Duration="0:0:0.15">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
     </Page.Resources>
     <Grid>
         <Grid.Background>
@@ -35,38 +72,32 @@
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" Tapped="VideoMediaElement_Tapped" />
+        <!--Popis-->
+        <Border x:Name="TitleBorder"
+                VerticalAlignment="Top"
+                Background="#99000000" 
+                RenderTransformOrigin="0.5,0.5" 
+                Height="35">
+            <Border.RenderTransform>
+                <CompositeTransform TranslateY="0"/>
+            </Border.RenderTransform>
+            <TextBlock Foreground="White"
+                       Opacity="0.8"
+                       FontSize="20"
+                       Margin="10,5,0,2"
+                       TextWrapping="NoWrap"
+                       Text="{Binding VideoSource.Title}" />
+        </Border>
         
         <!--Info-->
         <StackPanel x:Name="InfoStackPanel"
                     Background="#99000000" 
                     VerticalAlignment="Bottom" 
                     RenderTransformOrigin="0.5,0.5">
-            <StackPanel.Resources>
-                <Storyboard x:Name="HideSliderStoryboard">
-                    <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
-                                     Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
-                                     To="60"
-                                     Duration="0:0:1.5">
-                        <DoubleAnimation.EasingFunction>
-                            <ExponentialEase EasingMode="EaseOut" />
-                        </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
-                </Storyboard>
-                <Storyboard x:Name="ShowSliderStoryboard" >
-                    <DoubleAnimation Storyboard.TargetName="InfoStackPanel"
-                                     Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
-                                     To="0"
-                                     Duration="0:0:0.15">
-                        <DoubleAnimation.EasingFunction>
-                            <ExponentialEase EasingMode="EaseIn" />
-                        </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
-                </Storyboard>
-            </StackPanel.Resources>
             <StackPanel.RenderTransform>
                 <CompositeTransform TranslateY="0"/>
             </StackPanel.RenderTransform>
-            
+
             <!--Titulky-->
             <Border VerticalAlignment="Bottom">
                 <TextBlock Name="SubtitleTextBox" 

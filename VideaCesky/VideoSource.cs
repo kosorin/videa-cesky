@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace VideaCesky
 {
-    public class VideoSource
+    public class VideoSource : BindableBase
     {
+        private string _title;
+        public string Title
+        {
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
+        }
+
+        public string Description { get; set; }
+
         public string YoutubeUri { get; set; }
 
         public string SubtitlesUri { get; set; }
@@ -26,8 +35,10 @@ namespace VideaCesky
             }
         }
 
-        public VideoSource(string youtubeUri, string subtitlesUri)
+        public VideoSource(string title, string description, string youtubeUri, string subtitlesUri)
         {
+            Title = title;
+            Description = description;
             YoutubeUri = youtubeUri;
             SubtitlesUri = subtitlesUri;
         }

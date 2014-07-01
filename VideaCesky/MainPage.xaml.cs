@@ -47,7 +47,11 @@ namespace VideaCesky
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(VideoPage), new VideoSource("https://www.youtube.com/watch?v=KZYXOSvpYQ0", "http://www.videacesky.cz/autori/Pamis/titulky/BeatlesJimmy.srt"));
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Který X-Man je nejlepší?", 
+                "Člen komediální skupiny Suricate Julien Josselin a známý francouzský vlogger Cyprien o tom podiskutují v následujícím videu.",
+                "https://www.youtube.com/watch?v=pVMoi5weypI",
+                "http://www.videacesky.cz/autori/qetu/titulky/KteryX-Man.srt"));
         }
     }
 }

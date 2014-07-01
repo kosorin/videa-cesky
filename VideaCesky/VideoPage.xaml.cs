@@ -32,7 +32,7 @@ namespace VideaCesky
     public sealed partial class VideoPage : Page, INotifyPropertyChanged
     {
         #region Page
-        private VideoSource videoSource;
+        public VideoSource VideoSource { get; set; }
 
         private YouTubeUri youtubeUri;
 
@@ -62,11 +62,12 @@ namespace VideaCesky
             StatusBar statusBar = StatusBar.GetForCurrentView();
             await statusBar.HideAsync();
 
+            VideoSource = (VideoSource)e.Parameter;
             DataContext = this;
+            OnPropertyChanged("VideoSource");
 
-            videoSource = (VideoSource)e.Parameter;
-            youtubeUri = await YouTube.GetVideoUriAsync(videoSource.YoutubeId, YouTubeQuality.Quality360P);
-            subtitles = await Subtitles.Download(videoSource.SubtitlesUri);
+            youtubeUri = await YouTube.GetVideoUriAsync(VideoSource.YoutubeId, YouTubeQuality.Quality360P);
+            subtitles = await Subtitles.Download(VideoSource.SubtitlesUri);
 
             AttachVideo(youtubeUri);
             AttachSubtitles(subtitles);
