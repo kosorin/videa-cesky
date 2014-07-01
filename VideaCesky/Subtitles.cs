@@ -17,7 +17,6 @@ namespace VideaCesky
         public async static Task<Subtitles> Download(string uri)
         {
             string srt = "";
-            bool isError = false;
             try
             {
                 HttpResponse response = await Http.GetAsync(uri);
@@ -26,17 +25,11 @@ namespace VideaCesky
             catch (OperationCanceledException)
             {
                 // TODO add your cancellation logic
-                isError = true;
+                return null;
             }
             catch (Exception)
             {
-                isError = true;
-            }
-
-            if (isError)
-            {
-                MessageDialog messageDialog = new MessageDialog("Chyba při stahování titulků!");
-                await messageDialog.ShowAsync();
+                return null;
             }
             return Parse(srt);
         }

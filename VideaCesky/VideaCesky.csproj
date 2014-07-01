@@ -83,6 +83,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BindableBase.cs" />
+    <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="NullToVisibilityConverter.cs" />
     <Compile Include="Subtitle.cs" />
     <Compile Include="Subtitles.cs" />
