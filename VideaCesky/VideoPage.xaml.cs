@@ -316,6 +316,9 @@ namespace VideaCesky
 
         private void ControlsGrid_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            if (IsError)
+                return;
+
             ShowSlider();
 
             sliderDragPosition = VideoMediaElement.Position;
@@ -327,6 +330,9 @@ namespace VideaCesky
 
         private void ControlsGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            if (IsError)
+                return;
+
             VideoMediaElement.Position = sliderDragPosition;
             UpdateSlider(sliderDragPosition);
             canAutoUpdateSlider = true;
@@ -341,6 +347,9 @@ namespace VideaCesky
 
         private void ControlsGrid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (IsError)
+                return;
+
             double ratio = Duration.TotalSeconds / e.Container.DesiredSize.Width;
             sliderDragPosition = sliderDragPosition.Add(TimeSpan.FromSeconds(e.Delta.Translation.X * ratio));
             if (sliderDragPosition < TimeSpan.Zero)

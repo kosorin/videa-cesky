@@ -116,16 +116,16 @@
                 Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Margin="50,0">
+                        Margin="40,0">
                 <TextBlock Foreground="White"
                            FontSize="60">
                     (ノò_ó)ノ︵ ┻━━┻
                 </TextBlock>
                 <TextBlock Foreground="White"
-                           FontSize="20"
+                           FontSize="24"
                            TextWrapping="WrapWholeWords"
                            FontWeight="SemiLight" 
-                           Margin="0,20,0,40">
+                           Margin="0,5,0,0">
                     Něco se pokazilo během nahrávání videa nebo stahování titulků. Video není možné přehrát.
                 </TextBlock>
             </StackPanel>
