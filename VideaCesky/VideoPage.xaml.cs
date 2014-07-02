@@ -26,6 +26,8 @@ namespace VideaCesky
         #region Page
         public VideoSource VideoSource { get; set; }
 
+        private DisplayRequest dispRequest = null;
+
         public VideoPage()
         {
             this.InitializeComponent();
@@ -220,6 +222,22 @@ namespace VideaCesky
         #endregion
 
         #region PlayPause =========================================================================
+        private void PlayPauseButton_Play(object sender, RoutedEventArgs e)
+        {
+            if (dispRequest == null)
+            {
+                dispRequest = new DisplayRequest();
+                dispRequest.RequestActive();
+            }
+
+            VideoMediaElement.Play();
+            updateSliderTimer.Start();
+
+            UpdateSlider();
+
+            autoHideSliderTimer.Start();
+        }
+
         private void PlayPauseButton_Pause(object sender, RoutedEventArgs e)
         {
             VideoMediaElement.Pause();
@@ -229,16 +247,12 @@ namespace VideaCesky
 
             ShowSlider();
             autoHideSliderTimer.Stop();
-        }
 
-        private void PlayPauseButton_Play(object sender, RoutedEventArgs e)
-        {
-            VideoMediaElement.Play();
-            updateSliderTimer.Start();
-
-            UpdateSlider();
-
-            autoHideSliderTimer.Start();
+            if (dispRequest != null)
+            {
+                dispRequest.RequestRelease();
+                dispRequest = null;
+            }
         }
         #endregion
 
