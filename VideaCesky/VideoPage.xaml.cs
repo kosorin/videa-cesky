@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
+using Windows.System.Display;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -22,10 +25,6 @@ namespace VideaCesky
     {
         #region Page
         public VideoSource VideoSource { get; set; }
-
-        private YouTubeUri youtubeUri = null;
-
-        private Subtitles subtitles = null;
 
         public VideoPage()
         {
@@ -144,26 +143,11 @@ namespace VideaCesky
                 }
             }
         }
-
-        public int PositionWidth
-        {
-            get
-            {
-                double maxWidth = ControlsGrid.ActualWidth;
-                double videoPosition = Position.TotalSeconds / Duration.TotalSeconds;
-                return (int)(videoPosition * maxWidth);
-            }
-        }
-
-        private string _subtitle;
-        public string Subtitle
-        {
-            get { return _subtitle; }
-            set { SetProperty(ref _subtitle, value); }
-        }
         #endregion
 
         #region MediaElement ======================================================================
+        private YouTubeUri youtubeUri = null;
+
         private void AttachVideo(YouTubeUri video)
         {
             VideoMediaElement.Source = video.Uri;
@@ -219,12 +203,18 @@ namespace VideaCesky
         {
             if (e.Marker.Type == "subtitle")
             {
-                Subtitle sub = subtitles[Convert.ToInt32(e.Marker.Text)];
-                Subtitle = sub.Text;
+                try
+                {
+                    Subtitle sub = subtitles[Convert.ToInt32(e.Marker.Text)];
+                    Subtitle = sub.Text;
 
-                subtitleTimer.Stop();
-                subtitleTimer.Interval = sub.End - sub.Start;
-                subtitleTimer.Start();
+                    subtitleTimer.Stop();
+                    subtitleTimer.Interval = sub.End - sub.Start;
+                    subtitleTimer.Start();
+                }
+                catch (Exception ex)
+                {
+                }
             }
         }
         #endregion
@@ -268,6 +258,16 @@ namespace VideaCesky
         {
             get { return _isVisibleSlider; }
             set { SetProperty(ref _isVisibleSlider, value); }
+        }
+
+        public int PositionWidth
+        {
+            get
+            {
+                double maxWidth = ControlsGrid.ActualWidth;
+                double videoPosition = Position.TotalSeconds / Duration.TotalSeconds;
+                return (int)(videoPosition * maxWidth);
+            }
         }
 
         void updateSliderTimer_Tick(object sender, object e)
@@ -365,7 +365,16 @@ namespace VideaCesky
         #endregion
 
         #region Subtitles =========================================================================
+        private Subtitles subtitles = null;
+
         DispatcherTimer subtitleTimer = new DispatcherTimer();
+
+        private string _subtitle;
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { SetProperty(ref _subtitle, value); }
+        }
 
         private void subtitleTimer_Tick(object sender, object e)
         {
