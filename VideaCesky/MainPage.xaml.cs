@@ -61,5 +61,14 @@ namespace VideaCesky
                 "http://www.youtube.com/watch?v=O1YNH6ogm2k",
                 "http://www.videacesky.cz/autori/Jackolo/titulky/WLIIAZpravodajskePanoptikum5.srt"));
         }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "chyba při načítání videa nebo titulků",
+                "",
+                "adsfasdfasdfasdfasdfd",
+                "asdqweasdfasd"));
+        }
     }
 }

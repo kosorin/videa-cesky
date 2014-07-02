@@ -14,5 +14,6 @@
         <Button Click="Button_Click_3" Content="video 3" />
         <Button Click="Button_Click_4" Content="video 4" />
         <Button Click="Button_Click_5" Content="video 5" />
+        <Button Click="Button_Click_6" Content="chyba" />
     </StackPanel>
 </Page>

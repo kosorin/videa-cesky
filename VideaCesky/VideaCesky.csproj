@@ -82,7 +82,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Attached.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="NullToVisibilityConverter.cs" />

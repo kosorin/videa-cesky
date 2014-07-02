@@ -26,10 +26,10 @@ namespace VideaCesky
         {
             get
             {
-                var match = Regex.Match(YoutubeUri, @"watch\?v=(?<id>[a-zA-Z0-9]+)");
+                var match = Regex.Match(YoutubeUri, @"(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+");
                 if (match != null && match.Success)
                 {
-                    return match.Groups["id"].Value;
+                    return match.Value;
                 }
                 return YoutubeUri;
             }
