@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
@@ -22,9 +23,9 @@ namespace VideaCesky
         #region Page
         public VideoSource VideoSource { get; set; }
 
-        private YouTubeUri youtubeUri;
+        private YouTubeUri youtubeUri = null;
 
-        private Subtitles subtitles;
+        private Subtitles subtitles = null;
 
         public VideoPage()
         {
@@ -54,16 +55,24 @@ namespace VideaCesky
             DataContext = this;
             OnPropertyChanged("VideoSource");
 
-            youtubeUri = await YouTube.GetVideoUriAsync(VideoSource.YoutubeId, YouTubeQuality.Quality360P);
-            subtitles = await Subtitles.Download(VideoSource.SubtitlesUri);
-            if (youtubeUri != null && subtitles != null)
+            try
             {
-                AttachVideo(youtubeUri);
-                AttachSubtitles(subtitles);
+                youtubeUri = await YouTube.GetVideoUriAsync(VideoSource.YoutubeId, YouTubeQuality.Quality360P);
+                subtitles = await Subtitles.Download(VideoSource.SubtitlesUri);
+                if (youtubeUri != null && subtitles != null)
+                {
+                    AttachVideo(youtubeUri);
+                    AttachSubtitles(subtitles);
+                }
+                else
+                {
+                    IsError = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
                 IsError = true;
+                Debug.WriteLine("CHYBA-----------------------------------------------: " + ex.Message);
             }
         }
 
@@ -379,6 +388,7 @@ namespace VideaCesky
                 SetProperty(ref _isError, value);
                 if (value)
                 {
+                    VideoMediaElement.Stop(); // projistotu, aby tam nic nehrálo
                     HideSliderStoryboard.Begin();
                     ShowErrorStoryboard.Begin();
                 }
