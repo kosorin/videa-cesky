@@ -24,7 +24,6 @@ namespace VideaCesky
             }
             catch (OperationCanceledException)
             {
-                // TODO add your cancellation logic
                 return null;
             }
             catch (Exception)

@@ -18,6 +18,10 @@ namespace VideaCesky
 
         public string Description { get; set; }
 
+        public string ImageUri { get; set; }
+
+        public string VideoUri { get; set; }
+
         public string YoutubeUri { get; set; }
 
         public string SubtitlesUri { get; set; }
@@ -35,12 +39,14 @@ namespace VideaCesky
             }
         }
 
-        public VideoSource(string title, string description, string youtubeUri, string subtitlesUri)
+        public VideoSource(string title, string description, string youtubeUri, string subtitlesUri, string videoUri = "", string imageUri = "")
         {
             Title = title;
             Description = description;
             YoutubeUri = youtubeUri;
             SubtitlesUri = subtitlesUri;
+            VideoUri = videoUri;
+            ImageUri = imageUri;
         }
     }
 }
