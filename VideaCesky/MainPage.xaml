@@ -5,11 +5,16 @@
     xmlns:local="using:VideaCesky"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Media="using:MyToolkit.Media"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    
+    <Page.Resources>
+        <local:EqualsToBrushConverter x:Key="EqualsToBrushConverter" />
+    </Page.Resources>
 
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <StackPanel>
+        <!--<StackPanel>
             <TextBlock Text="videa" Style="{ThemeResource SubheaderTextBlockStyle}" />
             <Button Click="Button_Click_1" Content="video 1" />
             <Button Click="Button_Click_2" Content="video 2" />
@@ -18,10 +23,54 @@
             <Button Click="Button_Click_5" Content="video 5" />
         </StackPanel>
         <StackPanel Margin="80,0,0,0">
-            <TextBlock Text="chyby" Style="{ThemeResource SubheaderTextBlockStyle}" />
-            <Button Click="Button_Click_Video" Content="video" />
-            <Button Click="Button_Click_Subtitles" Content="titulky" />
-        </StackPanel>
+            <StackPanel>
+                <TextBlock Text="chyby" Style="{ThemeResource SubheaderTextBlockStyle}" />
+                <Button Click="Button_Click_Video" Content="video" />
+                <Button Click="Button_Click_Subtitles" Content="titulky" />
+            </StackPanel>
+            <StackPanel Margin="0,20,0,0">
+                <TextBlock Text="test" Style="{ThemeResource SubheaderTextBlockStyle}" />
+                <Button Click="Button_Click_Html" Content="html" />
+            </StackPanel>
+        </StackPanel>-->
+        <ListBox x:Name="VideoListBox"
+                 ItemsSource="{Binding VideoList}" 
+                 Background="#66FFFFFF" 
+                 SelectionChanged="VideoListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Background="#15FFFFFF">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="200" />
+                        </Grid.ColumnDefinitions>
+                        <Image Media:ImageHelper.Source="{Binding ImageUri}" />
+                        <TextBlock Grid.Column="1"
+                                   Style="{ThemeResource TitleTextBlockStyle}"
+                                   Text="{Binding Title}"
+                                   TextWrapping="WrapWholeWords"
+                                   FontWeight="SemiLight"
+                                   Margin="10,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox ItemsSource="{Binding Pagination}"
+                 SelectionChanged="ListBox_SelectionChanged" 
+                 HorizontalAlignment="Center" 
+                 Width="60">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding}"
+                                   Style="{ThemeResource TitleTextBlockStyle}" 
+                                   Foreground="{Binding Converter={StaticResource EqualsToBrushConverter}}" />
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
     </StackPanel>
 
 </Page>

@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="BoolNegationConverter.cs" />
+    <Compile Include="EqualsToBrushConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="NullToVisibilityConverter.cs" />
     <Compile Include="Subtitle.cs" />
