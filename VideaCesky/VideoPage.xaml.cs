@@ -107,12 +107,15 @@ namespace VideaCesky
             await statusBar.ShowAsync();
             #endregion
 
+            StopVideoPlayback();
             base.OnNavigatedFrom(e);
         }
 
         private void BackButtonPress(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
             e.Handled = true;
+
+            StopVideoPlayback();
             if (Frame.CanGoBack)
             {
                 Frame.GoBack();
