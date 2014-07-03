@@ -13,9 +13,10 @@
 
     <Page.Resources>
         <!--Konvertory-->
-        <local:TimeSpanConverter x:Key="TimeSpanConverter" />
+        <local:TimeSpanConverter x:Key="TimeSpanConverter" /> 
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" /> 
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <local:BoolNegationConverter x:Key="BoolNegationConverter" />
 
         <!--Kulaté tlačítko-->
         <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
@@ -89,10 +90,9 @@
             <GradientStop Color="#FF333333"/>
             <GradientStop Color="#FF222222" Offset="1"/>
         </LinearGradientBrush>
-
     </Page.Resources>
+
     <Grid Background="{StaticResource VideoBackgroundBrush}">
-        
         <!--Logo-->
         <Image Source="Assets/VideaCeskyLogo.png" 
                HorizontalAlignment="Center" 
@@ -108,27 +108,31 @@
                       AutoPlay="False" 
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" 
-                      Tapped="VideoMediaElement_Tapped" />
+                      MediaFailed="VideoMediaElement_MediaFailed" 
+                      Tapped="VideoMediaElement_Tapped"/>
 
         <!--Chyba-->
         <Border Name="ErrorBorder"
                 Background="{StaticResource VideoColorBrush}"
-                Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-            <StackPanel VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Margin="40,0">
-                <TextBlock Foreground="White"
-                           FontSize="60">
-                    (ノò_ó)ノ︵ ┻━━┻
-                </TextBlock>
-                <TextBlock Foreground="White"
-                           FontSize="24"
-                           TextWrapping="WrapWholeWords"
-                           FontWeight="SemiLight" 
-                           Margin="0,5,0,0">
-                    Něco se pokazilo během nahrávání videa nebo stahování titulků. Video není možné přehrát.
-                </TextBlock>
-            </StackPanel>
+                Visibility="{Binding IsError, 
+                                     Converter={StaticResource BoolToVisibilityConverter}, 
+                                     FallbackValue=Collapsed}">
+            <Border Background="#66000000">
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Margin="40,0">
+                    <TextBlock Foreground="White"
+                               FontSize="60">
+                        (ノò_ó)ノ︵ ┻━━┻
+                    </TextBlock>
+                    <TextBlock Foreground="White"
+                               FontSize="24"
+                               TextWrapping="WrapWholeWords"
+                               FontWeight="SemiLight" 
+                               Margin="0,5,0,0"
+                               Text="{Binding ErrorMessage}" />
+                </StackPanel>
+            </Border>
         </Border>
         
         <!--Horní info-->
@@ -146,7 +150,7 @@
                            FontSize="20"
                            Margin="10,5,0,2"
                            TextWrapping="NoWrap"
-                           Text="{Binding VideoSource.Title}" />
+                           Text="{Binding Title}" />
             </Border>
 
         </StackPanel>
@@ -180,23 +184,23 @@
                   Height="60">
                 <Border Name="VideoSlider"
                         HorizontalAlignment="Left"
-                        Width="{Binding PositionWidth}"
+                        Width="{Binding SliderPositionWidth}"
                         Background="{StaticResource VideoColorBrush}"
                         Opacity="0.5"/>
 
                 <!--Play/Pause-->
                 <ProgressRing Name="LoadProgressRing"
-                              IsActive="True"
+                              IsActive="{Binding IsLoaded, Converter={StaticResource BoolNegationConverter}}"
                               HorizontalAlignment="Left"
                               Margin="2,0" 
                               Foreground="{StaticResource VideoColorBrush}"
                               Background="{x:Null}" />
                 <ToggleButton Name="PlayPauseButton"
-                              Unchecked="PlayPauseButton_Pause"
-                              Checked="PlayPauseButton_Play" 
+                              IsChecked="{Binding IsPlaying, Mode=TwoWay}"
+                              Tapped="PlayPauseButton_Tapped"
                               Margin="5,0"
                               MinWidth="50" 
-                              IsEnabled="False"
+                              IsEnabled="{Binding IsLoaded}"
                               MinHeight="50">
                     <ToggleButton.Template>
                         <ControlTemplate>
@@ -264,7 +268,7 @@
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"
                            Margin="0,8,0,0">
-                    <Run Text="{Binding Position, Converter={StaticResource TimeSpanConverter}}"
+                    <Run Text="{Binding SliderPosition, Converter={StaticResource TimeSpanConverter}}"
                          FontSize="36" 
                          Foreground="{StaticResource VideoForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
                 </TextBlock>

@@ -62,12 +62,21 @@ namespace VideaCesky
                 "http://www.videacesky.cz/autori/Jackolo/titulky/WLIIAZpravodajskePanoptikum5.srt"));
         }
 
-        private void Button_Click_6(object sender, RoutedEventArgs e)
+        private void Button_Click_Video(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(VideoPage), new VideoSource(
-                "chyba při načítání videa nebo titulků",
+                "chyba při načítání videa",
                 "",
                 "adsfasdfasdfasdfasdfd",
+                "http://www.videacesky.cz/autori/Jackolo/titulky/WLIIAZpravodajskePanoptikum5.srt"));
+        }
+
+        private void Button_Click_Subtitles(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), new VideoSource(
+                "Happy Tree Friends - All Work And No Play (Ep #76)",
+                "",
+                "https://www.youtube.com/watch?v=d4NmZRXa8zo",
                 "asdqweasdfasd"));
         }
     }

@@ -8,12 +8,20 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button Click="Button_Click_1" Content="video 1" />
-        <Button Click="Button_Click_2" Content="video 2" />
-        <Button Click="Button_Click_3" Content="video 3" />
-        <Button Click="Button_Click_4" Content="video 4" />
-        <Button Click="Button_Click_5" Content="video 5" />
-        <Button Click="Button_Click_6" Content="chyba" />
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel>
+            <TextBlock Text="videa" Style="{ThemeResource SubheaderTextBlockStyle}" />
+            <Button Click="Button_Click_1" Content="video 1" />
+            <Button Click="Button_Click_2" Content="video 2" />
+            <Button Click="Button_Click_3" Content="video 3" />
+            <Button Click="Button_Click_4" Content="video 4" />
+            <Button Click="Button_Click_5" Content="video 5" />
+        </StackPanel>
+        <StackPanel Margin="80,0,0,0">
+            <TextBlock Text="chyby" Style="{ThemeResource SubheaderTextBlockStyle}" />
+            <Button Click="Button_Click_Video" Content="video" />
+            <Button Click="Button_Click_Subtitles" Content="titulky" />
+        </StackPanel>
     </StackPanel>
+
 </Page>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
@@ -23,84 +24,6 @@ namespace VideaCesky
     /// </summary>
     public sealed partial class VideoPage : Page, INotifyPropertyChanged
     {
-        #region Page
-        public VideoSource VideoSource { get; set; }
-
-        private DisplayRequest dispRequest = null;
-
-        public VideoPage()
-        {
-            this.InitializeComponent();
-
-            Position = TimeSpan.Zero;
-            Duration = TimeSpan.Zero;
-
-            updateSliderTimer.Interval = TimeSpan.FromMilliseconds(1000F / 60F);
-            updateSliderTimer.Tick += updateSliderTimer_Tick;
-
-            autoHideSliderTimer.Interval = TimeSpan.FromSeconds(2.5);
-            autoHideSliderTimer.Tick += autoHideSliderTimer_Tick;
-
-            VideoMediaElement.MarkerReached += VideoMediaElement_MarkerReached;
-            subtitleTimer.Tick += subtitleTimer_Tick;
-        }
-
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            HardwareButtons.BackPressed += BackButtonPress;
-            DisplayInformation.AutoRotationPreferences = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
-            StatusBar statusBar = StatusBar.GetForCurrentView();
-            await statusBar.HideAsync();
-
-            VideoSource = (VideoSource)e.Parameter;
-            DataContext = this;
-            OnPropertyChanged("VideoSource");
-
-            try
-            {
-                youtubeUri = await YouTube.GetVideoUriAsync(VideoSource.YoutubeId, YouTubeQuality.Quality360P);
-                subtitles = await Subtitles.Download(VideoSource.SubtitlesUri);
-                if (youtubeUri != null && subtitles != null)
-                {
-                    AttachVideo(youtubeUri);
-                    AttachSubtitles(subtitles);
-                }
-                else
-                {
-                    IsError = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                IsError = true;
-                Debug.WriteLine("CHYBA-----------------------------------------------: " + ex.Message);
-            }
-        }
-
-        protected async override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            HardwareButtons.BackPressed -= BackButtonPress;
-            DisplayInformation.AutoRotationPreferences = DisplayOrientations.None;
-            StatusBar statusBar = StatusBar.GetForCurrentView();
-            await statusBar.ShowAsync();
-        }
-
-        private void BackButtonPress(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
-        {
-            e.Handled = true;
-            if (Frame.CanGoBack)
-            {
-                Frame.GoBack();
-            }
-            else
-            {
-                Frame.Navigate(typeof(MainPage));
-            }
-        }
-        #endregion
-
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -125,7 +48,88 @@ namespace VideaCesky
         }
         #endregion
 
+        #region Page
+        private DisplayRequest displayRequest = null;
+
+        public VideoPage()
+        {
+            this.InitializeComponent();
+
+            SliderPosition = TimeSpan.Zero;
+            Duration = TimeSpan.Zero;
+
+            updateSliderPositionTimer.Interval = TimeSpan.FromMilliseconds(1000F / 60F);
+            updateSliderPositionTimer.Tick += updateSliderPositionTimer_Tick;
+
+            autoHideSliderTimer.Interval = TimeSpan.FromSeconds(2.5);
+            autoHideSliderTimer.Tick += autoHideSliderTimer_Tick;
+
+            VideoMediaElement.MarkerReached += VideoMediaElement_MarkerReached;
+            subtitleTimer.Tick += subtitleTimer_Tick;
+        }
+
+        private async Task VideoRequest(VideoSource videoSource)
+        {
+            Title = videoSource.Title;
+            if (!await AttachVideo(videoSource.YoutubeId))
+            {
+                ShowError("Něco se pokazilo během nahrávání videa. Video není možné přehrát.");
+            }
+            else if (!await AttachSubtitles(videoSource.SubtitlesUri))
+            {
+                ShowError("Titulky se nepodařilo stáhnout. Video můžete přesto přehrát.", true);
+            }
+        }
+
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            #region Tlačítko zpět, orientace displeje, atd...
+            HardwareButtons.BackPressed += BackButtonPress;
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
+            StatusBar statusBar = StatusBar.GetForCurrentView();
+            await statusBar.HideAsync();
+            #endregion
+
+            DataContext = this;
+
+            // Zpracování požadavku na video
+            await VideoRequest((VideoSource)e.Parameter);
+        }
+
+        protected async override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            #region Tlačítko zpět, orientace displeje, atd...
+            HardwareButtons.BackPressed -= BackButtonPress;
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.None;
+            StatusBar statusBar = StatusBar.GetForCurrentView();
+            await statusBar.ShowAsync();
+            #endregion
+
+            base.OnNavigatedFrom(e);
+        }
+
+        private void BackButtonPress(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
+        {
+            e.Handled = true;
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+            }
+            else
+            {
+                Frame.Navigate(typeof(MainPage));
+            }
+        }
+        #endregion
+
         #region Properties
+        private string _title;
+        public string Title
+        {
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
+        }
+
         private TimeSpan _duration;
         public TimeSpan Duration
         {
@@ -134,57 +138,183 @@ namespace VideaCesky
         }
 
         private TimeSpan _position;
-        public TimeSpan Position
+        public TimeSpan SliderPosition
         {
             get { return _position; }
             set
             {
                 if (SetProperty(ref _position, value))
                 {
-                    OnPropertyChanged("PositionWidth");
+                    OnPropertyChanged("SliderPositionWidth");
                 }
+            }
+        }
+
+        public int SliderPositionWidth
+        {
+            get
+            {
+                double maxWidth = ControlsGrid.ActualWidth;
+                double videoPosition = SliderPosition.TotalSeconds / Duration.TotalSeconds;
+                return (int)(videoPosition * maxWidth);
+            }
+        }
+
+        private bool _isLoaded = false;
+        public bool IsLoaded
+        {
+            get { return _isLoaded; }
+            private set { SetProperty(ref _isLoaded, value); }
+        }
+
+        private bool _isVisibleSlider = true;
+        public bool IsVisibleSlider
+        {
+            get { return _isVisibleSlider; }
+            set { SetProperty(ref _isVisibleSlider, value); }
+        }
+
+        private string _subtitle;
+        public string Subtitle
+        {
+            get { return _subtitle; }
+            set { SetProperty(ref _subtitle, value); }
+        }
+
+        private bool _isError = false;
+        public bool IsError
+        {
+            get { return _isError; }
+            private set { SetProperty(ref _isError, value); }
+        }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            private set { SetProperty(ref _errorMessage, value); }
+        }
+
+        private bool _canPlayAnyway = false;
+        public bool CanPlayAnyway
+        {
+            get { return _canPlayAnyway; }
+            private set { SetProperty(ref _canPlayAnyway, value); }
+        }
+
+        private bool _isPlaying = false;
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            private set { SetProperty(ref _isPlaying, value); }
+        }
+        #endregion
+
+        #region Video
+        private void PlayVideoPlayback()
+        {
+            Debug.WriteLine("PLAY");
+            if (displayRequest == null)
+            {
+                displayRequest = new DisplayRequest();
+                displayRequest.RequestActive();
+            }
+
+            VideoMediaElement.Play();
+
+            updateSliderPositionTimer.Start();
+            UpdateSliderPosition();
+            autoHideSliderTimer.Start();
+
+            IsPlaying = true;
+        }
+
+        private void PauseVideoPlayback()
+        {
+            Debug.WriteLine("PAUSE");
+            VideoMediaElement.Pause();
+
+            updateSliderPositionTimer.Stop();
+            UpdateSliderPosition();
+            ShowSlider();
+            autoHideSliderTimer.Stop();
+
+            IsPlaying = false;
+
+            if (displayRequest != null)
+            {
+                displayRequest.RequestRelease();
+                displayRequest = null;
+            }
+        }
+
+        private void StopVideoPlayback()
+        {
+            Debug.WriteLine("STOP");
+            VideoMediaElement.Stop();
+
+            updateSliderPositionTimer.Stop();
+            UpdateSliderPosition();
+            ShowSlider();
+            autoHideSliderTimer.Stop();
+
+            IsPlaying = false;
+
+            if (displayRequest != null)
+            {
+                displayRequest.RequestRelease();
+                displayRequest = null;
             }
         }
         #endregion
 
         #region MediaElement ======================================================================
-        private YouTubeUri youtubeUri = null;
-
-        private void AttachVideo(YouTubeUri video)
+        private async Task<bool> AttachVideo(string youtubeId, YouTubeQuality quality = YouTubeQuality.Quality360P)
         {
-            VideoMediaElement.Source = video.Uri;
-            VideoMediaElement.Position = TimeSpan.Zero;
+            YouTubeUri video = await YouTube.GetVideoUriAsync(youtubeId, quality);
+            if (video != null)
+            {
+                VideoMediaElement.Source = video.Uri;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void UpdateDuration()
+        {
+            Duration = VideoMediaElement.NaturalDuration.TimeSpan;
         }
 
         private void VideoMediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
-            ResetSlider();
-            Duration = VideoMediaElement.NaturalDuration.TimeSpan;
+            if (!IsError)
+            {
+                IsLoaded = true;
 
-            ShowSlider();
-            autoHideSliderTimer.Stop();
+                UpdateDuration();
+                ResetSliderPosition();
+                ShowSlider();
 
-            LoadProgressRing.IsActive = false;
-            PlayPauseButton.IsEnabled = true;
-
-            PlayPauseButton.IsChecked = true;
+                PlayVideoPlayback();
+            }
         }
 
         private void VideoMediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            VideoMediaElement.Stop();
-            updateSliderTimer.Stop();
+            StopVideoPlayback();
+        }
 
-            PlayPauseButton.IsChecked = false;
-            ResetSlider();
-
-            ShowSlider();
-            autoHideSliderTimer.Stop();
+        private void VideoMediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            ShowError("Neznámá chyba");
         }
 
         private void VideoMediaElement_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (!LoadProgressRing.IsActive)
+            if (IsLoaded)
             {
                 if (IsVisibleSlider)
                 {
@@ -193,9 +323,9 @@ namespace VideaCesky
                 else
                 {
                     ShowSlider();
-                    if (PlayPauseButton.IsChecked ?? false)
+                    if (IsPlaying)
                     {
-                        autoHideSliderTimer.Start();
+                        autoHideSliderTimer.Start(); // TODO
                     }
                 }
             }
@@ -207,14 +337,12 @@ namespace VideaCesky
             {
                 try
                 {
-                    Subtitle sub = subtitles[Convert.ToInt32(e.Marker.Text)];
-                    Subtitle = sub.Text;
-
-                    subtitleTimer.Stop();
-                    subtitleTimer.Interval = sub.End - sub.Start;
-                    subtitleTimer.Start();
+                    SetSubtitle(Convert.ToInt32(e.Marker.Text));
                 }
-                catch (Exception ex)
+                catch (FormatException)
+                {
+                }
+                catch (OverflowException)
                 {
                 }
             }
@@ -222,98 +350,57 @@ namespace VideaCesky
         #endregion
 
         #region PlayPause =========================================================================
-        private void PlayPauseButton_Play(object sender, RoutedEventArgs e)
+        private void PlayPauseButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (dispRequest == null)
+            if (IsPlaying)
             {
-                dispRequest = new DisplayRequest();
-                dispRequest.RequestActive();
+                PauseVideoPlayback();
             }
-
-            VideoMediaElement.Play();
-            updateSliderTimer.Start();
-
-            UpdateSlider();
-
-            autoHideSliderTimer.Start();
-        }
-
-        private void PlayPauseButton_Pause(object sender, RoutedEventArgs e)
-        {
-            VideoMediaElement.Pause();
-            updateSliderTimer.Stop();
-
-            UpdateSlider();
-
-            ShowSlider();
-            autoHideSliderTimer.Stop();
-
-            if (dispRequest != null)
+            else
             {
-                dispRequest.RequestRelease();
-                dispRequest = null;
+                PlayVideoPlayback();
             }
         }
         #endregion
 
         #region Slider ============================================================================
-        DispatcherTimer updateSliderTimer = new DispatcherTimer();
+        DispatcherTimer updateSliderPositionTimer = new DispatcherTimer();
 
         DispatcherTimer autoHideSliderTimer = new DispatcherTimer();
 
-        private bool canAutoUpdateSlider = true;
+        private bool canAutoUpdateSliderPosition = true;
 
         private TimeSpan sliderDragPosition;
 
         private bool playAfterDrag;
 
-        private bool _isVisibleSlider = true;
-        public bool IsVisibleSlider
+        private void updateSliderPositionTimer_Tick(object sender, object e)
         {
-            get { return _isVisibleSlider; }
-            set { SetProperty(ref _isVisibleSlider, value); }
+            UpdateSliderPosition();
         }
 
-        public int PositionWidth
-        {
-            get
-            {
-                double maxWidth = ControlsGrid.ActualWidth;
-                double videoPosition = Position.TotalSeconds / Duration.TotalSeconds;
-                return (int)(videoPosition * maxWidth);
-            }
-        }
-
-        void updateSliderTimer_Tick(object sender, object e)
-        {
-            UpdateSlider();
-        }
-
-        void autoHideSliderTimer_Tick(object sender, object e)
+        private void autoHideSliderTimer_Tick(object sender, object e)
         {
             autoHideSliderTimer.Stop();
             HideSlider();
         }
 
-        private void UpdateSlider()
+        private void UpdateSliderPosition()
         {
-            if (canAutoUpdateSlider)
+            if (canAutoUpdateSliderPosition)
             {
-                UpdateSlider(VideoMediaElement.Position);
+                UpdateSliderPosition(VideoMediaElement.Position);
             }
         }
 
-        private void UpdateSlider(TimeSpan position)
+        private void UpdateSliderPosition(TimeSpan position)
         {
-            //double maxWidth = ControlsGrid.ActualWidth;
-            //double videoPosition = position.TotalSeconds / VideoMediaElement.NaturalDuration.TimeSpan.TotalSeconds;
-            //VideoSlider.Width = videoPosition * maxWidth;
-            Position = position;
+            SliderPosition = position;
         }
 
-        private void ResetSlider()
+        private void ResetSliderPosition()
         {
-            Position = VideoMediaElement.Position;
+            SliderPosition = VideoMediaElement.Position;
         }
 
         private void ShowSlider()
@@ -335,11 +422,11 @@ namespace VideaCesky
 
             ShowSlider();
 
+            canAutoUpdateSliderPosition = false;
             sliderDragPosition = VideoMediaElement.Position;
-            canAutoUpdateSlider = false;
+            playAfterDrag = IsPlaying;
 
-            playAfterDrag = PlayPauseButton.IsChecked ?? false;
-            PlayPauseButton.IsChecked = false;
+            PauseVideoPlayback();
         }
 
         private void ControlsGrid_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -347,16 +434,14 @@ namespace VideaCesky
             if (IsError)
                 return;
 
+            canAutoUpdateSliderPosition = true;
             VideoMediaElement.Position = sliderDragPosition;
-            UpdateSlider(sliderDragPosition);
-            canAutoUpdateSlider = true;
+            UpdateSliderPosition(sliderDragPosition);
 
             if (playAfterDrag)
             {
-                PlayPauseButton.IsChecked = true;
+                PlayVideoPlayback();
             }
-
-            autoHideSliderTimer.Start();
         }
 
         private void ControlsGrid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -374,7 +459,7 @@ namespace VideaCesky
             {
                 sliderDragPosition = Duration;
             }
-            UpdateSlider(sliderDragPosition);
+            UpdateSliderPosition(sliderDragPosition);
         }
         #endregion
 
@@ -383,48 +468,60 @@ namespace VideaCesky
 
         DispatcherTimer subtitleTimer = new DispatcherTimer();
 
-        private string _subtitle;
-        public string Subtitle
-        {
-            get { return _subtitle; }
-            set { SetProperty(ref _subtitle, value); }
-        }
-
         private void subtitleTimer_Tick(object sender, object e)
         {
             Subtitle = null;
         }
 
-        private void AttachSubtitles(Subtitles subtitles)
+        private async Task<bool> AttachSubtitles(string uri)
         {
-            int i = 0;
-            foreach (Subtitle sub in subtitles)
+            subtitles = await Subtitles.Download(uri);
+            if (subtitles != null)
             {
-                VideoMediaElement.Markers.Add(new TimelineMarker()
+                int i = 0;
+                foreach (Subtitle sub in subtitles)
                 {
-                    Time = sub.Start,
-                    Type = "subtitle",
-                    Text = (i++).ToString()
-                });
+                    VideoMediaElement.Markers.Add(new TimelineMarker()
+                    {
+                        Time = sub.Start,
+                        Type = "subtitle",
+                        Text = (i++).ToString()
+                    });
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void SetSubtitle(int i)
+        {
+            subtitleTimer.Stop();
+
+            if (i >= 0 && i < subtitles.Count)
+            {
+                Subtitle sub = subtitles[i];
+                Subtitle = sub.Text;
+
+                subtitleTimer.Interval = sub.End - sub.Start;
+                subtitleTimer.Start();
             }
         }
         #endregion
 
         #region Chyba =============================================================================
-        private bool _isError = false;
-        public bool IsError
+        private void ShowError(string message, bool canPlayAnyway = false)
         {
-            get { return _isError; }
-            private set
-            {
-                SetProperty(ref _isError, value);
-                if (value)
-                {
-                    VideoMediaElement.Stop(); // projistotu, aby tam nic nehrálo
-                    HideSliderStoryboard.Begin();
-                    ShowErrorStoryboard.Begin();
-                }
-            }
+            IsError = true;
+            ErrorMessage = message;
+            CanPlayAnyway = canPlayAnyway;
+
+            StopVideoPlayback(); // projistotu, aby tam nic nehrálo
+            HideSlider();
+
+            ShowErrorStoryboard.Begin();
         }
         #endregion
     }
