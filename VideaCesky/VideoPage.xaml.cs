@@ -66,6 +66,8 @@ namespace VideaCesky
 
             VideoMediaElement.MarkerReached += VideoMediaElement_MarkerReached;
             subtitleTimer.Tick += subtitleTimer_Tick;
+
+            HideErrorStoryboard.Completed += (s, e) => ErrorBorder.Visibility = Visibility.Collapsed;
         }
 
         private async Task VideoRequest(VideoSource videoSource)
@@ -290,14 +292,14 @@ namespace VideaCesky
 
         private void VideoMediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
+            IsLoaded = true;
+
+            UpdateDuration();
+            ResetSliderPosition();
+
             if (!IsError)
             {
-                IsLoaded = true;
-
-                UpdateDuration();
-                ResetSliderPosition();
                 ShowSlider();
-
                 PlayVideoPlayback();
             }
         }
@@ -314,7 +316,7 @@ namespace VideaCesky
 
         private void VideoMediaElement_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (IsLoaded)
+            if (!IsError)
             {
                 if (IsVisibleSlider)
                 {
@@ -325,7 +327,7 @@ namespace VideaCesky
                     ShowSlider();
                     if (IsPlaying)
                     {
-                        autoHideSliderTimer.Start(); // TODO
+                        autoHideSliderTimer.Start();
                     }
                 }
             }
@@ -521,7 +523,20 @@ namespace VideaCesky
             StopVideoPlayback(); // projistotu, aby tam nic nehrálo
             HideSlider();
 
+            ErrorBorder.Visibility = Visibility.Visible;
             ShowErrorStoryboard.Begin();
+        }
+
+        private void HideError()
+        {
+            IsError = false;
+            HideErrorStoryboard.Begin();
+            PlayVideoPlayback();
+        }
+
+        private void PlayAnyway_Click(object sender, RoutedEventArgs e)
+        {
+            HideError();
         }
         #endregion
     }

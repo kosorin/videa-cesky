@@ -29,7 +29,7 @@
             <DoubleAnimation Storyboard.TargetName="BottomInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="60"
-                             Duration="0:0:1.5">
+                             Duration="0:0:1">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
@@ -37,7 +37,7 @@
             <DoubleAnimation Storyboard.TargetName="TopInfoStackPanel"
                              Storyboard.TargetProperty="(StackPanel.RenderTransform).(CompositeTransform.TranslateY)"
                              To="-35"
-                             Duration="0:0:1.5">
+                             Duration="0:0:1">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseOut" />
                 </DoubleAnimation.EasingFunction>
@@ -62,11 +62,20 @@
             </DoubleAnimation>
         </Storyboard>
 
-        <!--Zobrazení chyby-->
+        <!--Skrytí/zobrazení chyby-->
+        <Storyboard x:Name="HideErrorStoryboard">
+            <DoubleAnimation Storyboard.TargetName="ErrorBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             To="0"
+                             Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
         <Storyboard x:Name="ShowErrorStoryboard">
             <DoubleAnimation Storyboard.TargetName="ErrorBorder"
                              Storyboard.TargetProperty="Opacity"
-                             From="0"
                              To="1"
                              Duration="0:0:0.3">
                 <DoubleAnimation.EasingFunction>
@@ -114,9 +123,8 @@
         <!--Chyba-->
         <Border Name="ErrorBorder"
                 Background="{StaticResource VideoColorBrush}"
-                Visibility="{Binding IsError, 
-                                     Converter={StaticResource BoolToVisibilityConverter}, 
-                                     FallbackValue=Collapsed}">
+                Opacity="0"
+                Visibility="Collapsed">
             <Border Background="#66000000">
                 <StackPanel VerticalAlignment="Center"
                             HorizontalAlignment="Center"
@@ -130,7 +138,10 @@
                                TextWrapping="WrapWholeWords"
                                FontWeight="SemiLight" 
                                Margin="0,5,0,0"
-                               Text="{Binding ErrorMessage}" />
+                               Text="{Binding ErrorMessage, FallbackValue='Lorem ipsum atd...'}" />
+                    <Button Content="Přesto přehrát"
+                            Visibility="{Binding CanPlayAnyway, Converter={StaticResource BoolToVisibilityConverter}}" 
+                            Click="PlayAnyway_Click"/>
                 </StackPanel>
             </Border>
         </Border>
