@@ -1,9 +1,12 @@
-﻿using MyToolkit.Multimedia;
+﻿using HtmlAgilityPack;
+using MyToolkit.Multimedia;
+using MyToolkit.Networking;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Windows.Graphics.Display;
@@ -49,6 +52,8 @@ namespace VideaCesky
         #endregion
 
         #region Page
+        public static string uriPattern = @"^videacesky:link=(?<uri>.*)$";
+
         private DisplayRequest displayRequest = null;
 
         public VideoPage()
@@ -70,14 +75,100 @@ namespace VideaCesky
             HideErrorStoryboard.Completed += (s, e) => ErrorBorder.Visibility = Visibility.Collapsed;
         }
 
-        private async Task VideoRequest(VideoSource videoSource)
+        private Uri ParseEntryUri(Uri entryUri)
         {
-            Title = videoSource.Title;
-            if (!await AttachVideo(videoSource.YoutubeId))
+            if (entryUri != null)
+            {
+                Debug.WriteLine("Entry URI: " + entryUri.OriginalString);
+                try
+                {
+                    Match match = Regex.Match(entryUri.OriginalString, uriPattern);
+                    if (match.Success)
+                    {
+                        Uri uri = new Uri(match.Groups["uri"].Value, UriKind.Absolute);
+                        if (uri.Host == "www.videacesky.cz")
+                        {
+                            Debug.WriteLine("URI: " + uri.OriginalString);
+                            return uri;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
+                }
+                catch (FormatException)
+                {
+                    ShowError("Špatná adresa videa.");
+                }
+                catch (InvalidOperationException)
+                {
+                    ShowError("Na požadované stránce jsem nenašel žádné video.");
+                }
+            }
+            Debug.WriteLine("URI: <nic>");
+            return null;
+        }
+
+        private async Task<VideoData> ParseVideoPage(Uri videoUri)
+        {
+            VideoData data = new VideoData()
+            {
+                VideoUri = videoUri,
+                YoutubeId = "pVMoi5weypI",
+                SubtitlesUriPart = "/autori/qetu/titulky/KteryX-Man.srt"
+            };
+
+            try
+            {
+                HttpResponse response = await Http.GetAsync(videoUri);
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(response.Response);
+
+                Debug.WriteLine("HTML OK");
+
+                HtmlNode contentNode = doc.GetElementbyId("contentArea");
+                //data.Title = contentNode.Element("span").InnerText;
+                //Debug.WriteLine("Title: " + data.Title);
+                foreach (HtmlNode node in contentNode.Descendants("div"))
+                {
+                    if (node.Attributes.Contains("class") && node.Attributes["class"].Value == "postContent")
+                    {
+                        string postContent = node.InnerHtml;
+
+                        Match youtubeMatch = Regex.Match(postContent, VideoData.YoutubePattern, RegexOptions.IgnorePatternWhitespace);
+                        if (youtubeMatch != null && youtubeMatch.Success)
+                        {
+                            data.YoutubeId = youtubeMatch.Groups["youtubeId"].Value;
+                            Debug.WriteLine("Youtube ID: " + data.YoutubeId);
+                        }
+
+                        Match subtitlesMatch = Regex.Match(postContent, VideoData.SubtitlesPattern);
+                        if (subtitlesMatch != null && subtitlesMatch.Success)
+                        {
+                            data.SubtitlesUriPart = subtitlesMatch.Groups["uriPart"].Value;
+                            Debug.WriteLine("Subtitles URI part: " + data.SubtitlesUriPart);
+                        }
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("EX ParseVideoPage: " + e.Message);
+            }
+
+            return data;
+        }
+
+        private async Task AttachVideoData(VideoData videoData)
+        {
+            Title = videoData.Title;
+            if (!await AttachVideo(videoData.YoutubeId))
             {
                 ShowError("Něco se pokazilo během nahrávání videa. Video není možné přehrát.");
             }
-            else if (!await AttachSubtitles(videoSource.SubtitlesUri))
+            else if (!await AttachSubtitles(string.Format(VideoData.SubtitlesUriFormat, videoData.SubtitlesUriPart)))
             {
                 ShowError("Titulky se nepodařilo stáhnout. Video můžete přesto přehrát.", true);
             }
@@ -94,21 +185,9 @@ namespace VideaCesky
 
             DataContext = this;
 
-            // Zpracování požadavku na video
-            VideoSource videoSource;
-            if (e.Parameter is VideoSource)
-            {
-                videoSource = (VideoSource)e.Parameter;
-            }
-            else
-            {
-                videoSource = new VideoSource("CHYBA", "", "", "");
-            }
-            await VideoRequest(new VideoSource(
-                "Který X-Man je nejlepší?",
-                "Člen komediální skupiny Suricate Julien Josselin a známý francouzský vlogger Cyprien o tom podiskutují v následujícím videu.",
-                "https://www.youtube.com/watch?v=pVMoi5weypI",
-                "http://www.videacesky.cz/autori/qetu/titulky/KteryX-Man.srt"));
+            Uri videoUri = ParseEntryUri(e.Parameter as Uri);
+            VideoData videoData = await ParseVideoPage(videoUri);
+            await AttachVideoData(videoData);
         }
 
         protected async override void OnNavigatedFrom(NavigationEventArgs e)
