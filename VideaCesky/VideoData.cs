@@ -10,22 +10,22 @@ namespace VideaCesky
     public class VideoData : BindableBase
     {
         public static string YoutubePattern =
-            @"https?:\/\/(www\.)?
+            @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
             (
-                youtube\.com\/
+                youtube\.com(\/|%2F)
                 (
-	                embed\/|
-	                watch\?
+	                embed(\/|%2F)|
+	                watch(\?|%3F)
 	                (
-		                .*&
+		                .*(&|%26)
 	                )?
-	                v=
+	                v(=|%3D)
                 )|
-                youtu\.be\/
+                youtu\.be(\/|%2F)
             )
             (?<youtubeId>[A-Za-z0-9_\-]{11})";
 
-        public static string SubtitlesPattern = @"http:\/\/www\.videacesky\.cz(?<uriPart>[A-Za-z0-9_\-\/]*\.srt)";
+        public static string SubtitlesPattern = @"http(:|%3A)(\/|%2F)(\/|%2F)(www\.)?videacesky\.cz(?<uriPart>([A-Za-z0-9_\-\/]|%2F)*\.srt)";
 
         public static string SubtitlesUriFormat = "http://www.videacesky.cz{0}";
 

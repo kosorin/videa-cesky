@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -52,7 +53,7 @@ namespace VideaCesky
         #endregion
 
         #region Page
-        public static string uriPattern = @"^videacesky:link=(?<uri>.*)$";
+        public static string uriPattern = @"^videacesky:(?<uri>.*)$";
 
         private DisplayRequest displayRequest = null;
 
@@ -86,28 +87,23 @@ namespace VideaCesky
                     if (match.Success)
                     {
                         Uri uri = new Uri(match.Groups["uri"].Value, UriKind.Absolute);
-                        if (uri.Host == "www.videacesky.cz")
+                        if (uri.Host.Contains("videacesky.cz"))
                         {
                             Debug.WriteLine("URI: " + uri.OriginalString);
                             return uri;
                         }
                         else
                         {
-                            throw new InvalidOperationException();
+                            throw new VideoException("Videa hledám jen na stránce VideaČesky.cz");
                         }
                     }
                 }
                 catch (FormatException)
                 {
-                    ShowError("Špatná adresa videa.");
-                }
-                catch (InvalidOperationException)
-                {
-                    ShowError("Na požadované stránce jsem nenašel žádné video.");
+                    throw new VideoException("Špatná adresa videa.");
                 }
             }
-            Debug.WriteLine("URI: <nic>");
-            return null;
+            throw new VideoException();
         }
 
         private async Task<VideoData> ParseVideoPage(Uri videoUri)
@@ -115,8 +111,9 @@ namespace VideaCesky
             VideoData data = new VideoData()
             {
                 VideoUri = videoUri,
-                YoutubeId = "pVMoi5weypI",
-                SubtitlesUriPart = "/autori/qetu/titulky/KteryX-Man.srt"
+                Title = null,
+                YoutubeId = null,
+                SubtitlesUriPart = null
             };
 
             try
@@ -124,31 +121,39 @@ namespace VideaCesky
                 HttpResponse response = await Http.GetAsync(videoUri);
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(response.Response);
-
-                Debug.WriteLine("HTML OK");
-
                 HtmlNode contentNode = doc.GetElementbyId("contentArea");
-                //data.Title = contentNode.Element("span").InnerText;
-                //Debug.WriteLine("Title: " + data.Title);
+
+                // Název videa
+                HtmlNode titleNode = contentNode.ChildNodes.FindFirst("span");
+                if (titleNode != null)
+                {
+                    data.Title = WebUtility.HtmlDecode(titleNode.InnerText);
+                    Debug.WriteLine("Title: " + data.Title);
+                }
+
+                // Odkaz na video a titulky
                 foreach (HtmlNode node in contentNode.Descendants("div"))
                 {
                     if (node.Attributes.Contains("class") && node.Attributes["class"].Value == "postContent")
                     {
                         string postContent = node.InnerHtml;
 
-                        Match youtubeMatch = Regex.Match(postContent, VideoData.YoutubePattern, RegexOptions.IgnorePatternWhitespace);
+                        // Video
+                        Match youtubeMatch = Regex.Match(postContent, VideoData.YoutubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
                         if (youtubeMatch != null && youtubeMatch.Success)
                         {
-                            data.YoutubeId = youtubeMatch.Groups["youtubeId"].Value;
+                            data.YoutubeId = WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value);
                             Debug.WriteLine("Youtube ID: " + data.YoutubeId);
                         }
 
-                        Match subtitlesMatch = Regex.Match(postContent, VideoData.SubtitlesPattern);
+                        // Titulky
+                        Match subtitlesMatch = Regex.Match(postContent, VideoData.SubtitlesPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
                         if (subtitlesMatch != null && subtitlesMatch.Success)
                         {
-                            data.SubtitlesUriPart = subtitlesMatch.Groups["uriPart"].Value;
+                            data.SubtitlesUriPart = WebUtility.UrlDecode(subtitlesMatch.Groups["uriPart"].Value);
                             Debug.WriteLine("Subtitles URI part: " + data.SubtitlesUriPart);
                         }
+
                         break;
                     }
                 }
@@ -156,6 +161,7 @@ namespace VideaCesky
             catch (Exception e)
             {
                 Debug.WriteLine("EX ParseVideoPage: " + e.Message);
+                throw new VideoException();
             }
 
             return data;
@@ -164,13 +170,21 @@ namespace VideaCesky
         private async Task AttachVideoData(VideoData videoData)
         {
             Title = videoData.Title;
-            if (!await AttachVideo(videoData.YoutubeId))
+            if (videoData.YoutubeId == null)
+            {
+                ShowError("Na požadované stránce jsem nenašel žádné video.");
+            }
+            else if (!await AttachVideo(videoData.YoutubeId))
             {
                 ShowError("Něco se pokazilo během nahrávání videa. Video není možné přehrát.");
             }
+            else if (videoData.SubtitlesUriPart == null)
+            {
+                ShowError("Na požadované stránce jsem nenašel žádné titulky.", true);
+            }
             else if (!await AttachSubtitles(string.Format(VideoData.SubtitlesUriFormat, videoData.SubtitlesUriPart)))
             {
-                ShowError("Titulky se nepodařilo stáhnout. Video můžete přesto přehrát.", true);
+                ShowError("Titulky se nepodařilo stáhnout.", true);
             }
         }
 
@@ -184,10 +198,15 @@ namespace VideaCesky
             #endregion
 
             DataContext = this;
-
-            Uri videoUri = ParseEntryUri(e.Parameter as Uri);
-            VideoData videoData = await ParseVideoPage(videoUri);
-            await AttachVideoData(videoData);
+            Debug.WriteLine("NAVIGATED TO");
+            try
+            {
+                await AttachVideoData(await ParseVideoPage(ParseEntryUri(e.Parameter as Uri)));
+            }
+            catch (VideoException ex)
+            {
+                ShowError(ex.Message);
+            }
         }
 
         protected async override void OnNavigatedFrom(NavigationEventArgs e)
@@ -198,7 +217,7 @@ namespace VideaCesky
             StatusBar statusBar = StatusBar.GetForCurrentView();
             await statusBar.ShowAsync();
             #endregion
-
+            
             Debug.WriteLine("OnNavigatedFrom");
             PauseVideoPlayback();
             base.OnNavigatedFrom(e);

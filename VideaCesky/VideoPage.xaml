@@ -156,7 +156,8 @@
 
             <!--Popis-->
             <Border Background="{StaticResource VideoTitleBackgroundBrush}" 
-                    Height="35">
+                    Height="35"
+                    Visibility="{Binding Title, Converter={StaticResource NullToVisibilityConverter}}">
                 <TextBlock Foreground="{StaticResource VideoTitleBrush}"
                            FontSize="20"
                            Margin="10,5,0,2"
