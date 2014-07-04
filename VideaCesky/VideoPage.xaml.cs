@@ -95,7 +95,20 @@ namespace VideaCesky
             DataContext = this;
 
             // Zpracování požadavku na video
-            await VideoRequest((VideoSource)e.Parameter);
+            VideoSource videoSource;
+            if (e.Parameter is VideoSource)
+            {
+                videoSource = (VideoSource)e.Parameter;
+            }
+            else
+            {
+                videoSource = new VideoSource("CHYBA", "", "", "");
+            }
+            await VideoRequest(new VideoSource(
+                "Který X-Man je nejlepší?",
+                "Člen komediální skupiny Suricate Julien Josselin a známý francouzský vlogger Cyprien o tom podiskutují v následujícím videu.",
+                "https://www.youtube.com/watch?v=pVMoi5weypI",
+                "http://www.videacesky.cz/autori/qetu/titulky/KteryX-Man.srt"));
         }
 
         protected async override void OnNavigatedFrom(NavigationEventArgs e)
@@ -107,22 +120,24 @@ namespace VideaCesky
             await statusBar.ShowAsync();
             #endregion
 
-            StopVideoPlayback();
+            Debug.WriteLine("OnNavigatedFrom");
+            PauseVideoPlayback();
             base.OnNavigatedFrom(e);
         }
 
         private void BackButtonPress(object sender, Windows.Phone.UI.Input.BackPressedEventArgs e)
         {
+            Debug.WriteLine("BackButtonPress");
             e.Handled = true;
-
-            StopVideoPlayback();
-            if (Frame.CanGoBack)
+            if (IsVisibleSlider)
             {
-                Frame.GoBack();
+                HideSlider();
             }
             else
             {
-                Frame.Navigate(typeof(MainPage));
+                StopVideoPlayback();
+                Debug.WriteLine("Exit");
+                App.Current.Exit();
             }
         }
         #endregion

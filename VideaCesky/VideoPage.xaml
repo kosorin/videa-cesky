@@ -199,13 +199,15 @@
                         Background="{StaticResource VideoColorBrush}"
                         Opacity="0.5"/>
 
-                <!--Play/Pause-->
+                <!--Progress-->
                 <ProgressRing Name="LoadProgressRing"
-                              IsActive="{Binding IsLoaded, Converter={StaticResource BoolNegationConverter}}"
-                              HorizontalAlignment="Left"
-                              Margin="2,0" 
-                              Foreground="{StaticResource VideoColorBrush}"
-                              Background="{x:Null}" />
+                                IsActive="{Binding IsLoaded, Converter={StaticResource BoolNegationConverter}}"
+                                HorizontalAlignment="Left"
+                                Margin="2,0" 
+                                Foreground="{StaticResource VideoColorBrush}"
+                                Background="{x:Null}" />
+                
+                <!--Play/Pause-->
                 <ToggleButton Name="PlayPauseButton"
                               IsChecked="{Binding IsPlaying, Mode=TwoWay}"
                               Tapped="PlayPauseButton_Tapped"
@@ -274,7 +276,8 @@
                 </ToggleButton>
 
                 <!--Čas-->
-                <TextBlock FontSize="20" 
+                <TextBlock x:Name="TimeText"
+                           FontSize="20" 
                            Foreground="{StaticResource VideoSubtleBrush}"
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"
