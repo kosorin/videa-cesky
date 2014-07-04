@@ -55,7 +55,7 @@
                     <TextBlock Style="{ThemeResource Level2Style}">2.2. v menu vyber <Bold>"přidat k oblíbeným položkám"</Bold> (musí být načtená libovolná stránka, jinak bude položka neaktivní)</TextBlock>
                     <TextBlock Style="{ThemeResource Level2Style}">2.3. do pole pro <Bold>webovou adresu</Bold> vlož zkopírovaný text</TextBlock>
                     <TextBlock Style="{ThemeResource Level2Style}">2.4. <Bold>název</Bold> je na tobě, ale doporučuji ho zvolit tak, aby oblíbená položka byla na začátku seznamu pro rychlejší výběr. Toho se dá lehce docílit pomocí nějakého speciálního znaku na začátku názvu, např.: !+#$*</TextBlock>
-                    <TextBlock Style="{ThemeResource Level1Style}">3. pak už stačí <Run Foreground="{ThemeResource PhoneAccentBrush}">na stránce s videem vybrat oblíbenou položku</Run> a spustí se přehrávání videa</TextBlock>
+                    <TextBlock Style="{ThemeResource Level1Style}">3. pak už stačí <Run Foreground="{ThemeResource PhoneAccentBrush}">na stránce s videem vybrat oblíbenou položku</Run> a poté spustí přehrávání videa</TextBlock>
                     <Border Height="40" />
                 </StackPanel>
             </ScrollViewer>
