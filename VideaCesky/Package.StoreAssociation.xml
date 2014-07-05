@@ -184,11 +184,13 @@
     <Language Code="vi-vn" InMinimumRequirementSet="true" />
   </SupportedLocales>
   <ProductReservedInfo>
-    <MainPackageIdentityName>4772DavidKosorin.Videaesky.cz</MainPackageIdentityName>
+    <MainPackageIdentityName>4772DavidKosorin.Videaesky</MainPackageIdentityName>
     <ReservedNames>
-      <ReservedName>VideaČesky.cz</ReservedName>
+      <ReservedName>Videa Česky</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames />
-  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=057db11a-8199-4d9b-87bd-77cb4f19b023" />
+  <AccountPackageIdentityNames>
+    <MainPackageIdentityName>4772DavidKosorin.Videaesky.cz</MainPackageIdentityName>
+  </AccountPackageIdentityNames>
+  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=5f966c1f-3c80-463b-8f6f-35457c7950b3" />
 </StoreAssociation>

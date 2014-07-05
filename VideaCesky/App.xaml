@@ -3,5 +3,24 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:VideaCesky">
+    <Application.Resources>
 
+        <!--Kulaté tlačítko-->
+        <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
+            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            <Setter Property="FontSize" Value="24" />
+        </Style>
+
+        <!--Barvy-->
+        <SolidColorBrush x:Key="VideoForegroundBrush" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="VideoForegroundBrush2" Color="#BBFFFFFF"/>
+        <SolidColorBrush x:Key="VideoSubtleBrush" Color="#66FFFFFF"/>
+        <SolidColorBrush x:Key="VideoColorBrush" Color="#FF005CBB"/>
+        <SolidColorBrush x:Key="VideoTitleBrush" Color="#E0FFFFFF"/>
+        <SolidColorBrush x:Key="VideoTitleBackgroundBrush" Color="#B0000000"/>
+        <SolidColorBrush x:Key="VideoSubtitleBrush" Color="White"/>
+        <SolidColorBrush x:Key="VideoSubtitleBackgroundBrush" Color="#99000000"/>
+        <SolidColorBrush x:Key="VideoSliderBackgroundBrush" Color="#D0000000"/>
+        <SolidColorBrush x:Key="VideoBackgroundBrush" Color="#FF606060"/>
+    </Application.Resources>
 </Application>

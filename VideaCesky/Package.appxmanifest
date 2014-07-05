@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="4772DavidKosorin.Videaesky.cz" Publisher="CN=3F6BBF0B-1BD9-4F01-9A2F-274AE3341C1A" Version="1.1.0.2" />
-  <mp:PhoneIdentity PhoneProductId="8ac61610-dacf-4c2c-bdd6-0a41c76f20a5" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="4772DavidKosorin.Videaesky" Publisher="CN=3F6BBF0B-1BD9-4F01-9A2F-274AE3341C1A" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="0989cbaf-5686-4fbe-87b5-8a42f2a48cbf" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>VideaČesky.cz</DisplayName>
+    <DisplayName>Videa Česky</DisplayName>
     <PublisherDisplayName>David Kosorin</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\LogoStore.png</Logo>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.3.1</OSMinVersion>
@@ -16,8 +16,12 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="VideaCesky.App">
-      <m3:VisualElements DisplayName="VideaČesky.cz" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="VideaČesky.cz" ForegroundText="light" BackgroundColor="transparent">
-        <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png">
+      <m3:VisualElements DisplayName="Videa Česky" Square150x150Logo="Assets\Tile.png" Square44x44Logo="Assets\LogoSmall.png" Description="Videa Česky" ForegroundText="light" BackgroundColor="transparent">
+        <m3:DefaultTile Wide310x150Logo="Assets\TileWide.png" Square71x71Logo="Assets\TileSmall.png">
+          <m3:ShowNameOnTiles>
+            <m3:ShowOn Tile="square150x150Logo" />
+            <m3:ShowOn Tile="wide310x150Logo" />
+          </m3:ShowNameOnTiles>
         </m3:DefaultTile>
         <m3:SplashScreen Image="Assets\SplashScreen.png" />
         <m3:InitialRotationPreference>
@@ -30,7 +34,7 @@
         <Extension Category="windows.protocol">
           <Protocol Name="videacesky">
             <Logo>Assets\VideaCeskyLogo.png</Logo>
-            <DisplayName>VideaČesky.cz</DisplayName>
+            <DisplayName>Videa Česky</DisplayName>
           </Protocol>
         </Extension>
       </Extensions>

@@ -18,12 +18,6 @@
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <local:BoolNegationConverter x:Key="BoolNegationConverter" />
 
-        <!--Kulaté tlačítko-->
-        <Style TargetType="TextBlock" x:Key="RoundButtonStyle">
-            <Setter Property="FontFamily" Value="Segoe UI Symbol" />
-            <Setter Property="FontSize" Value="24" />
-        </Style>
-
         <!--Skrytí/zobrazení infa-->
         <Storyboard x:Name="HideSliderStoryboard">
             <DoubleAnimation Storyboard.TargetName="BottomInfoStackPanel"
@@ -83,27 +77,11 @@
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
-        
-        <!--Barvy-->
-        <SolidColorBrush x:Key="VideoForegroundBrush" Color="#FFFFFFFF"/>
-        <SolidColorBrush x:Key="VideoSubtleBrush" Color="#66FFFFFF"/>
-        <SolidColorBrush x:Key="VideoColorBrush" Color="{ThemeResource SystemColorControlAccentColor}"/>
-        <SolidColorBrush x:Key="VideoTitleBrush" Color="#E0FFFFFF"/>
-        <SolidColorBrush x:Key="VideoTitleBackgroundBrush" Color="#B0000000"/>
-        <SolidColorBrush x:Key="VideoSubtitleBrush" Color="White"/>
-        <SolidColorBrush x:Key="VideoSubtitleBackgroundBrush" Color="#99000000"/>
-        <SolidColorBrush x:Key="VideoSliderBackgroundBrush" Color="#D0000000"/>
-        <LinearGradientBrush x:Key="VideoBackgroundBrush"
-                             EndPoint="0.5,1" 
-                             StartPoint="0.5,0">
-            <GradientStop Color="#FF333333"/>
-            <GradientStop Color="#FF222222" Offset="1"/>
-        </LinearGradientBrush>
     </Page.Resources>
 
     <Grid Background="{StaticResource VideoBackgroundBrush}">
         <!--Logo-->
-        <Image Source="Assets/VideaCeskyLogo.png" 
+        <Image Source="Assets/LogoTransparent.png" 
                HorizontalAlignment="Center" 
                VerticalAlignment="Center"
                RenderTransformOrigin="0.5,0.5">

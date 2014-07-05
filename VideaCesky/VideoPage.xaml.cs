@@ -94,7 +94,7 @@ namespace VideaCesky
                         }
                         else
                         {
-                            throw new VideoException("Videa hledám jen na stránce VideaČesky.cz");
+                            throw new VideoException("Videa hledám jen na stránce www.VideaČesky.cz");
                         }
                     }
                 }
@@ -217,7 +217,10 @@ namespace VideaCesky
             StatusBar statusBar = StatusBar.GetForCurrentView();
             await statusBar.ShowAsync();
             #endregion
-            
+
+
+            // TODO: IsNavigationInitiator
+
             Debug.WriteLine("OnNavigatedFrom");
             PauseVideoPlayback();
             base.OnNavigatedFrom(e);
