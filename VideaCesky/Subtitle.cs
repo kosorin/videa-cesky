@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyToolkit.Converters;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,9 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Media;
 
 namespace VideaCesky
 {
@@ -72,6 +75,27 @@ namespace VideaCesky
                 else if (el.Name == "u")
                 {
                     inline = new Underline();
+                }
+                else if (el.Name == "font")
+                {
+                    inline = new Span();
+                    XAttribute colorAttribute = el.Attribute("color");
+                    if (colorAttribute != null)
+                    {
+                        string colorString = colorAttribute.Value.Trim();
+                        if (colorString.StartsWith("#") && colorString.Length == 4)
+                        {
+                            colorString = string.Format("#{0}{0}{1}{1}{2}{2}", colorString[1], colorString[2], colorString[3]);
+                        }
+                        try
+                        {
+                            inline.Foreground = new SolidColorBrush((Color)(new ColorConverter()).Convert(colorString, typeof(Color), null, ""));
+                        }
+                        catch (Exception)
+                        {
+                            inline.Foreground = (SolidColorBrush)App.Current.Resources["VideoSubtitleBrush"];
+                        }
+                    }
                 }
                 else
                 {
