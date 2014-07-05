@@ -48,7 +48,7 @@
                     <TextBlock Style="{ThemeResource Level1Style}">1. <Run Foreground="{StaticResource VideoColorBrush}">zkopíruj</Run> následující text</TextBlock>
                     <TextBox IsTextPredictionEnabled="False">
                         <TextBox.Text>
-                            javascript: location.href =  "videacesky:" + location.href
+                            javascript: location.href = "videacesky:" + location.href;
                         </TextBox.Text>
                     </TextBox>
                     <TextBlock Style="{ThemeResource Level1Style}">2. v Internet Exploreru <Run Foreground="{StaticResource VideoColorBrush}">vytvoř oblíbenou položku</Run></TextBlock>
