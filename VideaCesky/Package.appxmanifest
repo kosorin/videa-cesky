@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="4772DavidKosorin.Videaesky" Publisher="CN=3F6BBF0B-1BD9-4F01-9A2F-274AE3341C1A" Version="1.1.0.1" />
+  <Identity Name="4772DavidKosorin.Videaesky" Publisher="CN=3F6BBF0B-1BD9-4F01-9A2F-274AE3341C1A" Version="1.1.0.2" />
   <mp:PhoneIdentity PhoneProductId="0989cbaf-5686-4fbe-87b5-8a42f2a48cbf" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Videa Česky</DisplayName>

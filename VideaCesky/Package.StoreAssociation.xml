@@ -189,8 +189,12 @@
       <ReservedName>Videa Česky</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames>
-    <MainPackageIdentityName>4772DavidKosorin.Videaesky.cz</MainPackageIdentityName>
-  </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=5f966c1f-3c80-463b-8f6f-35457c7950b3" />
+  <AccountPackageIdentityNames />
+  <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=5f966c1f-3c80-463b-8f6f-35457c7950b3">
+    <PackageInfo>
+      <OsMinVersion>6.3.0.0</OsMinVersion>
+      <PackageArchitecture>neutral</PackageArchitecture>
+      <PackageMaxArchitectureVersion>1.1.0.1</PackageMaxArchitectureVersion>
+    </PackageInfo>
+  </PackageInfoList>
 </StoreAssociation>
