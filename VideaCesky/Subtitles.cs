@@ -1,4 +1,5 @@
-﻿using MyToolkit.Networking;
+﻿using HtmlAgilityPack;
+using MyToolkit.Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.UI.Popups;
 
 namespace VideaCesky
@@ -16,11 +18,11 @@ namespace VideaCesky
 
         public async static Task<Subtitles> Download(Uri uri)
         {
-            string srt = "";
+            string subtitlesText = "";
             try
             {
                 HttpResponse response = await Http.GetAsync(uri);
-                srt = response.Response;
+                subtitlesText = response.Response;
             }
             catch (OperationCanceledException)
             {
@@ -31,11 +33,11 @@ namespace VideaCesky
                 return null;
             }
 
-            string ext = uri.OriginalString.Substring(uri.OriginalString.Length - 3, 3);
-            if (ext == "srt")
-                return ParseSubRip(srt);
+            string fileExt = uri.OriginalString.Substring(uri.OriginalString.Length - 3, 3);
+            if (fileExt == "srt")
+                return ParseSubRip(subtitlesText);
             else
-                return ParseSubXml(srt);
+                return ParseSubXml(subtitlesText);
         }
 
         public static Subtitles ParseSubRip(string srt)
@@ -59,22 +61,37 @@ namespace VideaCesky
             return subtitles;
         }
 
-        public static Subtitles ParseSubXml(string srt)
+        public static Subtitles ParseSubXml(string xml)
         {
-            srt += "\r\n\r\n";
             Subtitles subtitles = new Subtitles();
 
-            var matches = Regex.Matches(srt, srtPattern);
-            foreach (Match match in matches)
+            try
             {
-                GroupCollection groups = match.Groups;
+                XDocument doc = XDocument.Parse(xml);
+                XNamespace ns = XNamespace.None;
+                if (doc.Root.Attribute("xmlns") != null)
+                {
+                    ns = doc.Root.Attribute("xmlns").Value;
+                }
+                XElement body = doc.Root.Element(ns + "body");
 
-                Subtitle subtitle = new Subtitle();
-                subtitle.Start = TimeSpan.Parse(groups["start"].Value.Replace(',', '.'));
-                subtitle.End = TimeSpan.Parse(groups["end"].Value.Replace(',', '.'));
-                subtitle.Text = groups["text"].Value;
+                foreach (XElement s in ((XElement)body.FirstNode).Elements())
+                {
+                    if (s.Name == ns + "p")
+                    {
+                        Subtitle subtitle = new Subtitle();
 
-                subtitles.Add(subtitle);
+                        subtitle.Start = TimeSpan.Parse(s.Attribute("begin").Value);
+                        subtitle.End = TimeSpan.Parse(s.Attribute("end").Value);
+                        subtitle.Text = Regex.Replace(s.Value, @"<br\s*\/>", Environment.NewLine);
+
+                        subtitles.Add(subtitle);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
 
             return subtitles;
