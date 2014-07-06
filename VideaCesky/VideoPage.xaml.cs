@@ -109,6 +109,7 @@ namespace VideaCesky
 
         private async Task AttachVideoData(VideoData videoData)
         {
+            IsLoaded = false;
             CurrentVideo = videoData;
 
             if (VideoList.Count <= 1)
@@ -394,9 +395,15 @@ namespace VideaCesky
             }
         }
 
-        private void VideoMediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        private async void VideoMediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
             StopVideoPlayback();
+
+            int nextVideoIndex = VideoList.IndexOf(CurrentVideo) + 1;
+            if (VideoList.Count > 1 && nextVideoIndex < VideoList.Count)
+            {
+                await AttachVideoData(VideoList[nextVideoIndex]);
+            }
         }
 
         private void VideoMediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
