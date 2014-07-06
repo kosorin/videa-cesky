@@ -87,6 +87,7 @@
     <Compile Include="BindableBase.cs" />
     <Compile Include="BoolNegationConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
+    <Compile Include="IntToBoolConverter.cs" />
     <Compile Include="VideoDataCollection.cs" />
     <Compile Include="VideoException.cs" />
     <Compile Include="MainPage.xaml.cs">

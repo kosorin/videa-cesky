@@ -12,8 +12,9 @@
     ManipulationMode="TranslateX">
 
     <Page.Resources>
-        <!--Konvertory-->
-        <local:TimeSpanConverter x:Key="TimeSpanConverter" /> 
+        <!--Konvertory--> 
+        <local:TimeSpanConverter x:Key="TimeSpanConverter" />
+        <local:IntToBoolConverter x:Key="IntToBoolConverter" /> 
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <local:BoolNegationConverter x:Key="BoolNegationConverter" />
@@ -186,73 +187,120 @@
                                 Foreground="{StaticResource VideoColorBrush}"
                                 Background="{x:Null}" />
                 
-                <!--Play/Pause-->
-                <ToggleButton Name="PlayPauseButton"
-                              IsChecked="{Binding IsPlaying, Mode=TwoWay}"
-                              Tapped="PlayPauseButton_Tapped"
-                              Margin="5,0"
-                              MinWidth="50" 
-                              IsEnabled="{Binding IsLoaded}"
-                              MinHeight="50">
-                    <ToggleButton.Template>
-                        <ControlTemplate>
-                            <Grid Background="Transparent">
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Disabled">
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="PauseText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="0" 
-                                                                 Duration="0:0:0.25"/>
-                                                <DoubleAnimation Storyboard.TargetName="PlayText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="0" 
-                                                                 Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </VisualState>
-                                        <VisualState x:Name="Checked">
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="PauseText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="1" 
-                                                                 Duration="0:0:0.25"/>
-                                                <DoubleAnimation Storyboard.TargetName="PlayText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="0" 
-                                                                 Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </VisualState>
-                                        <VisualState x:Name="Normal">
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="PauseText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="0"
-                                                                 Duration="0:0:0.25"/>
-                                                <DoubleAnimation Storyboard.TargetName="PlayText"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="1" 
-                                                                 Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
-                                <TextBlock x:Name="PlayText" 
-                                           Style="{StaticResource RoundButtonStyle}"
-                                           Foreground="{StaticResource VideoForegroundBrush}"
-                                           Text="&#xe17E;&#xe102;" 
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock x:Name="PauseText" 
-                                           Style="{StaticResource RoundButtonStyle}"
-                                           Foreground="{StaticResource VideoSubtleBrush}"
-                                           Text="&#xe17E;&#xe103;"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-                            </Grid>
-                        </ControlTemplate>
-                    </ToggleButton.Template>
-                </ToggleButton>
+                
+                <StackPanel Orientation="Horizontal">
+                    
+                    <!--Play/Pause-->
+                    <ToggleButton Name="PlayPauseButton"
+                                  IsChecked="{Binding IsPlaying, Mode=TwoWay}"
+                                  Tapped="PlayPauseButton_Tapped"
+                                  Margin="5,0"
+                                  MinWidth="50" 
+                                  IsEnabled="{Binding IsLoaded}"
+                                  MinHeight="50">
+                        <ToggleButton.Template>
+                            <ControlTemplate>
+                                <Grid Background="Transparent">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Disabled">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="0" 
+                                                                     Duration="0:0:0.25"/>
+                                                    <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="0" 
+                                                                     Duration="0:0:0.25"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Checked">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1" 
+                                                                     Duration="0:0:0.25"/>
+                                                    <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="0" 
+                                                                     Duration="0:0:0.25"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Normal">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="PauseText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="0"
+                                                                     Duration="0:0:0.25"/>
+                                                    <DoubleAnimation Storyboard.TargetName="PlayText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1" 
+                                                                     Duration="0:0:0.25"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <TextBlock x:Name="PlayText" 
+                                               Style="{StaticResource RoundButtonStyle}"
+                                               Foreground="{StaticResource VideoForegroundBrush}"
+                                               Text="&#xe17E;&#xe102;" 
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="PauseText" 
+                                               Style="{StaticResource RoundButtonStyle}"
+                                               Foreground="{StaticResource VideoForegroundBrush2}"
+                                               Text="&#xe17E;&#xe103;"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                    
+                    <!--Playlist-->
+                    <Button Name="PlaylistButton"
+                            IsEnabled="{Binding VideoList.Count, Converter={StaticResource IntToBoolConverter}, ConverterParameter='>1', FallbackValue=False}"
+                            Margin="5,0"
+                            MinWidth="50" 
+                            MinHeight="50" 
+                            HorizontalAlignment="Right">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <Grid Background="Transparent">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Disabled">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="PlaylistText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="0" 
+                                                                     Duration="0:0:0.25"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Normal">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="PlaylistText"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1" 
+                                                                     Duration="0:0:0.25"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <TextBlock x:Name="PlaylistText" 
+                                               Style="{StaticResource RoundButtonStyle}"
+                                               Foreground="{StaticResource VideoForegroundBrush2}"
+                                               Text="&#xe17E;&#xe292;" 
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                </StackPanel>
+
 
                 <!--Čas-->
                 <TextBlock x:Name="TimeText"

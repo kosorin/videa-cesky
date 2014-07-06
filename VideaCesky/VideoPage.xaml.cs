@@ -107,162 +107,24 @@ namespace VideaCesky
             throw new VideoException();
         }
 
-        private async Task<VideoData> ParseVideoPage(Uri videoUri)
-        {
-            VideoData data = new VideoData()
-            {
-                Title = null,
-                YoutubeId = null,
-                SubtitlesUri = null
-            };
-
-            string youtubePattern =
-                @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
-                (
-                    youtube\.com(\/|%2F)
-                    (
-	                    embed(\/|%2F)|
-	                    watch(\?|%3F)
-	                    (
-		                    .*(&|%26)
-	                    )?
-	                    v(=|%3D)
-                    )|
-                    youtu\.be(\/|%2F)
-                )
-                (?<youtubeId>[A-Za-z0-9_\-]{11})";
-            try
-            {
-                string mainTitle;
-                List<string> youtubeIdList = new List<string>();
-                List<Uri> subtitlesList = new List<Uri>();
-
-                HttpResponse response = await Http.GetAsync(videoUri);
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(response.Response);
-                HtmlNode contentNode = doc.GetElementbyId("contentArea");
-
-                // Název videa
-                HtmlNode titleNode = contentNode.ChildNodes.FindFirst("span");
-                if (titleNode != null)
-                {
-                    mainTitle = WebUtility.HtmlDecode(titleNode.InnerText);
-                    Debug.WriteLine("Title: " + mainTitle);
-                }
-
-                // Odkaz na video a titulky
-                Uri playlistUri = null;
-                foreach (HtmlNode node in contentNode.Descendants("div"))
-                {
-                    if (node.Attributes.Contains("class") && node.Attributes["class"].Value == "postContent")
-                    {
-                        string postContent = node.InnerHtml;
-
-                        // Video
-                        MatchCollection youtubeMatches = Regex.Matches(postContent, youtubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
-                        foreach (Match youtubeMatch in youtubeMatches)
-                        {
-                            if (youtubeMatch != null && youtubeMatch.Success)
-                            {
-                                youtubeIdList.Add(WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value));
-                                Debug.WriteLine("Youtube ID [{0}]: {1}", youtubeIdList.Count, youtubeIdList[youtubeIdList.Count - 1]);
-                            }
-                        }
-
-                        // Titulky
-                        string subtitlesPattern =
-                            @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
-                                videacesky\.cz(\/|%2F)
-                                autori(\/|%2F)
-                                [A-Za-z0-9_\-]+(\/|%2F)
-                                    (?<type>titulky|playlisty)(\/|%2F)
-                                [A-Za-z0-9_\-]+\.
-                                    (?<format>srt|xml)";
-                        MatchCollection subtitlesMatches = Regex.Matches(postContent, subtitlesPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
-                        foreach (Match subtitlesMatch in subtitlesMatches)
-                        {
-                            if (subtitlesMatch != null && subtitlesMatch.Success)
-                            {
-                                Uri subtitlesUri = new Uri(subtitlesMatch.Value);
-                                if (subtitlesMatch.Groups["type"].Value == "playlisty")
-                                {
-                                    playlistUri = subtitlesUri;
-                                    break;
-                                }
-                                subtitlesList.Add(subtitlesUri);
-                                Debug.WriteLine("Subtitles URI [{0}]: {1}", subtitlesList.Count, subtitlesList[subtitlesList.Count - 1]);
-                            }
-                        }
-
-                        break;
-                    }
-                }
-                if (playlistUri != null)
-                {
-                    Debug.WriteLine("PLAYLIST");
-                    List<string> titleList = new List<string>();
-                    youtubeIdList.Clear();
-                    subtitlesList.Clear();
-
-                    response = await Http.GetAsync(playlistUri);
-                    string playlistXml = response.Response;
-                    int startIndex = playlistXml.IndexOf('<');
-                    if (startIndex > 0)
-                    {
-                        playlistXml = playlistXml.Remove(0, startIndex);
-                    }
-                    XDocument xdoc = XDocument.Parse(playlistXml);
-
-                    foreach (XNode node in xdoc.DescendantNodes())
-                    {
-                        if (node.NodeType != XmlNodeType.Element || ((XElement)node).Name != "item")
-                        {
-                            continue;
-                        }
-
-                        // title
-                        XElement current = (XElement)((XElement)node).FirstNode;
-                        titleList.Add(current.Value);
-                        Debug.WriteLine("Title [{0}]: {1}", titleList.Count, titleList[titleList.Count - 1]);
-
-                        // YoutubeID
-                        current = (XElement)current.NextNode;
-                        Match youtubeMatch = Regex.Match(current.Value, youtubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
-                        if (youtubeMatch != null && youtubeMatch.Success)
-                        {
-                            youtubeIdList.Add(WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value));
-                            Debug.WriteLine("Youtube ID [{0}]: {1}", youtubeIdList.Count, youtubeIdList[youtubeIdList.Count - 1]);
-                        }
-                        else
-                        {
-                            throw new VideoException("Špatný odkaz videa.");
-                        }
-
-                        // Subtitles
-                        current = (XElement)((XElement)current.NextNode).NextNode; // jde se ještě přes duration
-                        subtitlesList.Add(new Uri("http://www.videacesky.cz" + current.Value));
-                        Debug.WriteLine("Subtitles URI [{0}]: {1}", subtitlesList.Count, subtitlesList[subtitlesList.Count - 1]);
-                    }
-                }
-
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("EX ParseVideoPage: " + e.Message);
-                throw new VideoException();
-            }
-
-            return data;
-        }
-
         private async Task AttachVideoData(VideoData videoData)
         {
-            Title = videoData.Title;
-            if (!await AttachVideo(videoData.YoutubeId))
+            CurrentVideo = videoData;
+
+            if (VideoList.Count <= 1)
+            {
+                Title = VideoList.Title;
+            }
+            else
+            {
+                Title = string.Format("{0} - {1}", VideoList.Title, CurrentVideo.Title);
+            }
+
+            if (!await AttachVideo(CurrentVideo.YoutubeId))
             {
                 ShowError("Něco se pokazilo během nahrávání videa.");
             }
-            if (!await AttachSubtitles(videoData.SubtitlesUri))
+            if (!await AttachSubtitles(CurrentVideo.SubtitlesUri))
             {
                 ShowError("Titulky se nepodařilo stáhnout.", true);
             }
@@ -282,14 +144,14 @@ namespace VideaCesky
             try
             {
                 Uri pageUri = ParseEntryUri(e.Parameter as Uri);
-                VideoDataCollection dataCollection = await VideoDataCollection.ParsePage(pageUri);
-                if (dataCollection.Count == 0)
+                VideoList = await VideoDataCollection.ParsePage(pageUri);
+                if (VideoList.Count == 0)
                 {
                     ShowError("Na požadované stránce jsem nenašel žádné video.");
                 }
                 else
                 {
-                    await AttachVideoData(dataCollection[1]);
+                    await AttachVideoData(VideoList[0]);
                 }
             }
             catch (VideoException ex)
@@ -337,6 +199,22 @@ namespace VideaCesky
         #endregion
 
         #region Properties
+        private VideoDataCollection _videoList;
+        public VideoDataCollection VideoList
+        {
+            get { return _videoList; }
+            set
+            { SetProperty(ref _videoList, value); }
+        }
+
+        private VideoData _currentVideo;
+        public VideoData CurrentVideo
+        {
+            get { return _currentVideo; }
+            set
+            { SetProperty(ref _currentVideo, value); }
+        }
+
         private string _title;
         public string Title
         {
