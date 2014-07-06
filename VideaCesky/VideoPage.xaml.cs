@@ -391,7 +391,10 @@ namespace VideaCesky
             if (!IsError)
             {
                 ShowSlider();
-                PlayVideoPlayback();
+                if (!isOpenPlaylist)
+                {
+                    PlayVideoPlayback();
+                }
             }
         }
 
@@ -574,6 +577,7 @@ namespace VideaCesky
 
         private async Task<bool> AttachSubtitles(Uri uri)
         {
+            VideoMediaElement.Markers.Clear();
             subtitles = await Subtitles.Download(uri);
             if (subtitles != null)
             {
@@ -634,6 +638,37 @@ namespace VideaCesky
         private void PlayAnyway_Click(object sender, RoutedEventArgs e)
         {
             HideError();
+        }
+        #endregion
+
+        #region Playlist
+        private bool playAfterClosePlaylist = false;
+
+        private bool isOpenPlaylist = false;
+
+        private async void ListPickerFlyout_ItemsPicked(ListPickerFlyout sender, ItemsPickedEventArgs args)
+        {
+            if (args.AddedItems.Count > 0)
+            {
+                playAfterClosePlaylist = false;
+                await AttachVideoData((VideoData)args.AddedItems[0]);
+            }
+        }
+
+        private void ListPickerFlyout_Opening(object sender, object e)
+        {
+            isOpenPlaylist = true;
+            playAfterClosePlaylist = IsPlaying;
+            PauseVideoPlayback();
+        }
+
+        private void ListPickerFlyout_Closed(object sender, object e)
+        {
+            isOpenPlaylist = false;
+            if (playAfterClosePlaylist)
+            {
+                PlayVideoPlayback();
+            }
         }
         #endregion
     }

@@ -265,6 +265,24 @@
                             MinWidth="50" 
                             MinHeight="50" 
                             HorizontalAlignment="Right">
+                        <Button.Flyout>
+                            <ListPickerFlyout DisplayMemberPath="Title"
+                                              ItemsSource="{Binding VideoList}"
+                                              SelectedItem="{Binding CurrentVideo}" 
+                                              ItemsPicked="ListPickerFlyout_ItemsPicked" 
+                                              Opening="ListPickerFlyout_Opening" 
+                                              Closed="ListPickerFlyout_Closed">
+                                <!--<ListPickerFlyout.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border>
+                                            <TextBlock Text="{Binding Title}" 
+                                                       Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                                       Foreground="{Binding Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListPickerFlyout.ItemTemplate>-->
+                            </ListPickerFlyout>
+                        </Button.Flyout>
                         <Button.Template>
                             <ControlTemplate>
                                 <Grid Background="Transparent">
