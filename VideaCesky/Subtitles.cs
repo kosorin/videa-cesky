@@ -12,7 +12,7 @@ namespace VideaCesky
 {
     public class Subtitles : List<Subtitle>
     {
-        public static string srtPattern = @"\d+\r\n(?<start>\S+)\s-->\s(?<end>\S+)\r\n(?<text>(.|[\r\n])+?)\r\n\r\n";
+        private static readonly string srtPattern = @"\d+\r\n(?<start>\S+)\s-->\s(?<end>\S+)\r\n(?<text>(.|[\r\n])+?)\r\n\r\n";
 
         public async static Task<Subtitles> Download(Uri uri)
         {
@@ -30,10 +30,36 @@ namespace VideaCesky
             {
                 return null;
             }
-            return Parse(srt);
+
+            string ext = uri.OriginalString.Substring(uri.OriginalString.Length - 3, 3);
+            if (ext == "srt")
+                return ParseSubRip(srt);
+            else
+                return ParseSubXml(srt);
         }
 
-        public static Subtitles Parse(string srt)
+        public static Subtitles ParseSubRip(string srt)
+        {
+            srt += "\r\n\r\n";
+            Subtitles subtitles = new Subtitles();
+
+            var matches = Regex.Matches(srt, srtPattern);
+            foreach (Match match in matches)
+            {
+                GroupCollection groups = match.Groups;
+
+                Subtitle subtitle = new Subtitle();
+                subtitle.Start = TimeSpan.Parse(groups["start"].Value.Replace(',', '.'));
+                subtitle.End = TimeSpan.Parse(groups["end"].Value.Replace(',', '.'));
+                subtitle.Text = groups["text"].Value;
+
+                subtitles.Add(subtitle);
+            }
+
+            return subtitles;
+        }
+
+        public static Subtitles ParseSubXml(string srt)
         {
             srt += "\r\n\r\n";
             Subtitles subtitles = new Subtitles();
