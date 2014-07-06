@@ -14,7 +14,7 @@ namespace VideaCesky
     {
         public static string srtPattern = @"\d+\r\n(?<start>\S+)\s-->\s(?<end>\S+)\r\n(?<text>(.|[\r\n])+?)\r\n\r\n";
 
-        public async static Task<Subtitles> Download(string uri)
+        public async static Task<Subtitles> Download(Uri uri)
         {
             string srt = "";
             try

@@ -9,6 +9,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
@@ -110,14 +111,32 @@ namespace VideaCesky
         {
             VideoData data = new VideoData()
             {
-                VideoUri = videoUri,
                 Title = null,
                 YoutubeId = null,
-                SubtitlesUriPart = null
+                SubtitlesUri = null
             };
 
+            string youtubePattern =
+                @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
+                (
+                    youtube\.com(\/|%2F)
+                    (
+	                    embed(\/|%2F)|
+	                    watch(\?|%3F)
+	                    (
+		                    .*(&|%26)
+	                    )?
+	                    v(=|%3D)
+                    )|
+                    youtu\.be(\/|%2F)
+                )
+                (?<youtubeId>[A-Za-z0-9_\-]{11})";
             try
             {
+                string mainTitle;
+                List<string> youtubeIdList = new List<string>();
+                List<Uri> subtitlesList = new List<Uri>();
+
                 HttpResponse response = await Http.GetAsync(videoUri);
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(response.Response);
@@ -127,11 +146,12 @@ namespace VideaCesky
                 HtmlNode titleNode = contentNode.ChildNodes.FindFirst("span");
                 if (titleNode != null)
                 {
-                    data.Title = WebUtility.HtmlDecode(titleNode.InnerText);
-                    Debug.WriteLine("Title: " + data.Title);
+                    mainTitle = WebUtility.HtmlDecode(titleNode.InnerText);
+                    Debug.WriteLine("Title: " + mainTitle);
                 }
 
                 // Odkaz na video a titulky
+                Uri playlistUri = null;
                 foreach (HtmlNode node in contentNode.Descendants("div"))
                 {
                     if (node.Attributes.Contains("class") && node.Attributes["class"].Value == "postContent")
@@ -139,24 +159,92 @@ namespace VideaCesky
                         string postContent = node.InnerHtml;
 
                         // Video
-                        Match youtubeMatch = Regex.Match(postContent, VideoData.YoutubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
-                        if (youtubeMatch != null && youtubeMatch.Success)
+                        MatchCollection youtubeMatches = Regex.Matches(postContent, youtubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
+                        foreach (Match youtubeMatch in youtubeMatches)
                         {
-                            data.YoutubeId = WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value);
-                            Debug.WriteLine("Youtube ID: " + data.YoutubeId);
+                            if (youtubeMatch != null && youtubeMatch.Success)
+                            {
+                                youtubeIdList.Add(WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value));
+                                Debug.WriteLine("Youtube ID [{0}]: {1}", youtubeIdList.Count, youtubeIdList[youtubeIdList.Count - 1]);
+                            }
                         }
 
                         // Titulky
-                        Match subtitlesMatch = Regex.Match(postContent, VideoData.SubtitlesPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
-                        if (subtitlesMatch != null && subtitlesMatch.Success)
+                        string subtitlesPattern =
+                            @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
+                                videacesky\.cz(\/|%2F)
+                                autori(\/|%2F)
+                                [A-Za-z0-9_\-]+(\/|%2F)
+                                    (?<type>titulky|playlisty)(\/|%2F)
+                                [A-Za-z0-9_\-]+\.
+                                    (?<format>srt|xml)";
+                        MatchCollection subtitlesMatches = Regex.Matches(postContent, subtitlesPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
+                        foreach (Match subtitlesMatch in subtitlesMatches)
                         {
-                            data.SubtitlesUriPart = WebUtility.UrlDecode(subtitlesMatch.Groups["uriPart"].Value);
-                            Debug.WriteLine("Subtitles URI part: " + data.SubtitlesUriPart);
+                            if (subtitlesMatch != null && subtitlesMatch.Success)
+                            {
+                                Uri subtitlesUri = new Uri(subtitlesMatch.Value);
+                                if (subtitlesMatch.Groups["type"].Value == "playlisty")
+                                {
+                                    playlistUri = subtitlesUri;
+                                    break;
+                                }
+                                subtitlesList.Add(subtitlesUri);
+                                Debug.WriteLine("Subtitles URI [{0}]: {1}", subtitlesList.Count, subtitlesList[subtitlesList.Count - 1]);
+                            }
                         }
 
                         break;
                     }
                 }
+                if (playlistUri != null)
+                {
+                    Debug.WriteLine("PLAYLIST");
+                    List<string> titleList = new List<string>();
+                    youtubeIdList.Clear();
+                    subtitlesList.Clear();
+
+                    response = await Http.GetAsync(playlistUri);
+                    string playlistXml = response.Response;
+                    int startIndex = playlistXml.IndexOf('<');
+                    if (startIndex > 0)
+                    {
+                        playlistXml = playlistXml.Remove(0, startIndex);
+                    }
+                    XDocument xdoc = XDocument.Parse(playlistXml);
+
+                    foreach (XNode node in xdoc.DescendantNodes())
+                    {
+                        if (node.NodeType != XmlNodeType.Element || ((XElement)node).Name != "item")
+                        {
+                            continue;
+                        }
+
+                        // title
+                        XElement current = (XElement)((XElement)node).FirstNode;
+                        titleList.Add(current.Value);
+                        Debug.WriteLine("Title [{0}]: {1}", titleList.Count, titleList[titleList.Count - 1]);
+
+                        // YoutubeID
+                        current = (XElement)current.NextNode;
+                        Match youtubeMatch = Regex.Match(current.Value, youtubePattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
+                        if (youtubeMatch != null && youtubeMatch.Success)
+                        {
+                            youtubeIdList.Add(WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value));
+                            Debug.WriteLine("Youtube ID [{0}]: {1}", youtubeIdList.Count, youtubeIdList[youtubeIdList.Count - 1]);
+                        }
+                        else
+                        {
+                            throw new VideoException("Špatný odkaz videa.");
+                        }
+
+                        // Subtitles
+                        current = (XElement)((XElement)current.NextNode).NextNode; // jde se ještě přes duration
+                        subtitlesList.Add(new Uri("http://www.videacesky.cz" + current.Value));
+                        Debug.WriteLine("Subtitles URI [{0}]: {1}", subtitlesList.Count, subtitlesList[subtitlesList.Count - 1]);
+                    }
+                }
+
             }
             catch (Exception e)
             {
@@ -170,19 +258,11 @@ namespace VideaCesky
         private async Task AttachVideoData(VideoData videoData)
         {
             Title = videoData.Title;
-            if (videoData.YoutubeId == null)
+            if (!await AttachVideo(videoData.YoutubeId))
             {
-                ShowError("Na požadované stránce jsem nenašel žádné video.");
+                ShowError("Něco se pokazilo během nahrávání videa.");
             }
-            else if (!await AttachVideo(videoData.YoutubeId))
-            {
-                ShowError("Něco se pokazilo během nahrávání videa. Video není možné přehrát.");
-            }
-            else if (videoData.SubtitlesUriPart == null)
-            {
-                ShowError("Na požadované stránce jsem nenašel žádné titulky.", true);
-            }
-            else if (!await AttachSubtitles(string.Format(VideoData.SubtitlesUriFormat, videoData.SubtitlesUriPart)))
+            if (!await AttachSubtitles(videoData.SubtitlesUri))
             {
                 ShowError("Titulky se nepodařilo stáhnout.", true);
             }
@@ -201,11 +281,24 @@ namespace VideaCesky
             Debug.WriteLine("NAVIGATED TO");
             try
             {
-                await AttachVideoData(await ParseVideoPage(ParseEntryUri(e.Parameter as Uri)));
+                Uri pageUri = ParseEntryUri(e.Parameter as Uri);
+                VideoDataCollection dataCollection = await VideoDataCollection.ParsePage(pageUri);
+                if (dataCollection.Count == 0)
+                {
+                    ShowError("Na požadované stránce jsem nenašel žádné video.");
+                }
+                else
+                {
+                    await AttachVideoData(dataCollection[1]);
+                }
             }
             catch (VideoException ex)
             {
                 ShowError(ex.Message);
+            }
+            catch (Exception)
+            {
+                ShowError("Neznámá chyba.");
             }
         }
 
@@ -594,7 +687,7 @@ namespace VideaCesky
             Subtitle = null;
         }
 
-        private async Task<bool> AttachSubtitles(string uri)
+        private async Task<bool> AttachSubtitles(Uri uri)
         {
             subtitles = await Subtitles.Download(uri);
             if (subtitles != null)

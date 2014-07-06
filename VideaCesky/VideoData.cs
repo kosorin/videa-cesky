@@ -9,7 +9,7 @@ namespace VideaCesky
 {
     public class VideoData : BindableBase
     {
-        public static string YoutubePattern =
+        public static readonly string YoutubeIdPattern =
             @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
             (
                 youtube\.com(\/|%2F)
@@ -25,16 +25,19 @@ namespace VideaCesky
             )
             (?<youtubeId>[A-Za-z0-9_\-]{11})";
 
-        public static string SubtitlesPattern = @"http(:|%3A)(\/|%2F)(\/|%2F)(www\.)?videacesky\.cz(?<uriPart>([A-Za-z0-9_\-\/]|%2F)*\.srt)";
-
-        public static string SubtitlesUriFormat = "http://www.videacesky.cz{0}";
-
-        public Uri VideoUri { get; set; }
+        public static readonly string SubtitlesUriPattern =
+            @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
+                videacesky\.cz(\/|%2F)
+                autori(\/|%2F)
+                [A-Za-z0-9_\-]+(\/|%2F)
+                    (?<type>titulky|playlisty)(\/|%2F)
+                [A-Za-z0-9_\-]+\.
+                    (?<format>srt|xml)";
 
         public string Title { get; set; }
 
         public string YoutubeId { get; set; }
 
-        public string SubtitlesUriPart { get; set; }
+        public Uri SubtitlesUri { get; set; }
     }
 }
