@@ -51,7 +51,7 @@
                             javascript: location.href = "videacesky:" + location.href;
                         </TextBox.Text>
                     </TextBox>
-                    <TextBlock Style="{ThemeResource Level1Style}">2. v Internet Exploreru <Run Foreground="{StaticResource VideoColorBrush}">vytvoř oblíbenou položku</Run></TextBlock>
+                    <TextBlock Style="{ThemeResource Level1Style}">2. v Internet Exploreru <Run Foreground="{StaticResource VideoColorBrush}">vytvoř oblíbenou položku</Run> (jiné webové prohlížeče jsem netestoval)</TextBlock>
                     <TextBlock Style="{ThemeResource Level2Style}">2.1. spusť aplikaci Internet Explorer</TextBlock>
                     <TextBlock Style="{ThemeResource Level2Style}">2.2. v menu vyber <Bold>"přidat k oblíbeným položkám"</Bold> (musí být načtená libovolná stránka, jinak bude položka neaktivní)</TextBlock>
                     <TextBlock Style="{ThemeResource Level2Style}">2.3. do pole pro <Bold>webovou adresu</Bold> vlož zkopírovaný text</TextBlock>
