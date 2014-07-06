@@ -71,7 +71,6 @@ namespace VideaCesky
             autoHideSliderTimer.Interval = TimeSpan.FromSeconds(2.5);
             autoHideSliderTimer.Tick += autoHideSliderTimer_Tick;
 
-            VideoMediaElement.MarkerReached += VideoMediaElement_MarkerReached;
             subtitleTimer.Tick += subtitleTimer_Tick;
 
             HideErrorStoryboard.Completed += (s, e) => ErrorBorder.Visibility = Visibility.Collapsed;

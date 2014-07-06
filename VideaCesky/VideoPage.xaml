@@ -97,7 +97,8 @@
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" 
                       MediaFailed="VideoMediaElement_MediaFailed" 
-                      Tapped="VideoMediaElement_Tapped"/>
+                      Tapped="VideoMediaElement_Tapped" 
+                      MarkerReached="VideoMediaElement_MarkerReached"/>
 
         <!--Chyba-->
         <Border Name="ErrorBorder"
@@ -272,15 +273,6 @@
                                               ItemsPicked="ListPickerFlyout_ItemsPicked" 
                                               Opening="ListPickerFlyout_Opening" 
                                               Closed="ListPickerFlyout_Closed">
-                                <!--<ListPickerFlyout.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border>
-                                            <TextBlock Text="{Binding Title}" 
-                                                       Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                                       Foreground="{Binding Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListPickerFlyout.ItemTemplate>-->
                             </ListPickerFlyout>
                         </Button.Flyout>
                         <Button.Template>
