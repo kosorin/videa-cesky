@@ -369,7 +369,7 @@
                                             <Storyboard>
                                                 <DoubleAnimation Storyboard.TargetName="CaptionsText"
                                                                  Storyboard.TargetProperty="Opacity"
-                                                                 To="0.2"
+                                                                 To="0.35"
                                                                  Duration="0:0:0.25"/>
                                                 <DoubleAnimation Storyboard.TargetName="CaptionsOffText"
                                                                  Storyboard.TargetProperty="Opacity"
