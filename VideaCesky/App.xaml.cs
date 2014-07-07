@@ -36,7 +36,8 @@ namespace VideaCesky
         {
             if (args.Kind == ActivationKind.Protocol)
             {
-                EnsureCreatedAndActivated(((ProtocolActivatedEventArgs)args).Uri);
+                Uri uri = ((ProtocolActivatedEventArgs)args).Uri;
+                EnsureCreatedAndActivated(uri.AbsolutePath);
             }
             else
             {
@@ -44,7 +45,7 @@ namespace VideaCesky
             }
         }
 
-        private void EnsureCreatedAndActivated(Uri uri = null)
+        private void EnsureCreatedAndActivated(string uri = null)
         {
             Frame rootFrame;
             if (uri != null)

@@ -76,34 +76,28 @@ namespace VideaCesky
             HideErrorStoryboard.Completed += (s, e) => ErrorBorder.Visibility = Visibility.Collapsed;
         }
 
-        private Uri ParseEntryUri(Uri entryUri)
+        private Uri CheckPageUri(string uriString)
         {
-            if (entryUri != null)
+            try
             {
-                Debug.WriteLine("Entry URI: " + entryUri.OriginalString);
-                try
+                Uri uri = new Uri(uriString);
+                Debug.WriteLine("URI: " + uri.OriginalString);
+
+                if (!uri.Host.Contains("videacesky.cz"))
                 {
-                    Match match = Regex.Match(entryUri.OriginalString, uriPattern);
-                    if (match.Success)
-                    {
-                        Uri uri = new Uri(match.Groups["uri"].Value, UriKind.Absolute);
-                        if (uri.Host.Contains("videacesky.cz"))
-                        {
-                            Debug.WriteLine("URI: " + uri.OriginalString);
-                            return uri;
-                        }
-                        else
-                        {
-                            throw new VideoException("Videa hledám jen na stránce www.VideaČesky.cz");
-                        }
-                    }
+                    throw new VideoException("Videa hledám jen na stránce www.VideaČesky.cz");
                 }
-                catch (FormatException)
-                {
-                    throw new VideoException("Špatná adresa videa.");
-                }
+
+                return uri;
             }
-            throw new VideoException();
+            catch (ArgumentNullException)
+            {
+                throw new VideoException("Nezadal jsi adresu videa.");
+            }
+            catch (FormatException)
+            {
+                throw new VideoException("Špatná adresa videa.");
+            }
         }
 
         private async Task AttachVideoData(VideoData videoData)
@@ -143,7 +137,7 @@ namespace VideaCesky
             Debug.WriteLine("NAVIGATED TO");
             try
             {
-                Uri pageUri = ParseEntryUri(e.Parameter as Uri);
+                Uri pageUri = CheckPageUri(e.Parameter as string);
                 VideoList = await VideoDataCollection.ParsePage(pageUri);
                 if (VideoList.Count == 0)
                 {
@@ -158,8 +152,9 @@ namespace VideaCesky
             {
                 ShowError(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 ShowError("Neznámá chyba.");
             }
         }
@@ -413,7 +408,8 @@ namespace VideaCesky
 
         private void VideoMediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            ShowError("Neznámá chyba");
+            Debug.WriteLine(e.ErrorMessage);
+            ShowError("Neznámá chyba při stahování videa.");
         }
 
         private void VideoMediaElement_Tapped(object sender, TappedRoutedEventArgs e)
@@ -617,8 +613,6 @@ namespace VideaCesky
                 {
                     subtitleTimer.Start();
                 }
-                else
-                { Debug.WriteLine(" ----------- NULL -----------------"); }
             }
         }
 
@@ -640,6 +634,8 @@ namespace VideaCesky
 
             ErrorBorder.Visibility = Visibility.Visible;
             ShowErrorStoryboard.Begin();
+
+            Subtitle = null;
         }
 
         private void HideError()
