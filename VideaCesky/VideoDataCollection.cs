@@ -157,20 +157,24 @@ namespace VideaCesky
                 }
                 XDocument doc = XDocument.Parse(playlistXml);
 
-                foreach (XNode node in doc.DescendantNodes()
+                XNamespace ns = XNamespace.None;
+                if (doc.Root.Attribute(XNamespace.Xmlns + "jwplayer") != null)
+                {
+                    ns = doc.Root.Attribute(XNamespace.Xmlns + "jwplayer").Value;
+                }
+
+                foreach (XElement node in doc.DescendantNodes()
                     .Where(n => n.NodeType == XmlNodeType.Element && ((XElement)n).Name == "item"))
                 {
                     Debug.WriteLine("Video");
                     VideoData data = new VideoData();
 
                     // Title
-                    XElement current = (XElement)((XElement)node).FirstNode;
-                    data.Title = current.Value;
+                    data.Title = node.Element("title").Value;
                     Debug.WriteLine("  Title: {0}", data.Title);
 
                     // YoutubeID
-                    current = (XElement)current.NextNode;
-                    Match youtubeMatch = Regex.Match(current.Value, VideoData.YoutubeIdPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
+                    Match youtubeMatch = Regex.Match(node.Element(ns + "file").Value, VideoData.YoutubeIdPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
                     if (youtubeMatch != null && youtubeMatch.Success)
                     {
                         data.YoutubeId = WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value);
@@ -182,8 +186,7 @@ namespace VideaCesky
                     }
 
                     // Subtitles
-                    current = (XElement)((XElement)current.NextNode).NextNode; // jde se ještě přes duration
-                    data.SubtitlesUri = new Uri("http://www.videacesky.cz" + current.Value);
+                    data.SubtitlesUri = new Uri("http://www.videacesky.cz" + (node.Element(ns + "captions.file").Value.Trim()));
                     Debug.WriteLine("  Subtitles URI: {0}", data.SubtitlesUri);
 
                     dataCollection.Add(data);
