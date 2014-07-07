@@ -266,8 +266,8 @@ namespace VideaCesky
             set { SetProperty(ref _isVisibleSlider, value); }
         }
 
-        private string _subtitle;
-        public string Subtitle
+        private Subtitle _subtitle;
+        public Subtitle Subtitle
         {
             get { return _subtitle; }
             set { SetProperty(ref _subtitle, value); }
@@ -313,18 +313,20 @@ namespace VideaCesky
             }
 
             VideoMediaElement.Play();
+            IsPlaying = true;
 
             updateSliderPositionTimer.Start();
             UpdateSliderPosition();
             autoHideSliderTimer.Start();
 
-            IsPlaying = true;
+            SetAndRunSubtitles(SliderPosition);
         }
 
         private void PauseVideoPlayback()
         {
             Debug.WriteLine("PAUSE");
             VideoMediaElement.Pause();
+            PauseSubtitles();
 
             updateSliderPositionTimer.Stop();
             UpdateSliderPosition();
@@ -344,6 +346,7 @@ namespace VideaCesky
         {
             Debug.WriteLine("STOP");
             VideoMediaElement.Stop();
+            PauseSubtitles();
 
             updateSliderPositionTimer.Stop();
             UpdateSliderPosition();
@@ -438,7 +441,7 @@ namespace VideaCesky
             {
                 try
                 {
-                    SetSubtitle(Convert.ToInt32(e.Marker.Text));
+                    SetAndRunSubtitles(e.Marker.Time);
                 }
                 catch (FormatException)
                 {
@@ -543,6 +546,10 @@ namespace VideaCesky
             {
                 PlayVideoPlayback();
             }
+            else
+            {
+                SetAndRunSubtitles(SliderPosition);
+            }
         }
 
         private void ControlsGrid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -598,18 +605,26 @@ namespace VideaCesky
             }
         }
 
-        private void SetSubtitle(int i)
+        private void SetAndRunSubtitles(TimeSpan position)
         {
             subtitleTimer.Stop();
+            Subtitle = subtitles.At(position);
 
-            if (i >= 0 && i < subtitles.Count)
+            if (Subtitle != null && IsPlaying)
             {
-                Subtitle sub = subtitles[i];
-                Subtitle = sub.Text;
-
-                subtitleTimer.Interval = sub.End - sub.Start;
-                subtitleTimer.Start();
+                subtitleTimer.Interval = Subtitle.End - position;
+                if (subtitleTimer.Interval.TotalMilliseconds > 0)
+                {
+                    subtitleTimer.Start();
+                }
+                else
+                { Debug.WriteLine(" ----------- NULL -----------------"); }
             }
+        }
+
+        private void PauseSubtitles()
+        {
+            subtitleTimer.Stop();
         }
         #endregion
 

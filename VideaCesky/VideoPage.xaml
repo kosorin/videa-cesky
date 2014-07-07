@@ -166,7 +166,7 @@
                            HorizontalAlignment="Center"
                            TextWrapping="WrapWholeWords" 
                            TextAlignment="Center"
-                           local:Subtitle.FormattedText="{Binding Subtitle}"
+                           local:Subtitle.FormattedText="{Binding Subtitle.Text}"
                            Visibility="{Binding Subtitle, Converter={StaticResource NullToVisibilityConverter}}" />
             </Border>
 

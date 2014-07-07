@@ -16,6 +16,30 @@ namespace VideaCesky
     {
         private static readonly string srtPattern = @"\d+\r\n(?<start>\S+)\s-->\s(?<end>\S+)\r\n(?<text>(.|[\r\n])+?)\r\n\r\n";
 
+        public Subtitle At(TimeSpan position)
+        {
+            foreach (Subtitle s in this)
+            {
+                if (s.Start <= position && s.End >= position)
+                {
+                    return s;
+                }
+            }
+            return null;
+        }
+
+        public new Subtitle this[int i]
+        {
+            get
+            {
+                if (i >= 0 && i < Count)
+                {
+                    return this.ElementAt(i);
+                }
+                return null;
+            }
+        }
+
         public async static Task<Subtitles> Download(Uri uri)
         {
             string subtitlesText = "";
