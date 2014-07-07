@@ -100,7 +100,7 @@ namespace VideaCesky
             }
         }
 
-        private async Task AttachVideoData(VideoData videoData)
+        private async Task AttachVideoData(VideoData videoData, YouTubeQuality quality)
         {
             IsLoaded = false;
             CurrentVideo = videoData;
@@ -114,7 +114,7 @@ namespace VideaCesky
                 Title = string.Format("{0} - {1}", VideoList.Title, CurrentVideo.Title);
             }
 
-            if (!await AttachVideo(CurrentVideo.YoutubeId))
+            if (!await AttachVideo(CurrentVideo.YoutubeId, quality))
             {
                 ShowError("Něco se pokazilo během nahrávání videa.");
             }
@@ -145,7 +145,7 @@ namespace VideaCesky
                 }
                 else
                 {
-                    await AttachVideoData(VideoList[0]);
+                    await AttachVideoData(VideoList[0], Quality);
                 }
             }
             catch (VideoException ex)
@@ -194,20 +194,25 @@ namespace VideaCesky
         #endregion
 
         #region Properties
+        private YouTubeQuality _quality = YouTubeQuality.QualityMedium;
+        public YouTubeQuality Quality
+        {
+            get { return _quality; }
+            set { SetProperty(ref _quality, value); }
+        }
+
         private VideoDataCollection _videoList;
         public VideoDataCollection VideoList
         {
             get { return _videoList; }
-            set
-            { SetProperty(ref _videoList, value); }
+            set { SetProperty(ref _videoList, value); }
         }
 
         private VideoData _currentVideo;
         public VideoData CurrentVideo
         {
             get { return _currentVideo; }
-            set
-            { SetProperty(ref _currentVideo, value); }
+            set { SetProperty(ref _currentVideo, value); }
         }
 
         private string _title;
@@ -359,11 +364,12 @@ namespace VideaCesky
         #endregion
 
         #region MediaElement ======================================================================
-        private async Task<bool> AttachVideo(string youtubeId, YouTubeQuality quality = YouTubeQuality.Quality360P)
+        private async Task<bool> AttachVideo(string youtubeId, YouTubeQuality quality)
         {
             YouTubeUri video = await YouTube.GetVideoUriAsync(youtubeId, quality);
             if (video != null)
             {
+                Debug.WriteLine("QUALITY: {0}", video.VideoQuality);
                 VideoMediaElement.Source = video.Uri;
                 return true;
             }
@@ -402,7 +408,7 @@ namespace VideaCesky
             int nextVideoIndex = VideoList.IndexOf(CurrentVideo) + 1;
             if (VideoList.Count > 1 && nextVideoIndex < VideoList.Count)
             {
-                await AttachVideoData(VideoList[nextVideoIndex]);
+                await AttachVideoData(VideoList[nextVideoIndex], Quality);
             }
         }
 
@@ -661,7 +667,7 @@ namespace VideaCesky
             if (args.AddedItems.Count > 0)
             {
                 playAfterClosePlaylist = false;
-                await AttachVideoData((VideoData)args.AddedItems[0]);
+                await AttachVideoData((VideoData)args.AddedItems[0], Quality);
             }
         }
 
