@@ -80,16 +80,23 @@
         </Storyboard>
     </Page.Resources>
 
-    <Grid Background="{StaticResource VideoBackgroundBrush}">
-        <!--Logo-->
-        <Image Source="Assets/LogoTransparent.png" 
+    <Grid>
+        <!--Pozadí-->
+        <Grid Background="{StaticResource VideoBackgroundBrush}"
+              Tapped="VideoMediaElement_Tapped">
+            
+            <!--Logo-->
+            <Image Source="Assets/LogoTransparent.png" 
                HorizontalAlignment="Center" 
                VerticalAlignment="Center"
-               RenderTransformOrigin="0.5,0.5">
-            <Image.RenderTransform>
-                <CompositeTransform ScaleX="0.7" ScaleY="0.7" TranslateY="-10"/>
-            </Image.RenderTransform>
-        </Image>
+               RenderTransformOrigin="0.5,0.5"
+               IsHitTestVisible="False">
+                <Image.RenderTransform>
+                    <CompositeTransform ScaleX="0.7" ScaleY="0.7" TranslateY="-10"/>
+                </Image.RenderTransform>
+            </Image>
+            
+        </Grid>
         
         <!--MediaPlayer-->
         <MediaElement Name="VideoMediaElement" 
@@ -97,9 +104,9 @@
                       MediaOpened="VideoMediaElement_MediaOpened" 
                       MediaEnded="VideoMediaElement_MediaEnded" 
                       MediaFailed="VideoMediaElement_MediaFailed" 
-                      Tapped="VideoMediaElement_Tapped" 
-                      MarkerReached="VideoMediaElement_MarkerReached"/>
-
+                      MarkerReached="VideoMediaElement_MarkerReached"
+                      IsHitTestVisible="False" />
+   
         <!--Chyba-->
         <Border Name="ErrorBorder"
                 Background="{StaticResource VideoColorBrush}"
@@ -129,7 +136,8 @@
         <!--Horní info-->
         <StackPanel x:Name="TopInfoStackPanel" 
                     VerticalAlignment="Top"
-                    RenderTransformOrigin="0.5,0.5" >
+                    RenderTransformOrigin="0.5,0.5"
+                    IsHitTestVisible="False">
             <StackPanel.RenderTransform>
                 <CompositeTransform TranslateY="0"/>
             </StackPanel.RenderTransform>
@@ -157,7 +165,8 @@
 
             <!--Titulky-->
             <Border VerticalAlignment="Bottom"
-                    Background="{StaticResource VideoSubtitleBackgroundBrush}">
+                    Background="{StaticResource VideoSubtitleBackgroundBrush}"
+                    IsHitTestVisible="False">
                 <TextBlock Name="SubtitleTextBox" 
                            Foreground="{StaticResource VideoSubtitleBrush}" 
                            FontSize="30"
@@ -170,15 +179,34 @@
                            Visibility="{Binding Subtitle, Converter={StaticResource NullToVisibilityConverter}}" />
             </Border>
 
-            <!--Slider-->
+            <!--Ovládání-->
             <Grid x:Name="ControlsGrid"
-                  Background="{StaticResource VideoSliderBackgroundBrush}" 
                   Height="60">
-                <Border Name="VideoSlider"
-                        HorizontalAlignment="Left"
-                        Width="{Binding SliderPositionWidth}"
-                        Background="{StaticResource VideoColorBrush}"
-                        Opacity="0.5"/>
+                
+                <!--Neklikatelné-->
+                <Grid Background="{StaticResource VideoSliderBackgroundBrush}"
+                      IsHitTestVisible="False">
+
+                    <!--Slider-->
+                    <Border Name="VideoSlider"
+                            HorizontalAlignment="Left"
+                            Width="{Binding SliderPositionWidth}"
+                            Background="{StaticResource VideoColorBrush}"
+                            Opacity="0.5"/>
+
+                    <!--Čas-->
+                    <TextBlock x:Name="TimeText"
+                           FontSize="20" 
+                           Foreground="{StaticResource VideoSubtleBrush}"
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0">
+                    <Run Text="{Binding SliderPosition, Converter={StaticResource TimeSpanConverter}}"
+                         FontSize="36" 
+                         Foreground="{StaticResource VideoForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
+                    </TextBlock>
+                    
+                </Grid>
 
                 <!--Progress-->
                 <ProgressRing Name="LoadProgressRing"
@@ -188,12 +216,12 @@
                                 Foreground="{StaticResource VideoColorBrush}"
                                 Background="{x:Null}" />
                 
-                
+                <!--Tlačítka nalevo-->
                 <StackPanel Orientation="Horizontal">
                     
                     <!--Play/Pause-->
                     <ToggleButton Name="PlayPauseButton"
-                                  IsChecked="{Binding IsPlaying, Mode=TwoWay}"
+                                  IsChecked="{Binding IsPlaying}"
                                   Tapped="PlayPauseButton_Tapped"
                                   Margin="5,0"
                                   MinWidth="50" 
@@ -310,19 +338,6 @@
                     </Button>
                     
                 </StackPanel>
-
-
-                <!--Čas-->
-                <TextBlock x:Name="TimeText"
-                           FontSize="20" 
-                           Foreground="{StaticResource VideoSubtleBrush}"
-                           VerticalAlignment="Center" 
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0">
-                    <Run Text="{Binding SliderPosition, Converter={StaticResource TimeSpanConverter}}"
-                         FontSize="36" 
-                         Foreground="{StaticResource VideoForegroundBrush}" />/<Run Text="{Binding Duration, Converter={StaticResource TimeSpanConverter}}" />
-                </TextBlock>
 
                 <!--Nastavení-->
                 <Button Name="SettingsButton"
