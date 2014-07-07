@@ -700,7 +700,10 @@ namespace VideaCesky
         {
             IsEnabledSubtitles = !IsEnabledSubtitles;
 
-            autoHideSliderTimer.Start();
+            if (IsPlaying)
+            {
+                autoHideSliderTimer.Start();
+            }
         }
         #endregion
     }
