@@ -30,7 +30,7 @@ namespace VideaCesky
                 videacesky\.cz(\/|%2F)
                 autori(\/|%2F)
                 [A-Za-z0-9_\-]+(\/|%2F)
-                    (?<type>titulky|playlisty)(\/|%2F)
+                    (?<type>[A-Za-z0-9_\-]+)(\/|%2F)
                 [A-Za-z0-9_\-]+\.
                     (?<format>srt|xml)";
 
