@@ -170,11 +170,11 @@ namespace VideaCesky
                     VideoData data = new VideoData();
 
                     // Title
-                    data.Title = node.Element("title").Value;
+                    data.Title = node.Element("title").Value.Trim();
                     Debug.WriteLine("  Title: {0}", data.Title);
 
                     // YoutubeID
-                    Match youtubeMatch = Regex.Match(node.Element(ns + "file").Value, VideoData.YoutubeIdPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
+                    Match youtubeMatch = Regex.Match(node.Element(ns + "file").Value.Trim(), VideoData.YoutubeIdPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
                     if (youtubeMatch != null && youtubeMatch.Success)
                     {
                         data.YoutubeId = WebUtility.UrlDecode(youtubeMatch.Groups["youtubeId"].Value);
