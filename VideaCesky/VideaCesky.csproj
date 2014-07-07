@@ -156,6 +156,7 @@
     <Content Include="Assets\LogoStore.scale-240.png" />
     <Content Include="Assets\TileWide.scale-240.png" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

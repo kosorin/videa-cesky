@@ -166,7 +166,8 @@
             <!--Titulky-->
             <Border VerticalAlignment="Bottom"
                     Background="{StaticResource VideoSubtitleBackgroundBrush}"
-                    IsHitTestVisible="False">
+                    IsHitTestVisible="False"
+                    Visibility="{Binding IsEnabledSubtitles, Converter={StaticResource BoolToVisibilityConverter}}">
                 <TextBlock Name="SubtitleTextBox" 
                            Foreground="{StaticResource VideoSubtitleBrush}" 
                            FontSize="30"
@@ -339,26 +340,61 @@
                     
                 </StackPanel>
 
-                <!--Nastavení-->
-                <Button Name="SettingsButton"
-                        Visibility="Collapsed"
+                <!--Nastavení zobrazení titulků-->
+                <ToggleButton Name="CaptionsButton"
+                        Visibility="Visible"
                         Margin="5,0"
                         MinWidth="50" 
                         MinHeight="50" 
-                        HorizontalAlignment="Right">
-                    <Button.Template>
+                        IsChecked="{Binding IsEnabledSubtitles}"
+                        HorizontalAlignment="Right" Tapped="CaptionsButton_Tapped">
+                    <ToggleButton.Template>
                         <ControlTemplate>
                             <Grid Background="Transparent">
-                                <TextBlock x:Name="PlayText" 
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Checked">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="CaptionsText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="1" 
+                                                                 Duration="0:0:0.25"/>
+                                                <DoubleAnimation Storyboard.TargetName="CaptionsOffText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0.25" 
+                                                                 Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="CaptionsText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0.2"
+                                                                 Duration="0:0:0.25"/>
+                                                <DoubleAnimation Storyboard.TargetName="CaptionsOffText"
+                                                                 Storyboard.TargetProperty="Opacity"
+                                                                 To="0"
+                                                                 Duration="0:0:0.25"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <TextBlock x:Name="CaptionsOffText" 
                                            Style="{StaticResource RoundButtonStyle}"
-                                           Foreground="{StaticResource VideoSubtleBrush}"
-                                           Text="&#xe17E;&#xe115;" 
+                                           Foreground="{StaticResource VideoForegroundBrush2}"
+                                           Text="&#xe17F;&#xe190;" 
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock x:Name="CaptionsText" 
+                                           Style="{StaticResource RoundButtonStyle}"
+                                           Foreground="{StaticResource VideoForegroundBrush2}"
+                                           Text="&#xe17E;&#xe190;" 
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
                             </Grid>
                         </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                    </ToggleButton.Template>
+                </ToggleButton>
 
             </Grid>
         </StackPanel>

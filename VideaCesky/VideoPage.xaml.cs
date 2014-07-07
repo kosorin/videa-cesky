@@ -154,7 +154,7 @@ namespace VideaCesky
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Debug.WriteLine("OnNavigatedTo Exception: {0}", ex);
                 ShowError("Neznámá chyba.");
             }
         }
@@ -271,6 +271,13 @@ namespace VideaCesky
         {
             get { return _subtitle; }
             set { SetProperty(ref _subtitle, value); }
+        }
+
+        private bool _isEnabledSubtitles = true;
+        public bool IsEnabledSubtitles
+        {
+            get { return _isEnabledSubtitles; }
+            private set { SetProperty(ref _isEnabledSubtitles, value); }
         }
 
         private bool _isError = false;
@@ -685,6 +692,15 @@ namespace VideaCesky
             {
                 PlayVideoPlayback();
             }
+        }
+        #endregion
+
+        #region Nastavení
+        private void CaptionsButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            IsEnabledSubtitles = !IsEnabledSubtitles;
+
+            autoHideSliderTimer.Start();
         }
         #endregion
     }
