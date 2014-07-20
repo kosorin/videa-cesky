@@ -59,66 +59,72 @@ namespace VideaCesky
 
             string fileExt = uri.OriginalString.Substring(uri.OriginalString.Length - 3, 3);
             if (fileExt == "srt")
-                return ParseSubRip(subtitlesText);
+                return SubRipSubtitles.Parse(subtitlesText);
             else
-                return ParseSubXml(subtitlesText);
+                return XmlSubtitles.Parse(subtitlesText);
         }
 
-        public static Subtitles ParseSubRip(string srt)
+        private class SubRipSubtitles
         {
-            srt += "\r\n\r\n";
-            Subtitles subtitles = new Subtitles();
-
-            var matches = Regex.Matches(srt, srtPattern);
-            foreach (Match match in matches)
+            public static Subtitles Parse(string srt)
             {
-                GroupCollection groups = match.Groups;
+                srt += "\r\n\r\n";
+                Subtitles subtitles = new Subtitles();
 
-                Subtitle subtitle = new Subtitle();
-                subtitle.Start = TimeSpan.Parse(groups["start"].Value.Replace(',', '.'));
-                subtitle.End = TimeSpan.Parse(groups["end"].Value.Replace(',', '.'));
-                subtitle.Text = groups["text"].Value;
-
-                subtitles.Add(subtitle);
-            }
-
-            return subtitles;
-        }
-
-        public static Subtitles ParseSubXml(string xml)
-        {
-            Subtitles subtitles = new Subtitles();
-
-            try
-            {
-                XDocument doc = XDocument.Parse(xml);
-                XNamespace ns = XNamespace.None;
-                if (doc.Root.Attribute("xmlns") != null)
+                var matches = Regex.Matches(srt, srtPattern);
+                foreach (Match match in matches)
                 {
-                    ns = doc.Root.Attribute("xmlns").Value;
+                    GroupCollection groups = match.Groups;
+
+                    Subtitle subtitle = new Subtitle();
+                    subtitle.Start = TimeSpan.Parse(groups["start"].Value.Replace(',', '.'));
+                    subtitle.End = TimeSpan.Parse(groups["end"].Value.Replace(',', '.'));
+                    subtitle.Text = groups["text"].Value;
+
+                    subtitles.Add(subtitle);
                 }
-                XElement body = doc.Root.Element(ns + "body");
 
-                foreach (XElement s in ((XElement)body.FirstNode).Elements())
+                return subtitles;
+            }
+        }
+
+        private class XmlSubtitles
+        {
+            public static Subtitles Parse(string xml)
+            {
+                Subtitles subtitles = new Subtitles();
+
+                try
                 {
-                    if (s.Name == ns + "p")
+                    XDocument doc = XDocument.Parse(xml);
+                    XNamespace ns = XNamespace.None;
+                    if (doc.Root.Attribute("xmlns") != null)
                     {
-                        Subtitle subtitle = new Subtitle();
+                        ns = doc.Root.Attribute("xmlns").Value;
+                    }
+                    XElement body = doc.Root.Element(ns + "body");
 
-                        subtitle.Start = TimeSpan.Parse(s.Attribute("begin").Value);
-                        subtitle.End = TimeSpan.Parse(s.Attribute("end").Value);
-                        subtitle.Text = Regex.Replace(s.Value, @"<br\s*\/>", Environment.NewLine);
+                    foreach (XElement s in ((XElement)body.FirstNode).Elements())
+                    {
+                        if (s.Name == ns + "p")
+                        {
+                            Subtitle subtitle = new Subtitle();
 
-                        subtitles.Add(subtitle);
+                            subtitle.Start = TimeSpan.Parse(s.Attribute("begin").Value);
+                            subtitle.End = TimeSpan.Parse(s.Attribute("end").Value);
+                            subtitle.Text = Regex.Replace(s.Value, @"<br\s*\/>", Environment.NewLine);
+
+                            subtitles.Add(subtitle);
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
 
-            return subtitles;
+                return subtitles;
+            }
         }
     }
 }

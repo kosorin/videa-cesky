@@ -187,8 +187,16 @@ namespace VideaCesky
             else
             {
                 StopVideoPlayback();
-                Debug.WriteLine("Exit");
-                App.Current.Exit();
+
+                if (Frame.CanGoBack)
+                {
+                    Frame.GoBack();
+                }
+                else
+                {
+                    Debug.WriteLine("EXIT");
+                    App.Current.Exit();
+                }
             }
         }
         #endregion

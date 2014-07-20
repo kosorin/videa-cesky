@@ -61,7 +61,7 @@ namespace VideaCesky
             if (rootFrame == null)
             {
                 rootFrame = new Frame();
-                rootFrame.CacheSize = 1;
+                rootFrame.CacheSize = 3;
                 Window.Current.Content = rootFrame;
             }
             if (rootFrame.Content == null)

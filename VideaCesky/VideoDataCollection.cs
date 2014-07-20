@@ -20,7 +20,7 @@ namespace VideaCesky
     public class VideoDataCollection : ObservableCollection<VideoData>, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
+        public new event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
