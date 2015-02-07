@@ -8,7 +8,14 @@ namespace VideaCesky
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return string.Format(parameter as string ?? "{0:f}", (DateTime)value);
+            if (value is DateTime)
+            {
+                return string.Format(parameter as string ?? "{0:f}", (DateTime)value);
+            }
+            else
+            {
+                return value;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -115,10 +115,21 @@ namespace VideaCesky
         }
         #endregion
 
+        #region VideoTemplate
+        private DataTemplate _videoTemplate = null;
+        public DataTemplate VideoTemplate
+        {
+            get { return _videoTemplate; }
+            set { SetProperty(ref _videoTemplate, value); }
+        }
+        #endregion // end of VideoTemplate
+
         public MainPage()
         {
             this.InitializeComponent();
             DataContext = this;
+
+            DisplayProperties_OrientationChanged(null);
 
             NavigationCacheMode = NavigationCacheMode.Required;
 #if DEBUG
@@ -149,10 +160,39 @@ namespace VideaCesky
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
+            DisplayProperties.OrientationChanged += DisplayProperties_OrientationChanged;
+
             if (e.NavigationMode == NavigationMode.New)
             {
                 await LoadMore();
+
             }
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
+        }
+
+        public void DisplayProperties_OrientationChanged(object sender)
+        {
+            if (DisplayProperties.CurrentOrientation == DisplayOrientations.Portrait || DisplayProperties.CurrentOrientation == DisplayOrientations.PortraitFlipped)
+            {
+                VideoTemplate = Resources["PortraitVideoTemplate"] as DataTemplate;
+            }
+            else
+            {
+                VideoTemplate = Resources["LandscapeVideoTemplate"] as DataTemplate;
+            }
+        }
+
+        public async Task Refresh()
+        {
+            Page = 0;
+            VideoList.Clear();
+            await LoadMore();
         }
 
         public async Task LoadMore()
@@ -198,17 +238,15 @@ namespace VideaCesky
                     }
                 }
 
-                if (MaxPage == 0)
+                var pagination = contentArea.LastChild.PreviousSibling.ChildNodes.FindFirst("ol");
+                foreach (var p in pagination.ChildNodes)
                 {
-                    var pagination = contentArea.LastChild.PreviousSibling.ChildNodes.FindFirst("ol");
-                    foreach (var p in pagination.ChildNodes)
+                    if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
                     {
-                        if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
-                        {
-                            MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
-                        }
+                        MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
                     }
                 }
+                Debug.WriteLine("Page {0}/{1}", Page, MaxPage);
             }
             catch (Exception e)
             {
@@ -221,9 +259,6 @@ namespace VideaCesky
             {
                 CanLoadMore = false;
             }
-
-            if (Page == 3)
-                IsError = true;
         }
 
         private async void LoadMoreButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -231,7 +266,7 @@ namespace VideaCesky
             await LoadMore();
         }
 
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(Guide));
         }
@@ -246,6 +281,11 @@ namespace VideaCesky
 
                 Frame.Navigate(typeof(VideoPage), video.Uri.ToString());
             }
+        }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await Refresh();
         }
     }
 }
