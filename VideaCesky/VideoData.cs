@@ -26,13 +26,14 @@ namespace VideaCesky
             (?<youtubeId>[A-Za-z0-9_\-]{11})";
 
         public static readonly string SubtitlesUriPattern =
-            @"https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
-                videacesky\.cz(\/|%2F)
-                autori(\/|%2F)
-                [A-Za-z0-9_\-]+(\/|%2F)
-                    (?<type>[A-Za-z0-9_\-]+)(\/|%2F)
-                [A-Za-z0-9_\-]+\.
-                    (?<format>srt|xml)";
+            @"(https?(:|%3A)(\/|%2F)(\/|%2F)(www\.)?
+                videacesky\.cz)?
+                (\/|%2F)
+                    autori(\/|%2F)
+                    [A-Za-z0-9_\-]+(\/|%2F)
+                        (?<type>[A-Za-z0-9_\-]+)(\/|%2F)
+                    [A-Za-z0-9_\-]+\.
+                        (?<format>srt|xml)";
 
         public string Title { get; set; }
 

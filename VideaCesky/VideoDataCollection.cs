@@ -97,7 +97,13 @@ namespace VideaCesky
                     MatchCollection subtitlesMatches = Regex.Matches(postContent, VideoData.SubtitlesUriPattern, RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase);
                     foreach (Match subtitlesMatch in subtitlesMatches)
                     {
-                        Uri subtitlesUri = new Uri(subtitlesMatch.Value);
+                        string struri = subtitlesMatch.Value;
+                        if (subtitlesMatch.Value.StartsWith("/autori"))
+                        {
+                            struri = "http://www.videacesky.cz" + struri;
+                        }
+
+                        Uri subtitlesUri = new Uri(struri);
                         if (subtitlesMatch.Groups["type"].Value == "playlisty")
                         {
                             playlistUri = subtitlesUri;

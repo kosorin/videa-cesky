@@ -13,94 +13,17 @@
         <sample:SampleDataSource x:Key="SampleDataSource"
                                  d:IsDataSource="True" />
 
-        <local:DateTimeConverter x:Key="DateTimeConverter" />
-        <local:BoolNegationToVisibilityConverter x:Key="BoolNegationToVisibilityConverter" />
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-
-        <Style x:Key="TitleStyle"
-               BasedOn="{StaticResource BaseTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="Foreground"
-                    Value="{ThemeResource VideoColorBrush}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleExtraLargeFontSize}" />
-            <Setter Property="LineHeight"
-                    Value="{ThemeResource TextStyleExtraLargeFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-        </Style>
-
-        <Style x:Key="DateStyle"
-               BasedOn="{StaticResource BaseTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="FontFamily"
-                    Value="{ThemeResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleMediumFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-            <Setter Property="Opacity"
-                    Value="0.6" />
-        </Style>
-
-        <Style x:Key="DetailStyle"
-               BasedOn="{StaticResource BodyTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="FontFamily"
-                    Value="{ThemeResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleLargeFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-        </Style>
-
-        <DataTemplate x:Key="PortraitVideoTemplate">
-            <StackPanel Margin="0,0,0,20">
-
-                <TextBlock Text="{Binding Title}"
-                           Style="{ThemeResource TitleStyle}" />
-                <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                           Style="{ThemeResource DateStyle}" />
-
-                <Border Margin="0,10"
-                        BorderThickness="1"
-                        BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                        VerticalAlignment="Top">
-                    <Image Source="{Binding ImageUri}" />
-                </Border>
-
-                <TextBlock Text="{Binding Detail}"
-                           Style="{ThemeResource DetailStyle}" />
+        <DataTemplate x:Key="CategoryTemplate">
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="{Binding Name}"
+                           Style="{ThemeResource ListViewItemTextBlockStyle}" />
+                <TextBlock Text="{Binding Description}"
+                           Style="{ThemeResource ListViewItemContentTextBlockStyle}"
+                           Opacity="0.5"
+                           TextWrapping="WrapWholeWords" />
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="LandscapeVideoTemplate">
-            <StackPanel Margin="0,0,0,20">
-
-                <TextBlock Text="{Binding Title}"
-                           Style="{ThemeResource TitleStyle}" />
-                <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                           Style="{ThemeResource DateStyle}" />
-
-                <Grid Margin="0,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="3*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border BorderThickness="1"
-                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                            VerticalAlignment="Top">
-                        <Image Source="{Binding ImageUri}" />
-                    </Border>
-
-                    <TextBlock Grid.Column="1"
-                               Text="{Binding Detail}"
-                               Style="{ThemeResource DetailStyle}"
-                               Margin="10,0,0,0" />
-                </Grid>
-            </StackPanel>
-        </DataTemplate>
     </Page.Resources>
 
     <Page.BottomAppBar>
@@ -121,38 +44,21 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <Grid x:Name="ContentRoot"
-              Margin="24,0">
-            <ScrollViewer>
-                <StackPanel>
-                    <TextBlock Text="Videa Česky"
-                               Margin="0,20,0,20"
-                               Style="{ThemeResource HeaderTextBlockStyle}"
-                               CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+        <Pivot Title="VIDEA ČESKY">
 
-                    <ListView ItemsSource="{Binding VideoList}"
-                              SelectionChanged="ListView_SelectionChanged"
-                              ItemTemplate="{Binding VideoTemplate, FallbackValue={StaticResource PortraitVideoTemplate}}" />
+            <PivotItem Header="nejnovější">
+                <local:VideoList x:Name="VideoList"
+                                 Feed="http://www.videacesky.cz"
+                                 Click="VideoList_Click" />
+            </PivotItem>
 
-                    <Grid Margin="0,20,0,40">
-                        <TextBlock Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}}"
-                                   Text="Něco se pokazilo :("
-                                   Style="{ThemeResource SubheaderTextBlockStyle}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
-                        <Grid Visibility="{Binding CanLoadMore, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Button Visibility="{Binding Loading, Converter={StaticResource BoolNegationToVisibilityConverter}}"
-                                    Tapped="LoadMoreButton_Tapped"
-                                    Content="Nahrát víc..."
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center" />
-                            <ProgressRing IsActive="{Binding Loading}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                        </Grid>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
-        </Grid>
+            <PivotItem Header="kategorie">
+                <ListView ItemsSource="{Binding Categories}"
+                          ItemTemplate="{StaticResource CategoryTemplate}"
+                          SelectionChanged="CategoriesListView_SelectionChanged" />
+            </PivotItem>
+
+        </Pivot>
+
     </Grid>
 </Page>

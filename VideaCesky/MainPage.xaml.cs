@@ -54,82 +54,32 @@ namespace VideaCesky
         }
         #endregion
 
-        #region VideoList
-        private ObservableCollection<Video> _videoList = new ObservableCollection<Video>();
-        public ObservableCollection<Video> VideoList
+        private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
+        public ObservableCollection<Category> Categories
         {
-            get { return _videoList; }
-            set { SetProperty(ref _videoList, value); }
+            get { return _categories; }
+            set { SetProperty(ref _categories, value); }
         }
-        #endregion
-
-        #region Page
-        private int _page = 0;
-        public int Page
-        {
-            get { return _page; }
-            set { SetProperty(ref _page, value); }
-        }
-        #endregion
-
-        #region MaxPage
-        private int _maxPage = 3;
-        public int MaxPage
-        {
-            get { return _maxPage; }
-            set { SetProperty(ref _maxPage, value); }
-        }
-        #endregion
-
-        #region Loading
-        private bool _loading = true;
-        public bool Loading
-        {
-            get { return _loading; }
-            set { SetProperty(ref _loading, value); }
-        }
-        #endregion
-
-        #region CanLoadMore
-        private bool _canLoadMore = true;
-        public bool CanLoadMore
-        {
-            get { return _canLoadMore; }
-            set { SetProperty(ref _canLoadMore, value); }
-        }
-        #endregion
-
-        #region IsError
-        private bool _isError = false;
-        public bool IsError
-        {
-            get { return _isError; }
-            set
-            {
-                SetProperty(ref _isError, value);
-                if (value)
-                {
-                    CanLoadMore = false;
-                }
-            }
-        }
-        #endregion
-
-        #region VideoTemplate
-        private DataTemplate _videoTemplate = null;
-        public DataTemplate VideoTemplate
-        {
-            get { return _videoTemplate; }
-            set { SetProperty(ref _videoTemplate, value); }
-        }
-        #endregion // end of VideoTemplate
 
         public MainPage()
         {
             this.InitializeComponent();
             DataContext = this;
 
-            DisplayProperties_OrientationChanged(null);
+            //Categories.Add(new Category("Články", "Novinky, články a soutěže o ceny na webu VideaCesky.cz", "http://www.videacesky.cz/category/clanky-novinky-souteze"));
+            Categories.Add(new Category("Krátké filmy", "Krátké filmy s českými titulky pro vás zdarma. Pohádky online zdarma", "http://www.videacesky.cz/category/kratke-filmy-online-zdarma"));
+            Categories.Add(new Category("Legendární videa", "Do této kategorie je video zařazeno, jakmile je na našich stránkách déle než 3 měsíce, má více než 1500 hodnocení a známku aspoň 9,20 z 10.", "http://www.videacesky.cz/category/legendarni-videa"));
+            Categories.Add(new Category("Naučná", "Dokumentární videa, návody, pokusy a mnoho dalšího.", "http://www.videacesky.cz/category/navody-dokumenty-pokusy"));
+            Categories.Add(new Category("Ostatní", "Nezařaditelná cizojazyčná videa ze serveru VideaČesky s českými titulky.", "http://www.videacesky.cz/category/ostatni-zabavna-videa"));
+            Categories.Add(new Category("Parodie", "Parodie na seriály, filmy a populární hudební videoklipy. Funny parody song", "http://www.videacesky.cz/category/parodie-parody-youtube"));
+            Categories.Add(new Category("Reklamy", "Zábavné reklamní spoty. Reklamní slogany", "http://www.videacesky.cz/category/reklamy-reklamni-spot-video"));
+            Categories.Add(new Category("Rozhovory", "Talkshow a rozhovory se slavnými hvězdami.", "http://www.videacesky.cz/category/talk-show-rozhovory"));
+            Categories.Add(new Category("Seriály", "VideaČesky přináší krátké online seriály zdarma.", "http://www.videacesky.cz/category/serialy-online-zdarma"));
+            Categories.Add(new Category("Skeče", "Filmové zábavné scénky. Vtipné skeče na serveru VideaCesky.cz", "http://www.videacesky.cz/category/skece"));
+            Categories.Add(new Category("Trailery", "Trailery k filmům. Recenze populárních filmů.", "http://www.videacesky.cz/category/trailery-recenze-filmy"));
+            Categories.Add(new Category("Videoklipy", "Videoklipy zahraničních skupin z youtube. Parodie na nejznámější hudební klipy.", "http://www.videacesky.cz/category/hudebni-klipy-videoklipy-hudba"));
+
+            VideoList.Refresh();
 
             NavigationCacheMode = NavigationCacheMode.Required;
 #if DEBUG
@@ -160,14 +110,10 @@ namespace VideaCesky
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            DisplayProperties_OrientationChanged(null);
             DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
             DisplayProperties.OrientationChanged += DisplayProperties_OrientationChanged;
-
-            if (e.NavigationMode == NavigationMode.New)
-            {
-                await LoadMore();
-
-            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -178,92 +124,7 @@ namespace VideaCesky
 
         public void DisplayProperties_OrientationChanged(object sender)
         {
-            if (DisplayProperties.CurrentOrientation == DisplayOrientations.Portrait || DisplayProperties.CurrentOrientation == DisplayOrientations.PortraitFlipped)
-            {
-                VideoTemplate = Resources["PortraitVideoTemplate"] as DataTemplate;
-            }
-            else
-            {
-                VideoTemplate = Resources["LandscapeVideoTemplate"] as DataTemplate;
-            }
-        }
-
-        public async Task Refresh()
-        {
-            Page = 0;
-            VideoList.Clear();
-            await LoadMore();
-        }
-
-        public async Task LoadMore()
-        {
-            Loading = true;
-            try
-            {
-                Page++;
-
-                HttpResponse response = await Http.GetAsync(string.Format(@"http://www.videacesky.cz/page/{0}", Page));
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(response.Response);
-
-                HtmlNode contentArea = doc.GetElementbyId("contentArea");
-                foreach (var node in contentArea.ChildNodes)
-                {
-                    if (node.NodeType == HtmlNodeType.Element && node.Id != "")
-                    {
-                        Uri uri = new Uri(node.ChildNodes.FindFirst("a").Attributes["href"].Value);
-                        string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
-                        Uri imageUri = new Uri(node.ChildNodes.FindFirst("img").Attributes["src"].Value);
-
-                        var descendants = node.Descendants();
-
-                        // 8.7.2014 v 08:00
-                        HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");
-                        DateTime date = DateTime.ParseExact(
-                            dateNode.InnerText,
-                            "d'.'M'.'yyyy' v 'HH':'mm",
-                            CultureInfo.InvariantCulture);
-
-                        HtmlNode detailNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "obs");
-                        string detail = WebUtility.HtmlDecode(Regex.Replace(detailNode.InnerText.Replace("(Celý příspěvek...)", ""), @"<!--[^>]*-->", "")).Trim();
-
-                        VideoList.Add(new Video()
-                        {
-                            Uri = uri,
-                            Title = title,
-                            Detail = detail,
-                            ImageUri = imageUri,
-                            Date = date
-                        });
-                    }
-                }
-
-                var pagination = contentArea.LastChild.PreviousSibling.ChildNodes.FindFirst("ol");
-                foreach (var p in pagination.ChildNodes)
-                {
-                    if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
-                    {
-                        MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
-                    }
-                }
-                Debug.WriteLine("Page {0}/{1}", Page, MaxPage);
-            }
-            catch (Exception e)
-            {
-                IsError = true;
-                Debug.WriteLine("[{0}] {1}", Page, e.Message);
-            }
-
-            Loading = false;
-            if (Page >= MaxPage && MaxPage != 0)
-            {
-                CanLoadMore = false;
-            }
-        }
-
-        private async void LoadMoreButton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            await LoadMore();
+            VideoList.Orientation = DisplayProperties.CurrentOrientation;
         }
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
@@ -271,21 +132,25 @@ namespace VideaCesky
             Frame.Navigate(typeof(Guide));
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await VideoList.Refresh();
+        }
+
+        private void VideoList_Click(object sender, VideoEventArgs e)
+        {
+            Frame.Navigate(typeof(VideoPage), e.Video.Uri.ToString());
+        }
+
+        private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListView lw = (ListView)sender;
             if (lw.SelectedItem != null)
             {
-                Video video = (Video)lw.SelectedItem;
+                Category category = (Category)lw.SelectedItem;
                 lw.SelectedItem = null;
-
-                Frame.Navigate(typeof(VideoPage), video.Uri.ToString());
+                Frame.Navigate(typeof(CategoryPage), category);
             }
-        }
-
-        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            await Refresh();
         }
     }
 }
