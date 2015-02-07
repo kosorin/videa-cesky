@@ -189,12 +189,15 @@
       <ReservedName>Videa Česky</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames />
+  <AccountPackageIdentityNames>
+    <MainPackageIdentityName>4772DavidKosorin.OneDo</MainPackageIdentityName>
+    <MainPackageIdentityName>4772DavidKosorin.OneDoBETA</MainPackageIdentityName>
+  </AccountPackageIdentityNames>
   <PackageInfoList LandingUrl="https://dev.windowsphone.com/AppSubmission/AssociationLanding?windowsProductId=5f966c1f-3c80-463b-8f6f-35457c7950b3">
     <PackageInfo>
       <OsMinVersion>6.3.0.0</OsMinVersion>
       <PackageArchitecture>neutral</PackageArchitecture>
-      <PackageMaxArchitectureVersion>1.3.0.5</PackageMaxArchitectureVersion>
+      <PackageMaxArchitectureVersion>2.0.0.6</PackageMaxArchitectureVersion>
     </PackageInfo>
   </PackageInfoList>
 </StoreAssociation>
