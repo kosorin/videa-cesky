@@ -47,7 +47,6 @@
               x:Name="ContentRoot"
               Margin="19,9.5,19,0">
             <local:VideoList x:Name="CategoryVideoList"
-                             Feed="{Binding Category.Feed}"
                              Click="CategoryVideoList_Click" />
         </Grid>
     </Grid>

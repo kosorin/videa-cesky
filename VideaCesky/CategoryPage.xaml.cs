@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -65,7 +66,7 @@ namespace VideaCesky
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
+            Debug.WriteLine("CAAAAAAAAAAAAAT");
             DataContext = this;
         }
 
@@ -86,8 +87,11 @@ namespace VideaCesky
         {
             this.navigationHelper.OnNavigatedTo(e);
 
-            Category = e.Parameter as Category;
-            CategoryVideoList.Feed = Category.Feed;
+            if (e.Parameter is Category)
+            {
+                Category = e.Parameter as Category;
+                CategoryVideoList.Feed = Category.Feed;
+            }
 
             DisplayProperties_OrientationChanged(null);
             DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
