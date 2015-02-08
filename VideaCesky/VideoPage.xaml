@@ -127,9 +127,13 @@
                                FontWeight="SemiLight"
                                Margin="0,5,0,0"
                                Text="{Binding ErrorMessage, FallbackValue='Lorem ipsum atd...'}" />
-                    <Button Content="Přesto přehrát"
-                            Visibility="{Binding CanPlayAnyway, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Click="PlayAnyway_Click" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Proč vidím tuto chybu tak často?"
+                                Click="ErrorReasonButton_Click" />
+                        <Button Content="Přesto přehrát"
+                                Click="PlayAnyway_Click"
+                                Margin="10,0,0,0" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </Border>

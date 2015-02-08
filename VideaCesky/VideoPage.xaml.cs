@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
 using Windows.System.Display;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -669,6 +670,12 @@ namespace VideaCesky
         private void PlayAnyway_Click(object sender, RoutedEventArgs e)
         {
             HideError();
+        }
+
+        private async void ErrorReasonButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageDialog dialog = new MessageDialog("Občas se stane, že některé video nejde přehrát. Je to způsobeno tím, že nemám data přímo od tvůrců videacesky.cz, ale musím stahovat stránky a pokusit se najít odkaz na Youtube video a titulky a to je u některých videí problém. Někdy nejsou informace uloženy tak, jak je očekávám a s tím se aplikace bohužel nedokáže vypořádat. Není tedy možné, abych pokryl všechny možnosti.");
+            await dialog.ShowAsync();
         }
         #endregion
 
