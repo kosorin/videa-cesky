@@ -59,7 +59,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <ScrollViewer>
+        <ScrollViewer x:Name="ScrollViewer">
             <StackPanel>
                 <ListView x:Name="VideoListView"
                           ItemsSource="{Binding List}"
@@ -78,10 +78,12 @@
                                 Content="Nahrát víc..."
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center" />
-                        <ProgressRing IsActive="{Binding Loading}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center" />
+           
                     </Grid>
+
+                    <ProgressRing IsActive="{Binding Loading}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
                 </Grid>
             </StackPanel>
         </ScrollViewer>

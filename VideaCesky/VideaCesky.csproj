@@ -85,6 +85,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SearchDialog.xaml.cs">
+      <DependentUpon>SearchDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VideoListBasePage.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="BoolNegationToVisibilityConverter.cs" />
     <Compile Include="Category.cs" />
@@ -98,8 +105,8 @@
     <Compile Include="DateTimeConverter.cs" />
     <Compile Include="BoolNegationConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="Guide.xaml.cs">
-      <DependentUpon>Guide.xaml</DependentUpon>
+    <Compile Include="GuidePage.xaml.cs">
+      <DependentUpon>GuidePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="IntToBoolConverter.cs" />
     <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
@@ -143,7 +150,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Guide.xaml">
+    <Page Include="GuidePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -155,6 +162,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </DesignTimeOnly>
+    <Page Include="SearchDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="VideoList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

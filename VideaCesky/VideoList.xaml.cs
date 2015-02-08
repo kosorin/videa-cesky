@@ -55,23 +55,31 @@ namespace VideaCesky
         #endregion
 
         #region Feed
+        private string _feed = "http://www.videacesky.cz";
         public string Feed
         {
-            get { return (string)GetValue(FeedProperty); }
-            set { SetValue(FeedProperty, value); }
-        }
-        public static readonly DependencyProperty FeedProperty =
-            DependencyProperty.Register("Feed", typeof(string), typeof(VideoList), new PropertyMetadata("http://www.videacesky.cz", Feed_Changed));
-
-        private async static void Feed_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            VideoList vl = d as VideoList;
-            if (vl != null)
-            {
-                await vl.Refresh();
-            }
+            get { return _feed; }
+            set { SetProperty(ref _feed, value); }
         }
         #endregion // end of Feed
+
+        #region Search
+        private string _search = null;
+        public string Search
+        {
+            get { return _search; }
+            set { SetProperty(ref _search, value); }
+        }
+        #endregion // end of Search
+
+        #region PageFrame
+        private Frame _pageFrame = null;
+        public Frame PageFrame
+        {
+            get { return _pageFrame; }
+            set { SetProperty(ref _pageFrame, value); }
+        }
+        #endregion // end of Frame
 
         #region Constructor
         public VideoList()
@@ -100,7 +108,7 @@ namespace VideaCesky
         #endregion
 
         #region MaxPage
-        private int _maxPage = 3;
+        private int _maxPage = 0;
         public int MaxPage
         {
             get { return _maxPage; }
@@ -142,55 +150,49 @@ namespace VideaCesky
         }
         #endregion
 
-        #region Orientation
-        public DisplayOrientations Orientation
+        #region Events
+        public event EventHandler<EventArgs> StartRefreshing;
+        private void OnStartRefreshing()
         {
-            get { return (DisplayOrientations)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
-        }
-        public static readonly DependencyProperty OrientationProperty =
-            DependencyProperty.Register("Orientation", typeof(DisplayOrientations), typeof(VideoList), new PropertyMetadata(DisplayOrientations.Portrait, Orientation_Changed));
-
-        private static void Orientation_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            VideoList vl = d as VideoList;
-            if (d != null)
+            if (StartRefreshing != null)
             {
-                DisplayOrientations orientation = (DisplayOrientations)e.NewValue;
-                if (orientation == DisplayOrientations.Portrait || orientation == DisplayOrientations.PortraitFlipped)
-                {
-                    vl.VideoListView.ItemTemplate = vl.Resources["PortraitVideoTemplate"] as DataTemplate;
-                }
-                else
-                {
-                    vl.VideoListView.ItemTemplate = vl.Resources["LandscapeVideoTemplate"] as DataTemplate;
-                }
+                StartRefreshing(this, new EventArgs());
             }
         }
 
-        #endregion // end of VideoTemplate
-
-        #region Events
-        public event EventHandler<VideoEventArgs> Click;
-        private void OnClick(Video video)
+        public event EventHandler<EventArgs> Refreshed;
+        private void OnRefreshed()
         {
-            if (Click != null)
+            if (Refreshed != null)
             {
-                Click(this, new VideoEventArgs(video));
+                Refreshed(this, new EventArgs());
             }
         }
         #endregion // end of Events
 
         #region Event Handlers
+        public void OrientationChanged(object sender)
+        {
+            DisplayOrientations orientation = DisplayProperties.CurrentOrientation; ;
+            if (orientation == DisplayOrientations.Portrait || orientation == DisplayOrientations.PortraitFlipped)
+            {
+                VideoListView.ItemTemplate = Resources["PortraitVideoTemplate"] as DataTemplate;
+            }
+            else
+            {
+                VideoListView.ItemTemplate = Resources["LandscapeVideoTemplate"] as DataTemplate;
+            }
+        }
+
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListView lw = (ListView)sender;
-            if (lw.SelectedItem != null)
+            if (lw.SelectedItem != null && lw.SelectedItem is Video)
             {
                 Video video = (Video)lw.SelectedItem;
                 lw.SelectedItem = null;
 
-                OnClick(video);
+                PageFrame.Navigate(typeof(VideoPage), video.Uri.ToString());
             }
         }
 
@@ -203,20 +205,48 @@ namespace VideaCesky
         #region Public Methods
         public async Task Refresh()
         {
+            OnStartRefreshing();
+
             Debug.WriteLine("Refresh...");
             Page = 0;
             List.Clear();
             await LoadMore();
+
+            OnRefreshed();
         }
 
-        public async Task LoadMore()
+        public void UpdateOrientation()
+        {
+            OrientationChanged(null);
+        }
+
+        private double _scrollPosition = 0;
+        public void SaveScrollPosition()
+        {
+            _scrollPosition = ScrollViewer.VerticalOffset;
+        }
+
+        public void RefreshScrollPosition()
+        {
+            ScrollViewer.ScrollToVerticalOffset(_scrollPosition);
+        }
+        #endregion // end of Public Methods
+
+        #region Private Methods
+        private async Task LoadMore()
         {
             Loading = true;
             try
             {
                 Page++;
 
-                HttpResponse response = await Http.GetAsync(string.Format("{0}/page/{1}", Feed, Page));
+                string requestUri = string.Format("{0}/page/{1}", Feed, Page);
+                if (!string.IsNullOrEmpty(Search))
+                {
+                    requestUri += "?s=" + Search;
+                }
+
+                HttpResponse response = await Http.GetAsync(requestUri);
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(response.Response);
 
@@ -253,11 +283,14 @@ namespace VideaCesky
                 }
 
                 var pagination = contentArea.LastChild.PreviousSibling.ChildNodes.FindFirst("ol");
-                foreach (var p in pagination.ChildNodes)
+                if (pagination != null)
                 {
-                    if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
+                    foreach (var p in pagination.ChildNodes)
                     {
-                        MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
+                        if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
+                        {
+                            MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
+                        }
                     }
                 }
                 Debug.WriteLine("Page {0}/{1}", Page, MaxPage);
@@ -269,11 +302,11 @@ namespace VideaCesky
             }
 
             Loading = false;
-            if (Page >= MaxPage && MaxPage != 0)
+            if (Page >= MaxPage)
             {
                 CanLoadMore = false;
             }
         }
-        #endregion // end of Private/Public Methods
+        #endregion // end of Private Methods
     }
 }

@@ -1,39 +1,21 @@
-﻿<Page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:VideaCesky"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:sample="using:Blend.SampleData.SampleDataSource"
-      x:Class="VideaCesky.MainPage"
-      mc:Ignorable="d"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-      d:DataContext="{d:DesignData /SampleData/SampleDataSource/SampleDataSource.xaml}">
-
-    <Page.Resources>
-        <sample:SampleDataSource x:Key="SampleDataSource"
-                                 d:IsDataSource="True" />
-
-        <DataTemplate x:Key="CategoryTemplate">
-            <StackPanel Margin="0,0,0,10">
-                <TextBlock Text="{Binding Name}"
-                           Style="{ThemeResource ListViewItemTextBlockStyle}" />
-                <TextBlock Text="{Binding Description}"
-                           Style="{ThemeResource ListViewItemContentTextBlockStyle}"
-                           Opacity="0.5"
-                           TextWrapping="WrapWholeWords" />
-            </StackPanel>
-        </DataTemplate>
-
-    </Page.Resources>
+﻿<local:VideoListBasePage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:local="using:VideaCesky"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:sample="using:Blend.SampleData.SampleDataSource"
+                         x:Class="VideaCesky.MainPage"
+                         mc:Ignorable="d"
+                         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Label="obnovit"
-                          Icon="Refresh"
-                          Click="RefreshButton_Click" />
             <AppBarButton Label="nápověda"
                           Icon="Help"
                           Click="HelpButton_Click" />
+            <AppBarButton Label="vyhledávání"
+                          Icon="Find"
+                          Click="SearchButton_Click" />
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -47,18 +29,28 @@
         <Pivot Title="VIDEA ČESKY">
 
             <PivotItem Header="nejnovější">
-                <local:VideoList x:Name="VideoList"
-                                 Feed="http://www.videacesky.cz"
-                                 Click="VideoList_Click" />
+                <local:VideoList x:Name="VideoListControl" />
             </PivotItem>
 
             <PivotItem Header="kategorie">
                 <ListView ItemsSource="{Binding Categories}"
-                          ItemTemplate="{StaticResource CategoryTemplate}"
-                          SelectionChanged="CategoriesListView_SelectionChanged" />
+                          SelectionChanged="CategoriesListView_SelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,10">
+                                <TextBlock Text="{Binding Name}"
+                                           Style="{ThemeResource ListViewItemTextBlockStyle}" />
+                                <TextBlock Text="{Binding Description}"
+                                           Style="{ThemeResource ListViewItemContentTextBlockStyle}"
+                                           Opacity="0.5"
+                                           TextWrapping="WrapWholeWords" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </PivotItem>
 
         </Pivot>
 
     </Grid>
-</Page>
+</local:VideoListBasePage>

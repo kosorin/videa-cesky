@@ -23,32 +23,8 @@ using System.Diagnostics;
 
 namespace VideaCesky
 {
-    public sealed partial class CategoryPage : Page, INotifyPropertyChanged
+    public sealed partial class CategoryPage : VideoListBasePage
     {
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        public bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = "")
-        {
-            if (EqualityComparer<T>.Default.Equals(storage, value))
-            {
-                return false;
-            }
-            storage = value;
-
-            OnPropertyChanged(propertyName);
-            return true;
-        }
-        #endregion
-
         private Category _category = null;
         public Category Category
         {
@@ -56,67 +32,28 @@ namespace VideaCesky
             set { SetProperty(ref _category, value); }
         }
 
-        private NavigationHelper navigationHelper;
-        private ObservableDictionary defaultViewModel = new ObservableDictionary();
-
         public CategoryPage()
+            : base()
         {
             this.InitializeComponent();
-
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
-            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-            Debug.WriteLine("CAAAAAAAAAAAAAT");
-            DataContext = this;
         }
 
-        public NavigationHelper NavigationHelper
+        protected override VideoList GetVideListControl()
         {
-            get { return this.navigationHelper; }
+            return VideoListControl;
         }
 
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        protected override void SetFeed(object parameter)
         {
-        }
-
-        private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
-        {
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            this.navigationHelper.OnNavigatedTo(e);
-
-            if (e.Parameter is Category)
+            if (parameter is Category)
             {
-                Category = e.Parameter as Category;
-                CategoryVideoList.Feed = Category.Feed;
+                Category = parameter as Category;
+                VideoList.Feed = Category.Feed;
             }
-
-            DisplayProperties_OrientationChanged(null);
-            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
-            DisplayProperties.OrientationChanged += DisplayProperties_OrientationChanged;
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            this.navigationHelper.OnNavigatedFrom(e);
-            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
-        }
-
-        public void DisplayProperties_OrientationChanged(object sender)
-        {
-            CategoryVideoList.Orientation = DisplayProperties.CurrentOrientation;
-        }
-
-        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            await CategoryVideoList.Refresh();
-        }
-
-        private void CategoryVideoList_Click(object sender, VideoEventArgs e)
-        {
-            Frame.Navigate(typeof(VideoPage), e.Video.Uri.ToString());
+            else
+            {
+                base.SetFeed(parameter);
+            }
         }
     }
 }

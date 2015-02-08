@@ -1,4 +1,4 @@
-﻿<local:VideoListBasePage x:Class="VideaCesky.CategoryPage"
+﻿<local:VideoListBasePage x:Class="VideaCesky.SearchPage"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:local="using:VideaCesky"
@@ -33,15 +33,28 @@
             <TextBlock Text="VIDEA ČESKY"
                        Style="{ThemeResource TitleTextBlockStyle}"
                        Margin="0,12,0,0" />
-            <TextBlock Text="{Binding Category.Name, Converter={StaticResource CategoryNameConverter}}"
+            <TextBlock Text="vyhledávání"
                        Margin="0,-6.5,0,26.5"
                        Style="{ThemeResource HeaderTextBlockStyle}"
                        CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+            <TextBlock Margin="0,-8,0,20"
+                       Style="{ThemeResource BodyTextBlockStyle}">
+                <Run Foreground="{ThemeResource PhoneDisabledBrush}"
+                     Text="Výsledky na dotaz &#x201E;" />
+                <Run x:Name="SearchExpression"
+                     FontWeight="Medium" />
+                <Run Foreground="{ThemeResource PhoneDisabledBrush}"
+                     Text="&#x201C;" />
+            </TextBlock>
         </StackPanel>
 
         <Grid Grid.Row="1"
               Margin="19,9.5,19,0">
             <local:VideoList x:Name="VideoListControl" />
+            <TextBlock x:Name="NoResultTextBlock"
+                       Visibility="Collapsed"
+                       Text="Vyhledávání nenašlo žádný výsledek."
+                       Style="{ThemeResource BodyTextBlockStyle}" />
         </Grid>
     </Grid>
 </local:VideoListBasePage>

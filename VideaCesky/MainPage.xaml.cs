@@ -1,59 +1,41 @@
-﻿using HtmlAgilityPack;
-using MyToolkit.Networking;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.System;
-using Windows.UI.ViewManagement;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using System;
+using Windows.System;
 
 namespace VideaCesky
 {
-    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    public sealed partial class MainPage : VideoListBasePage
     {
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        public MainPage()
+            : base()
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            this.InitializeComponent();
+            InitCategories();
         }
 
-        public bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = "")
+        protected override VideoList GetVideListControl()
         {
-            if (EqualityComparer<T>.Default.Equals(storage, value))
-            {
-                return false;
-            }
-            storage = value;
-
-            OnPropertyChanged(propertyName);
-            return true;
+            return VideoListControl;
         }
-        #endregion
 
+        #region AppBar
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(GuidePage));
+        }
+
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            SearchDialog sd = new SearchDialog();
+            await sd.ShowAsync();
+        }
+        #endregion // end of AppBar
+
+        #region Kategorie
         private ObservableCollection<Category> _categories = new ObservableCollection<Category>();
         public ObservableCollection<Category> Categories
         {
@@ -61,11 +43,8 @@ namespace VideaCesky
             set { SetProperty(ref _categories, value); }
         }
 
-        public MainPage()
+        private void InitCategories()
         {
-            this.InitializeComponent();
-            DataContext = this;
-
             //Categories.Add(new Category("Články", "Novinky, články a soutěže o ceny na webu VideaCesky.cz", "http://www.videacesky.cz/category/clanky-novinky-souteze"));
             Categories.Add(new Category("Krátké filmy", "Krátké filmy s českými titulky pro vás zdarma. Pohádky online zdarma", "http://www.videacesky.cz/category/kratke-filmy-online-zdarma"));
             Categories.Add(new Category("Legendární videa", "Do této kategorie je video zařazeno, jakmile je na našich stránkách déle než 3 měsíce, má více než 1500 hodnocení a známku aspoň 9,20 z 10.", "http://www.videacesky.cz/category/legendarni-videa"));
@@ -79,67 +58,6 @@ namespace VideaCesky
             Categories.Add(new Category("Trailery", "Trailery k filmům. Recenze populárních filmů.", "http://www.videacesky.cz/category/trailery-recenze-filmy"));
             Categories.Add(new Category("Videoklipy", "Videoklipy zahraničních skupin z youtube. Parodie na nejznámější hudební klipy.", "http://www.videacesky.cz/category/hudebni-klipy-videoklipy-hudba"));
 
-            VideoList.Refresh();
-
-            NavigationCacheMode = NavigationCacheMode.Required;
-#if DEBUG
-            //Loaded += async (s, e) =>
-            //{
-            //    ListPickerFlyout fo = new ListPickerFlyout();
-            //    fo.ItemsSource = new Dictionary<string, string>() 
-            //    { 
-            //        {"normální", "http://www.videacesky.cz/serialy-online-zdarma/odvazni-valecnici-2x06-loutkovy-horor"},
-            //        {"playlist 1", "http://www.videacesky.cz/ostatni-zabavna-videa/conan-policejnim-straznikem"},
-            //        {"playlist 2", "http://www.videacesky.cz/talk-show-rozhovory/arnold-schwarzenegger-u-jimmyho-fallona"},
-            //        {"více videí", "http://www.videacesky.cz/talk-show-rozhovory/russell-brand-u-conana-obriena"},
-            //        {"xml", "http://www.videacesky.cz/reklamy-reklamni-spot-video/nekompromisni-maskot"},
-            //    };
-            //    fo.ItemsPicked += (s2, e2) =>
-            //    {
-            //        if (e2.AddedItems.Count > 0)
-            //        {
-            //            Frame.Navigate(typeof(VideoPage), ((KeyValuePair<string, string>)e2.AddedItems[0]).Value);
-            //        }
-            //    };
-
-            //    await fo.ShowAtAsync(ContentRoot);
-            //};
-#endif
-        }
-
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            DisplayProperties_OrientationChanged(null);
-            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
-            DisplayProperties.OrientationChanged += DisplayProperties_OrientationChanged;
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            DisplayProperties.OrientationChanged -= DisplayProperties_OrientationChanged;
-        }
-
-        public void DisplayProperties_OrientationChanged(object sender)
-        {
-            VideoList.Orientation = DisplayProperties.CurrentOrientation;
-        }
-
-        private void HelpButton_Click(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(Guide));
-        }
-
-        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            await VideoList.Refresh();
-        }
-
-        private void VideoList_Click(object sender, VideoEventArgs e)
-        {
-            Frame.Navigate(typeof(VideoPage), e.Video.Uri.ToString());
         }
 
         private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -152,5 +70,10 @@ namespace VideaCesky
                 Frame.Navigate(typeof(CategoryPage), category);
             }
         }
+        #endregion // end of Kategorie
+
+        #region SearchDialog
+        
+        #endregion // end of SearchDialog
     }
 }
