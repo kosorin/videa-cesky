@@ -22,9 +22,9 @@ namespace VideaCesky
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class Guide : Page
+    public sealed partial class GuidePage : Page
     {
-        public Guide()
+        public GuidePage()
         {
             this.InitializeComponent();
         }
