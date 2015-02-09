@@ -1,6 +1,9 @@
-﻿using System;
+﻿using MyToolkit.Paging;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,7 +16,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace VideaCesky
 {
-    public abstract class VideoListBasePage : Page, INotifyPropertyChanged
+    public abstract class VideoListBasePage : MtPage, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -39,35 +42,19 @@ namespace VideaCesky
         }
         #endregion
 
-        public VideoList VideoList { get; protected set; }
+        public VideoList VideoList { get; private set; }
 
-        public VideoListBasePage()
-        {
-            DataContext = this;
-            NavigationCacheMode = NavigationCacheMode.Required;
-        }
-
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(MtNavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             VideoList = GetVideListControl();
             AddRefreshAppBarButton();
 
-            HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
-            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             DisplayProperties.OrientationChanged -= VideoList.OrientationChanged;
             DisplayProperties.OrientationChanged += VideoList.OrientationChanged;
 
-
-            VideoList.StartRefreshing -= VideoList_StartRefreshing;
-            VideoList.StartRefreshing += VideoList_StartRefreshing;
-            VideoList.Refreshed -= VideoList_Refreshed;
-            VideoList.Refreshed += VideoList_Refreshed;
             VideoList.UpdateOrientation();
-            VideoList.PageFrame = Frame;
-
             SetFeed(e.Parameter);
-
             if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
             {
                 await VideoList.Refresh();
@@ -78,14 +65,10 @@ namespace VideaCesky
             }
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        protected override void OnNavigatedFrom(MtNavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
             DisplayProperties.OrientationChanged -= VideoList.OrientationChanged;
-            HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
-
-            VideoList.StartRefreshing -= VideoList_StartRefreshing;
-            VideoList.Refreshed -= VideoList_Refreshed;
 
             VideoList.SaveScrollPosition();
         }
@@ -95,15 +78,6 @@ namespace VideaCesky
         protected virtual void SetFeed(object parameter)
         {
             VideoList.Feed = "http://www.videacesky.cz";
-        }
-
-        protected void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
-        {
-            if (Frame.CanGoBack)
-            {
-                Frame.GoBack();
-                e.Handled = true;
-            }
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -137,24 +111,6 @@ namespace VideaCesky
                 refreshButton.Click += async (s, e) => await VideoList.Refresh();
                 ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, refreshButton);
             }
-        }
-
-        private void VideoList_StartRefreshing(object sender, EventArgs e)
-        {
-            this.OnStartRefreshing();
-        }
-
-        private void VideoList_Refreshed(object sender, EventArgs e)
-        {
-            this.OnRefresh();
-        }
-
-        protected virtual void OnStartRefreshing()
-        {
-        }
-
-        protected virtual void OnRefresh()
-        {
         }
     }
 }

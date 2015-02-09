@@ -11,9 +11,9 @@ namespace VideaCesky
     public sealed partial class MainPage : VideoListBasePage
     {
         public MainPage()
-            : base()
         {
             this.InitializeComponent();
+            DataContext = this;
             InitCategories();
         }
 
@@ -30,8 +30,7 @@ namespace VideaCesky
 
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            SearchDialog sd = new SearchDialog();
-            await sd.ShowAsync();
+            await new SearchDialog().ShowAsync();
         }
         #endregion // end of AppBar
 
@@ -57,7 +56,6 @@ namespace VideaCesky
             Categories.Add(new Category("Skeče", "Filmové zábavné scénky. Vtipné skeče na serveru VideaCesky.cz", "http://www.videacesky.cz/category/skece"));
             Categories.Add(new Category("Trailery", "Trailery k filmům. Recenze populárních filmů.", "http://www.videacesky.cz/category/trailery-recenze-filmy"));
             Categories.Add(new Category("Videoklipy", "Videoklipy zahraničních skupin z youtube. Parodie na nejznámější hudební klipy.", "http://www.videacesky.cz/category/hudebni-klipy-videoklipy-hudba"));
-
         }
 
         private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -67,13 +65,9 @@ namespace VideaCesky
             {
                 Category category = (Category)lw.SelectedItem;
                 lw.SelectedItem = null;
-                Frame.Navigate(typeof(CategoryPage), category);
+                Frame.NavigateAsync(typeof(CategoryPage), category);
             }
         }
         #endregion // end of Kategorie
-
-        #region SearchDialog
-        
-        #endregion // end of SearchDialog
     }
 }

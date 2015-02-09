@@ -9,6 +9,15 @@
              d:DesignWidth="400">
 
     <UserControl.Resources>
+        <DataTemplate x:Key="TagTemplate">
+            <TextBlock Style="{ThemeResource TagStyle}"
+                       Tapped="Tag_Tapped">
+                <Underline>
+                    <Run Text="{Binding Name}" />
+                </Underline>
+            </TextBlock>
+        </DataTemplate>
+
         <DataTemplate x:Key="PortraitVideoTemplate">
             <StackPanel Margin="0,0,0,20">
 
@@ -20,27 +29,19 @@
                 <Border Margin="0,10"
                         BorderThickness="1"
                         BorderBrush="{ThemeResource PhoneDisabledBrush}"
+                        Tapped="Video_Tapped"
                         VerticalAlignment="Top">
                     <Image Source="{Binding ImageUri}" />
                 </Border>
 
                 <ItemsControl ItemsSource="{Binding Tags}"
+                              ItemTemplate="{StaticResource TagTemplate}"
                               Margin="0,0,0,5">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <local:WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Style="{ThemeResource TagStyle}"
-                                       Tapped="Tag_Tapped">
-                                <Underline>
-                                    <Run Text="{Binding Name}" />
-                                </Underline>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <TextBlock Text="{Binding Detail}"
@@ -65,29 +66,19 @@
                     <StackPanel>
                         <Border BorderThickness="1"
                                 BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                                VerticalAlignment="Top">
+                                VerticalAlignment="Top"
+                                Tapped="Video_Tapped">
                             <Image Source="{Binding ImageUri}" />
                         </Border>
 
                         <ItemsControl ItemsSource="{Binding Tags}"
+                                      ItemTemplate="{StaticResource TagTemplate}"
                                       Margin="0,0,0,5">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <local:WrapPanel />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel>
-                                        <TextBlock Style="{ThemeResource TagStyle}"
-                                                   Tapped="Tag_Tapped">
-                                            <Underline>
-                                                <Run Text="{Binding Name}" />
-                                            </Underline>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
 

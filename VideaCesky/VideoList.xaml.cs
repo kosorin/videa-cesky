@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MyToolkit.Networking;
+using MyToolkit.Paging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -79,11 +80,9 @@ namespace VideaCesky
         #endregion // end of Search
 
         #region PageFrame
-        private Frame _pageFrame = null;
-        public Frame PageFrame
+        public MtFrame PageFrame
         {
-            get { return _pageFrame; }
-            set { SetProperty(ref _pageFrame, value); }
+            get { return Window.Current.Content as MtFrame; }
         }
         #endregion // end of Frame
 
@@ -121,7 +120,7 @@ namespace VideaCesky
             set { SetProperty(ref _loading, value); }
         }
 
-        private bool _canLoadMore = true;
+        private bool _canLoadMore = false;
         public bool CanLoadMore
         {
             get { return _canLoadMore; }
@@ -185,13 +184,33 @@ namespace VideaCesky
                 Video video = (Video)lw.SelectedItem;
                 lw.SelectedItem = null;
 
-                PageFrame.Navigate(typeof(VideoPage), video.Uri.ToString());
+                //PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
             }
         }
 
         private async void LoadMoreButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             await LoadMore();
+        }
+
+        private void Video_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FrameworkElement fe = sender as FrameworkElement;
+            if (fe.DataContext is Video)
+            {
+                Video video = fe.DataContext as Video;
+                PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
+            }
+        }
+
+        private void Tag_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            TextBlock tb = sender as TextBlock;
+            if (tb.DataContext is Tag)
+            {
+                Tag tag = tb.DataContext as Tag;
+                PageFrame.NavigateAsync(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
+            }
         }
         #endregion // end of Event Handlers
 
@@ -335,15 +354,5 @@ namespace VideaCesky
             }
         }
         #endregion // end of Private Methods
-
-        private void Tag_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            TextBlock tb = sender as TextBlock;
-            if (tb.DataContext is Tag)
-            {
-                Tag tag = tb.DataContext as Tag;
-                //PageFrame.Navigate(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
-            }
-        }
     }
 }

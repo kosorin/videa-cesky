@@ -1,14 +1,14 @@
 ﻿<local:VideoListBasePage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:local="using:VideaCesky"
+                         xmlns:paging="using:MyToolkit.Paging"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:sample="using:Blend.SampleData.SampleDataSource"
                          x:Class="VideaCesky.MainPage"
                          mc:Ignorable="d"
                          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Page.BottomAppBar>
+    <paging:MtPage.BottomAppBar>
         <CommandBar>
             <AppBarButton Label="nápověda"
                           Icon="Help"
@@ -17,7 +17,7 @@
                           Icon="Find"
                           Click="SearchButton_Click" />
         </CommandBar>
-    </Page.BottomAppBar>
+    </paging:MtPage.BottomAppBar>
 
     <Grid>
         <Grid.ChildrenTransitions>
@@ -41,8 +41,7 @@
                                 <TextBlock Text="{Binding Name}"
                                            Style="{ThemeResource ListViewItemTextBlockStyle}" />
                                 <TextBlock Text="{Binding Description}"
-                                           Style="{ThemeResource ListViewItemContentTextBlockStyle}"
-                                           Opacity="0.5"
+                                           Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
                                            TextWrapping="WrapWholeWords" />
                             </StackPanel>
                         </DataTemplate>

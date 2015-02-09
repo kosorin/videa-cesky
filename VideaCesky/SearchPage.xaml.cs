@@ -19,9 +19,9 @@ namespace VideaCesky
     public sealed partial class SearchPage : VideoListBasePage
     {
         public SearchPage()
-            : base()
         {
             this.InitializeComponent();
+            DataContext = this;
         }
 
         protected override VideoList GetVideListControl()

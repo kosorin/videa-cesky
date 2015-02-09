@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using MyToolkit.Multimedia;
 using MyToolkit.Networking;
+using MyToolkit.Paging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,7 +29,7 @@ namespace VideaCesky
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class VideoPage : Page, INotifyPropertyChanged
+    public sealed partial class VideoPage : MtPage, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -125,7 +126,7 @@ namespace VideaCesky
             }
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(MtNavigationEventArgs e)
         {
             #region Tlačítko zpět, orientace displeje, atd...
             HardwareButtons.BackPressed += BackButtonPress;
@@ -160,7 +161,7 @@ namespace VideaCesky
             }
         }
 
-        protected async override void OnNavigatedFrom(NavigationEventArgs e)
+        protected async override void OnNavigatedFrom(MtNavigationEventArgs e)
         {
             #region Tlačítko zpět, orientace displeje, atd...
             HardwareButtons.BackPressed -= BackButtonPress;
@@ -191,7 +192,7 @@ namespace VideaCesky
 
                 if (Frame.CanGoBack)
                 {
-                    Frame.GoBack();
+                    Frame.GoBackAsync();
                 }
                 else
                 {

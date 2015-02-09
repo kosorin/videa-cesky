@@ -33,9 +33,9 @@ namespace VideaCesky
         }
 
         public CategoryPage()
-            : base()
         {
             this.InitializeComponent();
+            DataContext = this;
         }
 
         protected override VideoList GetVideListControl()

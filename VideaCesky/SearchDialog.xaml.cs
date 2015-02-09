@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyToolkit.Paging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,11 @@ namespace VideaCesky
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            Search();
+            MtFrame frame = Window.Current.Content as MtFrame;
+            if (frame != null)
+            {
+                frame.NavigateAsync(typeof(SearchPage), SearchTextBox.Text);
+            }
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -36,15 +41,6 @@ namespace VideaCesky
         private void ContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
             SearchTextBox.Focus(FocusState.Programmatic);
-        }
-
-        private void Search()
-        {
-            Frame frame = Window.Current.Content as Frame;
-            if (frame != null)
-            {
-                frame.Navigate(typeof(SearchPage), SearchTextBox.Text);
-            }
         }
     }
 }

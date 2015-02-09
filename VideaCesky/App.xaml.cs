@@ -1,9 +1,12 @@
-﻿using System;
+﻿using MyToolkit.Messaging;
+using MyToolkit.Paging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -20,17 +23,40 @@ using Windows.UI.Xaml.Navigation;
 
 namespace VideaCesky
 {
-    public sealed partial class App : Application
+    public sealed partial class App : MtApplication
     {
         public App()
+            : base()
         {
             this.InitializeComponent();
-            this.Suspending += this.OnSuspending;
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        public override Type StartPageType
         {
-            EnsureCreatedAndActivated();
+            get { return typeof(MainPage); }
+        }
+
+        public override Task OnInitializedAsync(MtFrame frame, ApplicationExecutionState args)
+        {
+            // TODO: Called when the app is started (not resumed)
+
+            //frame.PageAnimation = new TurnstilePageAnimation { UseBitmapCacheMode = true };
+            //frame.PageAnimation = new PushPageAnimation();
+
+            //var mapper = RegexViewModelToViewMapper.CreateDefaultMapper(typeof(App).GetTypeInfo().Assembly);
+            //Messenger.Default.Register(DefaultActions.GetNavigateMessageAction(mapper, frame));
+
+            return null;
+        }
+
+        //protected override void OnLaunched(LaunchActivatedEventArgs args)
+        //{
+        //    EnsureCreatedAndActivated();
+        //}
+
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            await InitializeFrameAsync(args.PreviousExecutionState);
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
@@ -76,10 +102,10 @@ namespace VideaCesky
             Window.Current.Activate();
         }
 
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            deferral.Complete();
-        }
+        //private void OnSuspending(object sender, SuspendingEventArgs e)
+        //{
+        //    var deferral = e.SuspendingOperation.GetDeferral();
+        //    deferral.Complete();
+        //}
     }
 }
