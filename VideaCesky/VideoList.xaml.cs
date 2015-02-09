@@ -255,17 +255,23 @@ namespace VideaCesky
                     {
                         try
                         {
+                            // Uri
                             Uri uri = new Uri(node.ChildNodes.FindFirst("a").Attributes["href"].Value);
                             if (uri.ToString().Contains("videacesky.cz/clanky-novinky-souteze"))
                             {
                                 // toto nejsou videa...
                                 continue;
                             }
+
+                            // Title
                             string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
+
+                            // ImageUri
                             Uri imageUri = new Uri(node.ChildNodes.FindFirst("img").Attributes["src"].Value);
 
                             var descendants = node.Descendants();
 
+                            // Date
                             // Formát: 8.7.2014 v 08:00
                             HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");
                             DateTime date = DateTime.ParseExact(
@@ -273,8 +279,23 @@ namespace VideaCesky
                                 "d'.'M'.'yyyy' v 'HH':'mm",
                                 CultureInfo.InvariantCulture);
 
+                            // Detail
                             HtmlNode detailNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "obs");
                             string detail = WebUtility.HtmlDecode(Regex.Replace(detailNode.InnerText.Replace("(Celý příspěvek...)", ""), @"<!--[^>]*-->", "")).Trim();
+
+                            // Tags
+                            List<Tag> tags = new List<Tag>();
+                            HtmlNode tagsNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postTags");
+                            foreach (var tagNode in tagsNode.ChildNodes)
+                            {
+                                if (tagNode.NodeType == HtmlNodeType.Element && tagNode.Name == "a")
+                                {
+                                    if (tagNode.Attributes.Contains("href"))
+                                    {
+                                        tags.Add(new Tag(tagNode.Attributes["href"].Value, tagNode.InnerText));
+                                    }
+                                }
+                            }
 
                             List.Add(new Video()
                             {
@@ -282,7 +303,8 @@ namespace VideaCesky
                                 Title = title,
                                 Detail = detail,
                                 ImageUri = imageUri,
-                                Date = date
+                                Date = date,
+                                Tags = tags
                             });
                         }
                         catch
@@ -313,5 +335,15 @@ namespace VideaCesky
             }
         }
         #endregion // end of Private Methods
+
+        private void Tag_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            TextBlock tb = sender as TextBlock;
+            if (tb.DataContext is Tag)
+            {
+                Tag tag = tb.DataContext as Tag;
+                //PageFrame.Navigate(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
+            }
+        }
     }
 }

@@ -24,6 +24,25 @@
                     <Image Source="{Binding ImageUri}" />
                 </Border>
 
+                <ItemsControl ItemsSource="{Binding Tags}"
+                              Margin="0,0,0,5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <local:WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Style="{ThemeResource TagStyle}"
+                                       Tapped="Tag_Tapped">
+                                <Underline>
+                                    <Run Text="{Binding Name}" />
+                                </Underline>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
                 <TextBlock Text="{Binding Detail}"
                            Style="{ThemeResource DetailStyle}" />
             </StackPanel>
@@ -43,11 +62,34 @@
                         <ColumnDefinition Width="3*" />
                     </Grid.ColumnDefinitions>
 
-                    <Border BorderThickness="1"
-                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                            VerticalAlignment="Top">
-                        <Image Source="{Binding ImageUri}" />
-                    </Border>
+                    <StackPanel>
+                        <Border BorderThickness="1"
+                                BorderBrush="{ThemeResource PhoneDisabledBrush}"
+                                VerticalAlignment="Top">
+                            <Image Source="{Binding ImageUri}" />
+                        </Border>
+
+                        <ItemsControl ItemsSource="{Binding Tags}"
+                                      Margin="0,0,0,5">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <local:WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Style="{ThemeResource TagStyle}"
+                                                   Tapped="Tag_Tapped">
+                                            <Underline>
+                                                <Run Text="{Binding Name}" />
+                                            </Underline>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
 
                     <TextBlock Grid.Column="1"
                                Text="{Binding Detail}"

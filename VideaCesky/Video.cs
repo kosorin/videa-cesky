@@ -6,6 +6,29 @@ using System.Threading.Tasks;
 
 namespace VideaCesky
 {
+    public class Tag : BindableBase
+    {
+        private string _feed = "";
+        public string Feed
+        {
+            get { return _feed; }
+            set { SetProperty(ref _feed, value); }
+        }
+
+        private string _name = "";
+        public string Name
+        {
+            get { return _name; }
+            set { SetProperty(ref _name, value); }
+        }
+
+        public Tag(string feed, string name)
+        {
+            Feed = feed;
+            Name = name;
+        }
+    }
+
     public class Video : BindableBase
     {
         #region Uri
@@ -52,5 +75,14 @@ namespace VideaCesky
             set { SetProperty(ref _date, value); }
         }
         #endregion
+
+        #region Tags
+        private List<Tag> _tags = null;
+        public List<Tag> Tags
+        {
+            get { return _tags; }
+            set { SetProperty(ref _tags, value); }
+        }
+        #endregion // end of Tags
     }
 }
