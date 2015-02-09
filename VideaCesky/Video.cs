@@ -84,5 +84,14 @@ namespace VideaCesky
             set { SetProperty(ref _tags, value); }
         }
         #endregion // end of Tags
+
+        #region Rating
+        private double _rating = 0;
+        public double Rating
+        {
+            get { return _rating; }
+            set { SetProperty(ref _rating, value); }
+        }
+        #endregion // end of Rating
     }
 }

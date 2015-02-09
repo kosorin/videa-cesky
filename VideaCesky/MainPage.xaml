@@ -13,9 +13,6 @@
             <AppBarButton Label="nápověda"
                           Icon="Help"
                           Click="HelpButton_Click" />
-            <AppBarButton Label="vyhledávání"
-                          Icon="Find"
-                          Click="SearchButton_Click" />
         </CommandBar>
     </paging:MtPage.BottomAppBar>
 
@@ -39,7 +36,8 @@
                         <DataTemplate>
                             <StackPanel Margin="0,0,0,10">
                                 <TextBlock Text="{Binding Name}"
-                                           Style="{ThemeResource ListViewItemTextBlockStyle}" />
+                                           Style="{ThemeResource ListViewItemTextBlockStyle}"
+                                           Margin="2,0,0,0" />
                                 <TextBlock Text="{Binding Description}"
                                            Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
                                            TextWrapping="WrapWholeWords" />

@@ -21,18 +21,31 @@
         <DataTemplate x:Key="PortraitVideoTemplate">
             <StackPanel Margin="0,0,0,20">
 
-                <TextBlock Text="{Binding Title}"
-                           Style="{ThemeResource TitleStyle}" />
-                <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                           Style="{ThemeResource DateStyle}" />
+                <StackPanel Tapped="Video_Tapped">
+                    <TextBlock Text="{Binding Title}"
+                               Style="{ThemeResource TitleStyle}" />
+                    <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
+                               Style="{ThemeResource DateStyle}" />
 
-                <Border Margin="0,10"
-                        BorderThickness="1"
-                        BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                        Tapped="Video_Tapped"
-                        VerticalAlignment="Top">
-                    <Image Source="{Binding ImageUri}" />
-                </Border>
+                    <Border Margin="0,10"
+                            BorderThickness="1"
+                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
+                            VerticalAlignment="Top">
+                        <Grid>
+                            <Image Source="{Binding ImageUri}" />
+                            <!--<TextBlock Foreground="White"
+                                       Opacity="0.8"
+                                       FontWeight="Normal"
+                                       FontSize="{ThemeResource TextStyleExtraLargeFontSize}"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Bottom">
+                                <Run Text="{Binding Rating}" />
+                                <Run Text="/10"
+                                     FontSize="{ThemeResource TextStyleLargeFontSize}" />
+                            </TextBlock>-->
+                        </Grid>
+                    </Border>
+                </StackPanel>
 
                 <ItemsControl ItemsSource="{Binding Tags}"
                               ItemTemplate="{StaticResource TagTemplate}"
@@ -52,35 +65,35 @@
         <DataTemplate x:Key="LandscapeVideoTemplate">
             <StackPanel Margin="0,0,0,20">
 
-                <TextBlock Text="{Binding Title}"
-                           Style="{ThemeResource TitleStyle}" />
-                <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                           Style="{ThemeResource DateStyle}" />
+                <StackPanel Tapped="Video_Tapped">
+                    <TextBlock Text="{Binding Title}"
+                               Style="{ThemeResource TitleStyle}" />
+                    <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
+                               Style="{ThemeResource DateStyle}" />
+                </StackPanel>
 
-                <Grid Margin="0,10,0,0">
+                <ItemsControl ItemsSource="{Binding Tags}"
+                              ItemTemplate="{StaticResource TagTemplate}"
+                              Margin="0,0,0,5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <local:WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <Grid Margin="0,10,0,0"
+                      Tapped="Video_Tapped">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="3*" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel>
-                        <Border BorderThickness="1"
-                                BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                                VerticalAlignment="Top"
-                                Tapped="Video_Tapped">
-                            <Image Source="{Binding ImageUri}" />
-                        </Border>
-
-                        <ItemsControl ItemsSource="{Binding Tags}"
-                                      ItemTemplate="{StaticResource TagTemplate}"
-                                      Margin="0,0,0,5">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <local:WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </StackPanel>
+                    <Border BorderThickness="1"
+                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
+                            VerticalAlignment="Top">
+                        <Image Source="{Binding ImageUri}" />
+                    </Border>
 
                     <TextBlock Grid.Column="1"
                                Text="{Binding Detail}"

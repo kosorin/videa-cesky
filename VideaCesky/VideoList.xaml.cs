@@ -316,6 +316,12 @@ namespace VideaCesky
                                 }
                             }
 
+                            // Rating
+                            HtmlNode ratingNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "post-ratings");
+                            string valueString = ratingNode.ChildNodes.First(n => n.Name == "strong").InnerText;
+                            valueString = valueString.Replace(',', '.');
+                            double rating = double.Parse(valueString, CultureInfo.InvariantCulture);
+
                             List.Add(new Video()
                             {
                                 Uri = uri,
@@ -323,7 +329,8 @@ namespace VideaCesky
                                 Detail = detail,
                                 ImageUri = imageUri,
                                 Date = date,
-                                Tags = tags
+                                Tags = tags,
+                                Rating = rating
                             });
                         }
                         catch

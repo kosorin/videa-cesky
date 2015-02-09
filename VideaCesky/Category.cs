@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VideaCesky
 {
+    [DataContract]
     public class Category : BindableBase
     {
         private string _name = "";
+        [DataMember]
         public string Name
         {
             get { return _name; }
@@ -16,6 +19,7 @@ namespace VideaCesky
         }
 
         private string _description = "";
+        [DataMember]
         public string Description
         {
             get { return _description; }
@@ -23,6 +27,7 @@ namespace VideaCesky
         }
 
         private string _feed = "";
+        [DataMember]
         public string Feed
         {
             get { return _feed; }

@@ -48,7 +48,7 @@ namespace VideaCesky
         {
             base.OnNavigatedTo(e);
             VideoList = GetVideListControl();
-            AddRefreshAppBarButton();
+            AddAppBarButtons();
 
             DisplayProperties.OrientationChanged -= VideoList.OrientationChanged;
             DisplayProperties.OrientationChanged += VideoList.OrientationChanged;
@@ -89,11 +89,12 @@ namespace VideaCesky
             return base.ArrangeOverride(finalSize);
         }
 
-        private void AddRefreshAppBarButton()
+        private void AddAppBarButtons()
         {
             if (BottomAppBar is CommandBar)
             {
                 const string refreshTag = "REFRESH";
+                const string searchTag = "SEARCH";
 
                 CommandBar ab = ((CommandBar)BottomAppBar);
                 if (ab.PrimaryCommands.Count > 0 && ab.PrimaryCommands[0] is AppBarButton)
@@ -104,12 +105,45 @@ namespace VideaCesky
                     }
                 }
 
-                AppBarButton refreshButton = new AppBarButton();
-                refreshButton.Label = "obnovit";
-                refreshButton.Icon = new SymbolIcon(Symbol.Refresh);
-                refreshButton.Tag = refreshTag;
-                refreshButton.Click += async (s, e) => await VideoList.Refresh();
-                ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, refreshButton);
+                bool isRefresh = false;
+                bool isSearch = false;
+                foreach (var b in ab.PrimaryCommands)
+                {
+                    if (b is AppBarButton)
+                    {
+                        AppBarButton button = (AppBarButton)b;
+                        if (button.Tag == refreshTag)
+                        {
+                            isRefresh = true;
+                            continue;
+                        }
+                        if (button.Tag == searchTag)
+                        {
+                            isSearch = true;
+                            continue;
+                        }
+                    }
+                }
+
+                if (!isRefresh)
+                {
+                    AppBarButton refreshButton = new AppBarButton();
+                    refreshButton.Label = "obnovit";
+                    refreshButton.Icon = new SymbolIcon(Symbol.Refresh);
+                    refreshButton.Tag = refreshTag;
+                    refreshButton.Click += async (s, e) => await VideoList.Refresh();
+                    ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, refreshButton);
+                }
+
+                if (!isSearch)
+                {
+                    AppBarButton searchButton = new AppBarButton();
+                    searchButton.Label = "vyhledávání";
+                    searchButton.Icon = new SymbolIcon(Symbol.Find);
+                    searchButton.Tag = searchTag;
+                    searchButton.Click += async (s, e) => await new SearchDialog().ShowAsync();
+                    ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, searchButton);
+                }
             }
         }
     }
