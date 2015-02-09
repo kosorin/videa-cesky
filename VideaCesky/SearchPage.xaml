@@ -40,7 +40,7 @@
             <TextBlock Margin="0,-8,0,20"
                        Style="{ThemeResource BodyTextBlockStyle}">
                 <Run Foreground="{ThemeResource PhoneDisabledBrush}"
-                     Text="Výsledky na dotaz &#x201E;" />
+                     Text="Výsledky pro dotaz &#x201E;" />
                 <Run x:Name="SearchExpression"
                      FontWeight="Medium" />
                 <Run Foreground="{ThemeResource PhoneDisabledBrush}"
@@ -51,10 +51,6 @@
         <Grid Grid.Row="1"
               Margin="19,9.5,19,0">
             <local:VideoList x:Name="VideoListControl" />
-            <TextBlock x:Name="NoResultTextBlock"
-                       Visibility="Collapsed"
-                       Text="Vyhledávání nenašlo žádný výsledek."
-                       Style="{ThemeResource BodyTextBlockStyle}" />
         </Grid>
     </Grid>
 </local:VideoListBasePage>

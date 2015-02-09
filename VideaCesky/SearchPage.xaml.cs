@@ -34,18 +34,5 @@ namespace VideaCesky
             base.SetFeed(parameter);
             VideoList.Search = SearchExpression.Text = (parameter as string) ?? "";
         }
-
-        protected override void OnStartRefreshing()
-        {
-            NoResultTextBlock.Visibility = Visibility.Collapsed;
-        }
-
-        protected override void OnRefresh()
-        {
-            if (VideoList.List.Count == 0)
-            {
-                NoResultTextBlock.Visibility = Visibility.Visible;
-            }
-        }
     }
 }

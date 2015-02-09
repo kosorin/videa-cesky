@@ -54,6 +54,12 @@ namespace VideaCesky
         }
         #endregion
 
+        #region Private Fields
+
+        private double _scrollPosition = 0;
+
+        #endregion // end of Private Fields
+
         #region Feed
         private string _feed = "http://www.videacesky.cz";
         public string Feed
@@ -107,46 +113,33 @@ namespace VideaCesky
         }
         #endregion
 
-        #region MaxPage
-        private int _maxPage = 0;
-        public int MaxPage
-        {
-            get { return _maxPage; }
-            set { SetProperty(ref _maxPage, value); }
-        }
-        #endregion
-
-        #region Loading
+        #region States
         private bool _loading = true;
         public bool Loading
         {
             get { return _loading; }
             set { SetProperty(ref _loading, value); }
         }
-        #endregion
 
-        #region CanLoadMore
         private bool _canLoadMore = true;
         public bool CanLoadMore
         {
             get { return _canLoadMore; }
             set { SetProperty(ref _canLoadMore, value); }
         }
-        #endregion
 
-        #region IsError
         private bool _isError = false;
         public bool IsError
         {
             get { return _isError; }
-            set
-            {
-                SetProperty(ref _isError, value);
-                if (value)
-                {
-                    CanLoadMore = false;
-                }
-            }
+            set { SetProperty(ref _isError, value); }
+        }
+
+        private bool _noVideos = false;
+        public bool NoVideos
+        {
+            get { return _noVideos; }
+            set { SetProperty(ref _noVideos, value); }
         }
         #endregion
 
@@ -205,11 +198,12 @@ namespace VideaCesky
         #region Public Methods
         public async Task Refresh()
         {
+            Debug.WriteLine("Refresh VideoList");
             OnStartRefreshing();
 
-            Debug.WriteLine("Refresh...");
-            Page = 0;
             List.Clear();
+            Page = 0;
+
             await LoadMore();
 
             OnRefreshed();
@@ -220,7 +214,6 @@ namespace VideaCesky
             OrientationChanged(null);
         }
 
-        private double _scrollPosition = 0;
         public void SaveScrollPosition()
         {
             _scrollPosition = ScrollViewer.VerticalOffset;
@@ -235,7 +228,12 @@ namespace VideaCesky
         #region Private Methods
         private async Task LoadMore()
         {
+            IsError = false;
+            CanLoadMore = false;
             Loading = true;
+            NoVideos = false;
+
+            int countBeforeLoading = List.Count;
             try
             {
                 Page++;
@@ -255,45 +253,45 @@ namespace VideaCesky
                 {
                     if (node.NodeType == HtmlNodeType.Element && node.Id != "")
                     {
-                        Uri uri = new Uri(node.ChildNodes.FindFirst("a").Attributes["href"].Value);
-                        string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
-                        Uri imageUri = new Uri(node.ChildNodes.FindFirst("img").Attributes["src"].Value);
-
-                        var descendants = node.Descendants();
-
-                        // 8.7.2014 v 08:00
-                        HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");
-                        DateTime date = DateTime.ParseExact(
-                            dateNode.InnerText,
-                            "d'.'M'.'yyyy' v 'HH':'mm",
-                            CultureInfo.InvariantCulture);
-
-                        HtmlNode detailNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "obs");
-                        string detail = WebUtility.HtmlDecode(Regex.Replace(detailNode.InnerText.Replace("(Celý příspěvek...)", ""), @"<!--[^>]*-->", "")).Trim();
-
-                        List.Add(new Video()
+                        try
                         {
-                            Uri = uri,
-                            Title = title,
-                            Detail = detail,
-                            ImageUri = imageUri,
-                            Date = date
-                        });
-                    }
-                }
+                            Uri uri = new Uri(node.ChildNodes.FindFirst("a").Attributes["href"].Value);
+                            if (uri.ToString().Contains("videacesky.cz/clanky-novinky-souteze"))
+                            {
+                                // toto nejsou videa...
+                                continue;
+                            }
+                            string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
+                            Uri imageUri = new Uri(node.ChildNodes.FindFirst("img").Attributes["src"].Value);
 
-                var pagination = contentArea.LastChild.PreviousSibling.ChildNodes.FindFirst("ol");
-                if (pagination != null)
-                {
-                    foreach (var p in pagination.ChildNodes)
-                    {
-                        if (p.Attributes.Contains("class") && p.Attributes["class"].Value == "gap")
+                            var descendants = node.Descendants();
+
+                            // Formát: 8.7.2014 v 08:00
+                            HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");
+                            DateTime date = DateTime.ParseExact(
+                                dateNode.InnerText,
+                                "d'.'M'.'yyyy' v 'HH':'mm",
+                                CultureInfo.InvariantCulture);
+
+                            HtmlNode detailNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "obs");
+                            string detail = WebUtility.HtmlDecode(Regex.Replace(detailNode.InnerText.Replace("(Celý příspěvek...)", ""), @"<!--[^>]*-->", "")).Trim();
+
+                            List.Add(new Video()
+                            {
+                                Uri = uri,
+                                Title = title,
+                                Detail = detail,
+                                ImageUri = imageUri,
+                                Date = date
+                            });
+                        }
+                        catch
                         {
-                            MaxPage = Convert.ToInt32(p.NextSibling.ChildNodes.FindFirst("span").InnerText);
+                            continue;
                         }
                     }
                 }
-                Debug.WriteLine("Page {0}/{1}", Page, MaxPage);
+                Debug.WriteLine("Loaded Page {0}", Page);
             }
             catch (Exception e)
             {
@@ -302,9 +300,16 @@ namespace VideaCesky
             }
 
             Loading = false;
-            if (Page >= MaxPage)
+            if (!IsError)
             {
-                CanLoadMore = false;
+                if (List.Count > countBeforeLoading)
+                {
+                    CanLoadMore = true;
+                }
+                if (List.Count == 0)
+                {
+                    NoVideos = true;
+                }
             }
         }
         #endregion // end of Private Methods

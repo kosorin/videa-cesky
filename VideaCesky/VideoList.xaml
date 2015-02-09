@@ -60,32 +60,40 @@
 
     <Grid>
         <ScrollViewer x:Name="ScrollViewer">
-            <StackPanel>
-                <ListView x:Name="VideoListView"
-                          ItemsSource="{Binding List}"
-                          SelectionChanged="ListView_SelectionChanged"
-                          ItemTemplate="{StaticResource PortraitVideoTemplate}" />
+            <Grid>
+                <TextBlock x:Name="NoVideosTextBlock"
+                           Visibility="{Binding NoVideos, Converter={StaticResource BoolToVisibilityConverter}}"
+                           Text="Žádná videa"
+                           Style="{ThemeResource SubheaderTextBlockStyle}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Foreground="{ThemeResource PhoneDisabledBrush}" />
 
-                <Grid Margin="0,20,0,40">
-                    <TextBlock Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}}"
-                               Text="Něco se pokazilo :("
-                               Style="{ThemeResource SubheaderTextBlockStyle}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
-                    <Grid Visibility="{Binding CanLoadMore, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <Button Visibility="{Binding Loading, Converter={StaticResource BoolNegationToVisibilityConverter}}"
-                                Tapped="LoadMoreButton_Tapped"
-                                Content="Nahrát víc..."
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
-           
+                <StackPanel>
+                    <ListView x:Name="VideoListView"
+                              ItemsSource="{Binding List}"
+                              SelectionChanged="ListView_SelectionChanged"
+                              ItemTemplate="{StaticResource PortraitVideoTemplate}" />
+
+                    <Grid Margin="0,20,0,40">
+                        <TextBlock Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   Text="Něco se pokazilo :("
+                                   Style="{ThemeResource SubheaderTextBlockStyle}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        <Grid Visibility="{Binding IsError, Converter={StaticResource BoolNegationToVisibilityConverter}}">
+                            <Button Visibility="{Binding CanLoadMore, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Tapped="LoadMoreButton_Tapped"
+                                    Content="Nahrát víc..."
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            <ProgressRing IsActive="{Binding Loading}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                        </Grid>
                     </Grid>
-
-                    <ProgressRing IsActive="{Binding Loading}"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center" />
-                </Grid>
-            </StackPanel>
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </UserControl>
