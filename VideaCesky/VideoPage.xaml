@@ -127,10 +127,24 @@
                                TextWrapping="WrapWholeWords"
                                FontWeight="SemiLight"
                                Margin="0,5,0,0"
-                               Text="{Binding ErrorMessage, FallbackValue='Lorem ipsum atd...'}" />
+                               Text="{Binding ErrorMessage}" />
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="Proč vidím tuto chybu tak často?"
-                                Click="ErrorReasonButton_Click" />
+                        <Button Content="Proč vidím tuto chybu tak často?">
+                            <Button.Flyout>
+                                <Flyout Placement="Full">
+                                    <TextBlock Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"
+                                               Margin="24"
+                                               TextWrapping="Wrap">
+                                        Občas se stane, že některé video nejde přehrát. 
+                                        Je to způsobeno tím, že nemám data přímo od tvůrců videacesky.cz, 
+                                        ale musím stahovat stránky a pokusit se najít odkaz na Youtube video a titulky 
+                                        a to je u některých videí problém. Někdy nejsou informace uloženy tak, 
+                                        jak je očekávám a s tím se aplikace bohužel nedokáže vypořádat. 
+                                        Není tedy možné, abych pokryl všechny možnosti.
+                                    </TextBlock>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
                         <Button Content="Přesto přehrát"
                                 Visibility="{Binding CanPlayAnyway, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Click="PlayAnyway_Click"

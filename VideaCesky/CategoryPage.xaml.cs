@@ -43,16 +43,6 @@ namespace VideaCesky
             return VideoListControl;
         }
 
-        protected override void OnSaveState(MyToolkit.Paging.MtSaveStateEventArgs pageState)
-        {
-            pageState.Set("Category", Category);
-        }
-
-        protected override void OnLoadState(MyToolkit.Paging.MtLoadStateEventArgs pageState)
-        {
-            SetFeed(pageState.Get<Category>("Category"));
-        }
-
         protected override void SetFeed(object parameter)
         {
             if (parameter is Category)

@@ -30,14 +30,6 @@
           <m3:Rotation Preference="landscapeFlipped" />
         </m3:InitialRotationPreference>
       </m3:VisualElements>
-      <Extensions>
-        <Extension Category="windows.protocol">
-          <Protocol Name="videacesky">
-            <Logo>Assets\VideaCeskyLogo.png</Logo>
-            <DisplayName>Videa Česky</DisplayName>
-          </Protocol>
-        </Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

@@ -1,5 +1,6 @@
 ﻿using MyToolkit.Messaging;
 using MyToolkit.Paging;
+using MyToolkit.Paging.Animations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,21 +39,9 @@ namespace VideaCesky
 
         public override Task OnInitializedAsync(MtFrame frame, ApplicationExecutionState args)
         {
-            // TODO: Called when the app is started (not resumed)
-
             //frame.PageAnimation = new TurnstilePageAnimation { UseBitmapCacheMode = true };
-            //frame.PageAnimation = new PushPageAnimation();
-
-            //var mapper = RegexViewModelToViewMapper.CreateDefaultMapper(typeof(App).GetTypeInfo().Assembly);
-            //Messenger.Default.Register(DefaultActions.GetNavigateMessageAction(mapper, frame));
-
             return null;
         }
-
-        //protected override void OnLaunched(LaunchActivatedEventArgs args)
-        //{
-        //    EnsureCreatedAndActivated();
-        //}
 
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
@@ -101,11 +90,5 @@ namespace VideaCesky
 
             Window.Current.Activate();
         }
-
-        //private void OnSuspending(object sender, SuspendingEventArgs e)
-        //{
-        //    var deferral = e.SuspendingOperation.GetDeferral();
-        //    deferral.Complete();
-        //}
     }
 }

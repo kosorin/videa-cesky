@@ -45,57 +45,5 @@
         </Style>
         <!--EndRegion Tlačítka-->
 
-        <!--Region TextSyles-->
-        <Style x:Key="TitleStyle"
-               BasedOn="{StaticResource BaseTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="Foreground"
-                    Value="{ThemeResource VideoColorBrush}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleExtraLargeFontSize}" />
-            <Setter Property="LineHeight"
-                    Value="{ThemeResource TextStyleExtraLargeFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-        </Style>
-
-        <Style x:Key="DateStyle"
-               BasedOn="{StaticResource BaseTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="FontFamily"
-                    Value="{ThemeResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleMediumFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-            <Setter Property="Opacity"
-                    Value="0.6" />
-        </Style>
-        
-        <Style x:Key="TagStyle"
-               BasedOn="{StaticResource BaseTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="FontFamily"
-                    Value="{ThemeResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleLargeFontSize}" />
-            <Setter Property="Opacity"
-                    Value="0.6" />
-            <Setter Property="Margin"
-                    Value="0,0,15,5" />
-        </Style>
-
-        <Style x:Key="DetailStyle"
-               BasedOn="{StaticResource BodyTextBlockStyle}"
-               TargetType="TextBlock">
-            <Setter Property="FontFamily"
-                    Value="{ThemeResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize"
-                    Value="{ThemeResource TextStyleLargeFontSize}" />
-            <Setter Property="TextWrapping"
-                    Value="WrapWholeWords" />
-        </Style>
-        <!--EndRegion TextSyles-->
-
     </paging:MtApplication.Resources>
 </paging:MtApplication>

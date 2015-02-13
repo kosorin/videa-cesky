@@ -6,14 +6,11 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          x:Class="VideaCesky.MainPage"
                          mc:Ignorable="d"
+                         RequestedTheme="Dark"
                          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <paging:MtPage.BottomAppBar>
-        <CommandBar>
-            <AppBarButton Label="nápověda"
-                          Icon="Help"
-                          Click="HelpButton_Click" />
-        </CommandBar>
+        <CommandBar />
     </paging:MtPage.BottomAppBar>
 
     <Grid>

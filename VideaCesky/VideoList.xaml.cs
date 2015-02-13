@@ -13,9 +13,12 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Graphics.Display;
+using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace VideaCesky
 {
@@ -163,53 +166,33 @@ namespace VideaCesky
         #endregion // end of Events
 
         #region Event Handlers
-        public void OrientationChanged(object sender)
-        {
-            DisplayOrientations orientation = DisplayProperties.CurrentOrientation; ;
-            if (orientation == DisplayOrientations.Portrait || orientation == DisplayOrientations.PortraitFlipped)
-            {
-                VideoListView.ItemTemplate = Resources["PortraitVideoTemplate"] as DataTemplate;
-            }
-            else
-            {
-                VideoListView.ItemTemplate = Resources["LandscapeVideoTemplate"] as DataTemplate;
-            }
-        }
-
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListView lw = (ListView)sender;
-            if (lw.SelectedItem != null && lw.SelectedItem is Video)
-            {
-                Video video = (Video)lw.SelectedItem;
-                lw.SelectedItem = null;
-
-                //PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
-            }
-        }
-
         private async void LoadMoreButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             await LoadMore();
         }
 
-        private void Video_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void VideoButton_Click(object sender, RoutedEventArgs e)
         {
             FrameworkElement fe = sender as FrameworkElement;
             if (fe.DataContext is Video)
             {
+                new MessageDialog(fe.ActualWidth.ToString()).ShowAsync();
                 Video video = fe.DataContext as Video;
-                PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
+                await PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
             }
         }
 
-        private void Tag_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void InfoButton_Click(object sender, RoutedEventArgs e)
         {
-            TextBlock tb = sender as TextBlock;
-            if (tb.DataContext is Tag)
+            Button button = (Button)sender;
+            if (button != null)
             {
-                Tag tag = tb.DataContext as Tag;
-                PageFrame.NavigateAsync(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
+                FrameworkElement fe = sender as FrameworkElement;
+                if (fe.DataContext is Video)
+                {
+                    Video video = fe.DataContext as Video;
+                    await PageFrame.NavigateAsync(typeof(VideoDetailPage), button.DataContext as Video);
+                }
             }
         }
         #endregion // end of Event Handlers
@@ -226,11 +209,6 @@ namespace VideaCesky
             await LoadMore();
 
             OnRefreshed();
-        }
-
-        public void UpdateOrientation()
-        {
-            OrientationChanged(null);
         }
 
         public void SaveScrollPosition()
@@ -361,5 +339,6 @@ namespace VideaCesky
             }
         }
         #endregion // end of Private Methods
+
     }
 }

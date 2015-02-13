@@ -50,12 +50,11 @@ namespace VideaCesky
             VideoList = GetVideListControl();
             AddAppBarButtons();
 
-            DisplayProperties.OrientationChanged -= VideoList.OrientationChanged;
-            DisplayProperties.OrientationChanged += VideoList.OrientationChanged;
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
 
-            VideoList.UpdateOrientation();
             SetFeed(e.Parameter);
-            if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh)
+            if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh
+                || VideoList.List.Count == 0)
             {
                 await VideoList.Refresh();
             }
@@ -68,7 +67,7 @@ namespace VideaCesky
         protected override void OnNavigatedFrom(MtNavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-            DisplayProperties.OrientationChanged -= VideoList.OrientationChanged;
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.None;
 
             VideoList.SaveScrollPosition();
         }
@@ -95,6 +94,7 @@ namespace VideaCesky
             {
                 const string refreshTag = "REFRESH";
                 const string searchTag = "SEARCH";
+                const string homeTag = "HOME";
 
                 CommandBar ab = ((CommandBar)BottomAppBar);
                 if (ab.PrimaryCommands.Count > 0 && ab.PrimaryCommands[0] is AppBarButton)
@@ -107,19 +107,25 @@ namespace VideaCesky
 
                 bool isRefresh = false;
                 bool isSearch = false;
+                bool isHome = false;
                 foreach (var b in ab.PrimaryCommands)
                 {
                     if (b is AppBarButton)
                     {
                         AppBarButton button = (AppBarButton)b;
-                        if (button.Tag == refreshTag)
+                        if ((button.Tag as string) == refreshTag)
                         {
                             isRefresh = true;
                             continue;
                         }
-                        if (button.Tag == searchTag)
+                        if ((button.Tag as string) == searchTag)
                         {
                             isSearch = true;
+                            continue;
+                        }
+                        if ((button.Tag as string) == homeTag)
+                        {
+                            isHome = true;
                             continue;
                         }
                     }
@@ -142,6 +148,17 @@ namespace VideaCesky
                     searchButton.Icon = new SymbolIcon(Symbol.Find);
                     searchButton.Tag = searchTag;
                     searchButton.Click += async (s, e) => await new SearchDialog().ShowAsync();
+                    ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, searchButton);
+                }
+
+                Type startPageType = ((MtApplication)App.Current).StartPageType;
+                if (!isHome && this.GetType() != startPageType)
+                {
+                    AppBarButton searchButton = new AppBarButton();
+                    searchButton.Label = "domů";
+                    searchButton.Icon = new SymbolIcon(Symbol.Home);
+                    searchButton.Tag = homeTag;
+                    searchButton.Click += (s, e) => Frame.Navigate(startPageType);
                     ((CommandBar)BottomAppBar).PrimaryCommands.Insert(0, searchButton);
                 }
             }

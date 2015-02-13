@@ -91,6 +91,9 @@
     <Compile Include="SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VideoDetailPage.xaml.cs">
+      <DependentUpon>VideoDetailPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VideoListBasePage.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="BoolNegationToVisibilityConverter.cs" />
@@ -105,13 +108,7 @@
     <Compile Include="DateTimeConverter.cs" />
     <Compile Include="BoolNegationConverter.cs" />
     <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="GuidePage.xaml.cs">
-      <DependentUpon>GuidePage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="IntToBoolConverter.cs" />
-    <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
-      <DependentUpon>SampleDataSource.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CategoryNameConverter.cs" />
     <Compile Include="Video.cs" />
     <Compile Include="VideoDataCollection.cs" />
@@ -151,23 +148,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GuidePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </DesignTimeOnly>
     <Page Include="SearchDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="VideoDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -217,24 +210,6 @@
     <Content Include="Assets\Store.png" />
     <Content Include="Assets\LogoStore.scale-240.png" />
     <Content Include="Assets\TileWide.scale-240.png" />
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource_Files\image01.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </DesignTimeOnly>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource_Files\image02.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </DesignTimeOnly>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource_Files\image03.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </DesignTimeOnly>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource_Files\image04.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </DesignTimeOnly>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource_Files\image05.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </DesignTimeOnly>
-  </ItemGroup>
-  <ItemGroup>
-    <DesignTimeOnly Include="SampleData\SampleDataSource\SampleDataSource.xsd" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

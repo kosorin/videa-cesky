@@ -9,98 +9,67 @@
              d:DesignWidth="400">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="TagTemplate">
-            <TextBlock Style="{ThemeResource TagStyle}"
-                       Tapped="Tag_Tapped">
-                <Underline>
-                    <Run Text="{Binding Name}" />
-                </Underline>
-            </TextBlock>
-        </DataTemplate>
-
         <DataTemplate x:Key="PortraitVideoTemplate">
-            <StackPanel Margin="0,0,0,20">
-
-                <StackPanel Tapped="Video_Tapped">
-                    <TextBlock Text="{Binding Title}"
-                               Style="{ThemeResource TitleStyle}" />
-                    <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                               Style="{ThemeResource DateStyle}" />
-
-                    <Border Margin="0,10"
-                            BorderThickness="1"
-                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                            VerticalAlignment="Top">
-                        <Grid>
+            <Grid Margin="0,0,0,20"
+                  Width="362">
+                <!--Obrázek + Title-->
+                <Button Click="VideoButton_Click"
+                        HorizontalAlignment="Stretch">
+                    <Button.Template>
+                        <ControlTemplate />
+                    </Button.Template>
+                    <Grid Background="{ThemeResource VideoBackgroundBrush}">
+                        <!--Obrázek-->
+                        <Border BorderThickness="1"
+                                BorderBrush="{ThemeResource PhoneDisabledBrush}"
+                                VerticalAlignment="Top"
+                                MinHeight="180">
+                            <Border.Background>
+                                <ImageBrush Stretch="Uniform"
+                                            ImageSource="Assets/LogoTransparent.png" />
+                            </Border.Background>
                             <Image Source="{Binding ImageUri}" />
-                            <!--<TextBlock Foreground="White"
-                                       Opacity="0.8"
-                                       FontWeight="Normal"
-                                       FontSize="{ThemeResource TextStyleExtraLargeFontSize}"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Bottom">
-                                <Run Text="{Binding Rating}" />
-                                <Run Text="/10"
-                                     FontSize="{ThemeResource TextStyleLargeFontSize}" />
-                            </TextBlock>-->
+                        </Border>
+
+                        <!--Title-->
+                        <Grid VerticalAlignment="Bottom"
+                              Margin="1">
+                            <Border Background="{ThemeResource PhoneAccentBrush}"
+                                    Opacity="0.65" />
+                            <TextBlock Text="{Binding Title}"
+                                       Style="{StaticResource BaseTextBlockStyle}"
+                                       Margin="10,6"
+                                       TextWrapping="WrapWholeWords"
+                                       Foreground="White"
+                                       FontSize="{ThemeResource TextStyleLargeFontSize}"
+                                       LineHeight="{ThemeResource TextStyleExtraLargeFontSize}" />
                         </Grid>
-                    </Border>
-                </StackPanel>
+                    </Grid>
+                </Button>
 
-                <ItemsControl ItemsSource="{Binding Tags}"
-                              ItemTemplate="{StaticResource TagTemplate}"
-                              Margin="0,0,0,5">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <local:WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+                <!--Info-->
+                <Button HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        MinWidth="52"
+                        MinHeight="52"
+                        Click="InfoButton_Click">
+                    <Button.Template>
+                        <ControlTemplate />
+                    </Button.Template>
+                    <Grid Background="Transparent">
+                        <Ellipse Margin="7"
+                                 Fill="White"
+                                 Opacity="0.4" />
+                        <Path Data="M402.198,281.152C385.279,281.152 365.874,287.45 342.941,300.374 321.161,312.758 296.933,333.386 270.976,361.86L261.651,372.265 298.083,400.487 306.113,392.569C334.158,365.281 343.626,357.83 346.795,355.815 310.47,482.709 291.785,559.388 291.785,592.398 291.785,605.536 295.566,616.158 302.944,624.184 310.541,632.32 321.052,636.567 333.329,636.567 345.786,636.567 360.582,631.564 378.583,621.305 395.466,611.622 420.955,590.672 456.452,557.229L466.244,548.048 433.086,515.759 424.123,524.144C392.622,553.772 378.834,563.131 375.702,566.3 376.242,553.088 383.802,514.821 414.943,410.1 439.963,326.546 439.963,317.799 439.963,313.625 439.963,303.758 436.148,295.371 428.874,289.359 422.251,283.925 413.288,281.152 402.198,281.152z M401.478,133.629C372.787,133.629 349.601,156.885 349.601,185.43 349.601,214.159 372.787,237.341 401.478,237.341 430.17,237.341 453.392,214.159 453.392,185.43 453.392,156.885 430.17,133.629 401.478,133.629z M383.983,0C595.665,7E-06 768,172.256 768,384 768,595.711 595.665,768 383.983,768 172.192,768 -4E-06,595.711 0,384 -4E-06,172.256 172.192,7E-06 383.983,0z"
+                              Stretch="Uniform"
+                              Fill="White"
+                              Width="32"
+                              Height="32"
+                              Margin="12" />
+                    </Grid>
+                </Button>
 
-                <TextBlock Text="{Binding Detail}"
-                           Style="{ThemeResource DetailStyle}" />
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate x:Key="LandscapeVideoTemplate">
-            <StackPanel Margin="0,0,0,20">
-
-                <StackPanel Tapped="Video_Tapped">
-                    <TextBlock Text="{Binding Title}"
-                               Style="{ThemeResource TitleStyle}" />
-                    <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                               Style="{ThemeResource DateStyle}" />
-                </StackPanel>
-
-                <ItemsControl ItemsSource="{Binding Tags}"
-                              ItemTemplate="{StaticResource TagTemplate}"
-                              Margin="0,0,0,5">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <local:WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-
-                <Grid Margin="0,10,0,0"
-                      Tapped="Video_Tapped">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="3*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Border BorderThickness="1"
-                            BorderBrush="{ThemeResource PhoneDisabledBrush}"
-                            VerticalAlignment="Top">
-                        <Image Source="{Binding ImageUri}" />
-                    </Border>
-
-                    <TextBlock Grid.Column="1"
-                               Text="{Binding Detail}"
-                               Style="{ThemeResource DetailStyle}"
-                               Margin="10,0,0,0" />
-                </Grid>
-            </StackPanel>
+            </Grid>
         </DataTemplate>
     </UserControl.Resources>
 
@@ -118,15 +87,10 @@
                 <StackPanel>
                     <ListView x:Name="VideoListView"
                               ItemsSource="{Binding List}"
-                              SelectionChanged="ListView_SelectionChanged"
-                              ItemTemplate="{StaticResource PortraitVideoTemplate}" />
+                              ItemTemplate="{StaticResource PortraitVideoTemplate}"
+                              HorizontalContentAlignment="Stretch" />
 
                     <Grid Margin="0,20,0,40">
-                        <TextBlock Visibility="{Binding IsError, Converter={StaticResource BoolToVisibilityConverter}}"
-                                   Text="Něco se pokazilo :("
-                                   Style="{ThemeResource SubheaderTextBlockStyle}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
                         <Grid Visibility="{Binding IsError, Converter={StaticResource BoolNegationToVisibilityConverter}}">
                             <Button Visibility="{Binding CanLoadMore, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Tapped="LoadMoreButton_Tapped"
