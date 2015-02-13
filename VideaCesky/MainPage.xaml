@@ -6,7 +6,6 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          x:Class="VideaCesky.MainPage"
                          mc:Ignorable="d"
-                         RequestedTheme="Dark"
                          Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <paging:MtPage.BottomAppBar>

@@ -171,14 +171,15 @@ namespace VideaCesky
             await LoadMore();
         }
 
-        private async void VideoButton_Click(object sender, RoutedEventArgs e)
+        private void VideoListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FrameworkElement fe = sender as FrameworkElement;
-            if (fe.DataContext is Video)
+            ListView lw = (ListView)sender;
+            if (lw.SelectedItem != null && lw.SelectedItem is Video)
             {
-                new MessageDialog(fe.ActualWidth.ToString()).ShowAsync();
-                Video video = fe.DataContext as Video;
-                await PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
+                Video video = (Video)lw.SelectedItem;
+                lw.SelectedItem = null;
+
+                PageFrame.NavigateAsync(typeof(VideoPage), video.Uri.ToString());
             }
         }
 
@@ -264,10 +265,10 @@ namespace VideaCesky
                             string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
 
                             // ImageUri
-                            Uri imageUri = new Uri(node.ChildNodes.FindFirst("img").Attributes["src"].Value);
+                            string imageUriString = node.ChildNodes.FindFirst("img").Attributes["src"].Value;
+                            Uri imageUri = new Uri(imageUriString);
 
-                            var descendants = node.Descendants();
-
+                            IEnumerable<HtmlNode> descendants = node.Descendants();
                             // Date
                             // Formát: 8.7.2014 v 08:00
                             HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");

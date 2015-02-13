@@ -39,7 +39,6 @@ namespace VideaCesky
 
         public override Task OnInitializedAsync(MtFrame frame, ApplicationExecutionState args)
         {
-            //frame.PageAnimation = new TurnstilePageAnimation { UseBitmapCacheMode = true };
             return null;
         }
 

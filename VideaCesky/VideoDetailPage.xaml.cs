@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using Windows.Graphics.Display;
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -56,6 +57,16 @@ namespace VideaCesky
             if (Video != null)
             {
                 await Launcher.LaunchUriAsync(Video.Uri);
+            }
+        }
+
+        private async void TagButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            FrameworkElement fe = sender as FrameworkElement;
+            if (fe != null)
+            {
+                Tag tag = fe.DataContext as Tag;
+                await Frame.NavigateAsync(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
             }
         }
     }
