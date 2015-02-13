@@ -23,7 +23,7 @@ namespace VideaCesky
             return VideoListControl;
         }
 
-        protected override async void OnNavigatedTo(MyToolkit.Paging.MtNavigationEventArgs e)
+        protected override void OnNavigatedTo(MyToolkit.Paging.MtNavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             HardwareButtons.BackPressed -= HardwareButtons_BackPressed;
