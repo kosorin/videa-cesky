@@ -128,8 +128,10 @@
                                FontWeight="SemiLight"
                                Margin="0,5,0,0"
                                Text="{Binding ErrorMessage}" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="Proč vidím tuto chybu tak často?">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,5,0,0">
+                        <Button Content="Proč vidím tuto chybu tak často?"
+                                Foreground="{StaticResource VideoForegroundBrush}">
                             <Button.Flyout>
                                 <Flyout Placement="Full">
                                     <TextBlock Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"
@@ -148,6 +150,7 @@
                         <Button Content="Přesto přehrát"
                                 Visibility="{Binding CanPlayAnyway, Converter={StaticResource BoolToVisibilityConverter}}"
                                 Click="PlayAnyway_Click"
+                                Foreground="{StaticResource VideoForegroundBrush}"
                                 Margin="10,0,0,0" />
                     </StackPanel>
                 </StackPanel>
