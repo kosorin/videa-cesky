@@ -289,7 +289,6 @@ namespace VideaCesky.Helpers
 
         public static async Task<List<Comment>> GetComments(Uri pageUri)
         {
-            List<Comment> comments = new List<Comment>();
             try
             {
                 HttpResponse response = await Http.GetAsync(pageUri);
@@ -299,102 +298,113 @@ namespace VideaCesky.Helpers
 
                 if (contentNode != null)
                 {
-                    HtmlNode root = contentNode.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element);
+                    HtmlNode root = contentNode.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "ul");
                     if (root != null)
                     {
-                        if (root.Name == "ul")
-                        {
-                            foreach (HtmlNode node in root.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "li"))
-                            {
-                                IEnumerable<HtmlNode> descendants = node.Descendants();
-
-                                // Id
-                                string id = node.Id.Replace("comment-", "");
-
-                                // Autor
-                                HtmlNode authorNode = descendants.Where(n => n.Attributes.Contains("href") && n.Attributes["href"].Value == "#comment-" + id).First();
-                                string author = authorNode.InnerText.Trim();
-
-                                // Date
-                                string dateString = authorNode.NextSibling.InnerText.Trim();
-                                DateTime date = DateTime.ParseExact(
-                                    dateString,
-                                    "HH':'mm' - 'd'.'M'.'yyyy",
-                                    CultureInfo.InvariantCulture);
-
-                                // Text
-                                List<string> texts = new List<string>();
-                                HtmlNode textRoot = descendants.First(n => n.Id == "commentbody-" + id);
-                                List<HtmlNode> textNodes;
-                                HtmlNode textDivNode = textRoot.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "div");
-                                if (textDivNode != default(HtmlNode))
-                                {
-                                    textNodes = new List<HtmlNode>(textDivNode.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "p"));
-                                }
-                                else
-                                {
-                                    textNodes = new List<HtmlNode>(textRoot.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "p"));
-                                    textNodes.RemoveAt(textNodes.Count - 1);
-                                }
-                                foreach (HtmlNode textNode in textNodes)
-                                {
-                                    string part = "";
-                                    foreach (HtmlNode n in textNode.ChildNodes)
-                                    {
-                                        switch (n.NodeType)
-                                        {
-                                        case HtmlNodeType.Element:
-                                            if (n.Name == "img" && n.Attributes.Contains("alt"))
-                                            {
-                                                string emoticon = n.Attributes["alt"].Value;
-                                                part += emoticon;
-                                            }
-                                            else
-                                            {
-                                                part += n.InnerText;
-                                            }
-                                            break;
-                                        case HtmlNodeType.Text:
-                                            part += n.InnerText;
-                                            break;
-                                        default:
-                                            break;
-                                        }
-                                    }
-                                    texts.Add(WebUtility.HtmlDecode(part.Trim()));
-                                }
-                                string text = string.Join(Environment.NewLine, texts);
-
-                                // Karma + IsPopular
-                                HtmlNode karmaNode = textRoot.ChildNodes.Last(n => n.NodeType == HtmlNodeType.Element && n.Name == "p");
-                                bool isPopular = karmaNode.InnerText.Contains("Oblíbený komentář.");
-                                string karmaUp = karmaNode.ChildNodes.Where(n => n.Id == "karma-" + id + "-up").First().InnerText;
-                                string karmaDown = karmaNode.ChildNodes.Where(n => n.Id == "karma-" + id + "-down").First().InnerText;
-
-                                comments.Add(new Comment()
-                                {
-                                    Author = author,
-                                    Date = date,
-                                    Text = text,
-                                    KarmaUp = int.Parse(karmaUp),
-                                    KarmaDown = int.Parse(karmaDown),
-                                    IsPopular = isPopular
-                                });
-                            }
-                        }
-                        else if (root.Name == "p" && root.Attributes.Contains("class") && root.Attributes["class"].Value == "noComments")
-                        {
-                            return null;
-                        }
+                        return ParseComment(root);
+                    }
+                    else if (root.Name == "p" && root.Attributes.Contains("class") && root.Attributes["class"].Value == "noComments")
+                    {
+                        return null;
                     }
                 }
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Error Comments: {0}", e.Message);
-                return null;
             }
 
+            return null;
+        }
+
+        private static List<Comment> ParseComment(HtmlNode root, int level = 0)
+        {
+            List<Comment> comments = new List<Comment>();
+            foreach (HtmlNode node in root.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "li"))
+            {
+                IEnumerable<HtmlNode> descendants = node.Descendants();
+
+                // Id
+                string id = node.Id.Replace("comment-", "");
+
+                // Autor
+                HtmlNode authorNode = descendants.Where(n => n.Attributes.Contains("href") && n.Attributes["href"].Value == "#comment-" + id).First();
+                string author = authorNode.InnerText.Trim();
+
+                // Date
+                string dateString = authorNode.NextSibling.InnerText.Trim();
+                DateTime date = DateTime.ParseExact(
+                    dateString,
+                    "HH':'mm' - 'd'.'M'.'yyyy",
+                    CultureInfo.InvariantCulture);
+
+                // Text
+                List<string> texts = new List<string>();
+                HtmlNode textRoot = descendants.First(n => n.Id == "commentbody-" + id);
+                List<HtmlNode> textNodes;
+                HtmlNode textDivNode = textRoot.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "div");
+                if (textDivNode != default(HtmlNode))
+                {
+                    textNodes = new List<HtmlNode>(textDivNode.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "p"));
+                }
+                else
+                {
+                    textNodes = new List<HtmlNode>(textRoot.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "p"));
+                    textNodes.RemoveAt(textNodes.Count - 1);
+                }
+                foreach (HtmlNode textNode in textNodes)
+                {
+                    string part = "";
+                    foreach (HtmlNode n in textNode.ChildNodes)
+                    {
+                        switch (n.NodeType)
+                        {
+                        case HtmlNodeType.Element:
+                            if (n.Name == "img" && n.Attributes.Contains("alt"))
+                            {
+                                string emoticon = n.Attributes["alt"].Value;
+                                part += emoticon;
+                            }
+                            else
+                            {
+                                part += n.InnerText;
+                            }
+                            break;
+                        case HtmlNodeType.Text:
+                            part += n.InnerText;
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                    texts.Add(WebUtility.HtmlDecode(part.Trim()));
+                }
+                string text = string.Join(Environment.NewLine, texts);
+
+                // Karma + IsPopular
+                HtmlNode karmaNode = textRoot.ChildNodes.Last(n => n.NodeType == HtmlNodeType.Element && n.Name == "p");
+                bool isPopular = karmaNode.InnerText.Contains("Oblíbený komentář.");
+                string karmaUp = karmaNode.ChildNodes.Where(n => n.Id == "karma-" + id + "-up").First().InnerText;
+                string karmaDown = karmaNode.ChildNodes.Where(n => n.Id == "karma-" + id + "-down").First().InnerText;
+
+                comments.Add(new Comment()
+                {
+                    Author = author,
+                    Date = date,
+                    Text = text,
+                    KarmaUp = int.Parse(karmaUp),
+                    KarmaDown = int.Parse(karmaDown),
+                    IsPopular = isPopular,
+                    Level = level
+                });
+
+                // Pod-komentáře
+                HtmlNode childrenNode = node.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "ul" && n.Attributes.Contains("class") && n.Attributes["class"].Value == "children");
+                if (childrenNode != default(HtmlNode))
+                {
+                    comments.AddRange(ParseComment(childrenNode, level + 1));
+                }
+            }
             return comments;
         }
     }

@@ -28,6 +28,8 @@ namespace VideaCesky.Models
 
         public bool IsPopular { get; set; }
 
+        public int Level { get; set; }
+
         public Comment()
         {
             Children = new List<Comment>();
