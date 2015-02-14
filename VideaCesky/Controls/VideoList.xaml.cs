@@ -12,6 +12,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using VideaCesky.Helpers;
 using VideaCesky.Models;
 using VideaCesky.Pages;
 using Windows.Graphics.Display;
@@ -228,110 +229,41 @@ namespace VideaCesky.Controls
         #region Private Methods
         private async Task LoadMore()
         {
+            // Reset stavů
             IsError = false;
             CanLoadMore = false;
             Loading = true;
             NoVideos = false;
 
-            int countBeforeLoading = List.Count;
-            try
+            // Poskládání stránky, ze které se bude stahovat
+            Page++;
+            string requestUri = string.Format("{0}/page/{1}", Feed, Page);
+            if (!string.IsNullOrEmpty(Search))
             {
-                Page++;
-
-                string requestUri = string.Format("{0}/page/{1}", Feed, Page);
-                if (!string.IsNullOrEmpty(Search))
-                {
-                    requestUri += "?s=" + Search;
-                }
-
-                HttpResponse response = await Http.GetAsync(requestUri);
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(response.Response);
-
-                HtmlNode contentArea = doc.GetElementbyId("contentArea");
-                foreach (var node in contentArea.ChildNodes)
-                {
-                    if (node.NodeType == HtmlNodeType.Element && node.Id != "")
-                    {
-                        try
-                        {
-                            // Uri
-                            Uri uri = new Uri(node.ChildNodes.FindFirst("a").Attributes["href"].Value);
-                            if (uri.ToString().Contains("videacesky.cz/clanky-novinky-souteze"))
-                            {
-                                // toto nejsou videa...
-                                continue;
-                            }
-
-                            // Title
-                            string title = WebUtility.HtmlDecode(node.ChildNodes.FindFirst("span").InnerText);
-
-                            // ImageUri
-                            string imageUriString = node.ChildNodes.FindFirst("img").Attributes["src"].Value;
-                            Uri imageUri = new Uri(imageUriString);
-
-                            IEnumerable<HtmlNode> descendants = node.Descendants();
-                            // Date
-                            // Formát: 8.7.2014 v 08:00
-                            HtmlNode dateNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postDate");
-                            DateTime date = DateTime.ParseExact(
-                                dateNode.InnerText,
-                                "d'.'M'.'yyyy' v 'HH':'mm",
-                                CultureInfo.InvariantCulture);
-
-                            // Detail
-                            HtmlNode detailNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "obs");
-                            string detail = WebUtility.HtmlDecode(Regex.Replace(detailNode.InnerText.Replace("(Celý příspěvek...)", ""), @"<!--[^>]*-->", "")).Trim();
-
-                            // Tags
-                            List<Tag> tags = new List<Tag>();
-                            HtmlNode tagsNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "postTags");
-                            foreach (var tagNode in tagsNode.ChildNodes)
-                            {
-                                if (tagNode.NodeType == HtmlNodeType.Element && tagNode.Name == "a")
-                                {
-                                    if (tagNode.Attributes.Contains("href"))
-                                    {
-                                        tags.Add(new Tag(tagNode.Attributes["href"].Value, tagNode.InnerText));
-                                    }
-                                }
-                            }
-
-                            // Rating
-                            HtmlNode ratingNode = descendants.First(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "post-ratings");
-                            string valueString = ratingNode.ChildNodes.First(n => n.Name == "strong").InnerText;
-                            valueString = valueString.Replace(',', '.');
-                            double rating = double.Parse(valueString, CultureInfo.InvariantCulture);
-
-                            List.Add(new Video()
-                            {
-                                Uri = uri,
-                                Title = title,
-                                Detail = detail,
-                                ImageUri = imageUri,
-                                Date = date,
-                                Tags = tags,
-                                Rating = rating
-                            });
-                        }
-                        catch
-                        {
-                            continue;
-                        }
-                    }
-                }
-                Debug.WriteLine("Loaded Page {0}", Page);
+                requestUri += "?s=" + Search;
             }
-            catch (Exception e)
+
+            // Stažení a přidání videí
+            bool canLoadMore = false;
+            List<Video> appendList = await Downloader.GetVideoList(new Uri(requestUri));
+            if (appendList!=null)
+            {
+                canLoadMore = appendList.Count > 0;
+                foreach (Video video in appendList)
+                {
+                    List.Add(video);
+                }
+            }
+            else
             {
                 IsError = true;
-                Debug.WriteLine("[{0}] {1}", Page, e.Message);
             }
 
+            // Nastavení nových stavů
             Loading = false;
             if (!IsError)
             {
-                if (List.Count > countBeforeLoading)
+                if (canLoadMore)
                 {
                     CanLoadMore = true;
                 }

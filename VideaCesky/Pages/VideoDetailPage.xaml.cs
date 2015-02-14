@@ -1,6 +1,9 @@
 ﻿using MyToolkit.Paging;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using VideaCesky.Helpers;
 using VideaCesky.Models;
 using Windows.Graphics.Display;
 using Windows.System;
@@ -19,7 +22,7 @@ namespace VideaCesky.Pages
 
         public Video Video { get; set; }
 
-        protected override void OnNavigatedTo(MtNavigationEventArgs args)
+        protected override async void OnNavigatedTo(MtNavigationEventArgs args)
         {
             base.OnNavigatedTo(args);
             DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
@@ -27,6 +30,8 @@ namespace VideaCesky.Pages
             if (args.Parameter != null && args.Parameter is Video)
             {
                 Video = args.Parameter as Video;
+                Video.Comments = await Downloader.GetComments(Video.Uri) ?? new List<Comment>();
+
                 DataContext = Video;
             }
             else
@@ -70,5 +75,6 @@ namespace VideaCesky.Pages
                 await Frame.NavigateAsync(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
             }
         }
+
     }
 }

@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using VideaCesky.Common;
+using VideaCesky.Helpers;
 using VideaCesky.Models;
 using Windows.Graphics.Display;
 using Windows.Phone.UI.Input;
@@ -142,7 +144,7 @@ namespace VideaCesky.Pages
             try
             {
                 Uri pageUri = CheckPageUri(e.Parameter as string);
-                VideoList = await VideoDataCollection.ParsePage(pageUri);
+                VideoList = await Downloader.GetVideoData(pageUri);
                 if (VideoList.Count == 0)
                 {
                     ShowError("Na požadované stránce jsem nenašel žádné video.");
@@ -601,7 +603,7 @@ namespace VideaCesky.Pages
         private async Task<bool> AttachSubtitles(Uri uri)
         {
             VideoMediaElement.Markers.Clear();
-            subtitles = await Subtitles.Download(uri);
+            subtitles = await Downloader.GetSubtitles(uri);
             if (subtitles != null)
             {
                 int i = 0;

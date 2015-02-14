@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -86,6 +87,15 @@ namespace VideaCesky.Models
             set { SetProperty(ref _tags, value); }
         }
         #endregion // end of Tags
+
+        #region Comments
+        private List<Comment> _comments = null;
+        public List<Comment> Comments
+        {
+            get { return _comments; }
+            set { SetProperty(ref _comments, value); }
+        }
+        #endregion // end of Comments
 
         #region Rating
         private double _rating = 0;
