@@ -85,50 +85,50 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SearchDialog.xaml.cs">
+    <Compile Include="Controls\SearchDialog.xaml.cs">
       <DependentUpon>SearchDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SearchPage.xaml.cs">
+    <Compile Include="Pages\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VideoDetailPage.xaml.cs">
+    <Compile Include="Pages\VideoDetailPage.xaml.cs">
       <DependentUpon>VideoDetailPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VideoListBasePage.cs" />
-    <Compile Include="BindableBase.cs" />
-    <Compile Include="BoolNegationToVisibilityConverter.cs" />
-    <Compile Include="Category.cs" />
-    <Compile Include="CategoryPage.xaml.cs">
+    <Compile Include="Controls\VideoListBasePage.cs" />
+    <Compile Include="Common\BindableBase.cs" />
+    <Compile Include="Converters\BoolNegationToVisibilityConverter.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Pages\CategoryPage.xaml.cs">
       <DependentUpon>CategoryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="DateTimeConverter.cs" />
-    <Compile Include="BoolNegationConverter.cs" />
-    <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="IntToBoolConverter.cs" />
-    <Compile Include="CategoryNameConverter.cs" />
-    <Compile Include="Video.cs" />
-    <Compile Include="VideoDataCollection.cs" />
-    <Compile Include="VideoException.cs" />
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Converters\DateTimeConverter.cs" />
+    <Compile Include="Converters\BoolNegationConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\IntToBoolConverter.cs" />
+    <Compile Include="Converters\CategoryNameConverter.cs" />
+    <Compile Include="Models\Video.cs" />
+    <Compile Include="Models\VideoDataCollection.cs" />
+    <Compile Include="Models\VideoException.cs" />
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NullToVisibilityConverter.cs" />
-    <Compile Include="Subtitle.cs" />
-    <Compile Include="Subtitles.cs" />
-    <Compile Include="TimeSpanConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Models\Subtitle.cs" />
+    <Compile Include="Models\Subtitles.cs" />
+    <Compile Include="Converters\TimeSpanConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VideoData.cs" />
-    <Compile Include="VideoList.xaml.cs">
+    <Compile Include="Models\VideoData.cs" />
+    <Compile Include="Controls\VideoList.xaml.cs">
       <DependentUpon>VideoList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VideoPage.xaml.cs">
+    <Compile Include="Pages\VideoPage.xaml.cs">
       <DependentUpon>VideoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WrapPanel.cs" />
+    <Compile Include="Controls\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -144,31 +144,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="CategoryPage.xaml">
+    <Page Include="Pages\CategoryPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchDialog.xaml">
+    <Page Include="Controls\SearchDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchPage.xaml">
+    <Page Include="Pages\SearchPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VideoDetailPage.xaml">
+    <Page Include="Pages\VideoDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VideoList.xaml">
+    <Page Include="Controls\VideoList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VideoPage.xaml">
+    <Page Include="Pages\VideoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

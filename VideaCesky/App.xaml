@@ -2,13 +2,14 @@
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:local="using:VideaCesky"
+                      xmlns:converters="using:VideaCesky.Converters"
                       xmlns:paging="using:MyToolkit.Paging">
     <paging:MtApplication.Resources>
 
         <!--Region Konvertory-->
-        <local:DateTimeConverter x:Key="DateTimeConverter" />
-        <local:BoolNegationToVisibilityConverter x:Key="BoolNegationToVisibilityConverter" />
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+        <converters:BoolNegationToVisibilityConverter x:Key="BoolNegationToVisibilityConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <!--EndRegion Konvertory-->
 
         <!--Region Barvy-->
