@@ -89,8 +89,8 @@ namespace VideaCesky.Models
         #endregion // end of Tags
 
         #region Comments
-        private List<Comment> _comments = null;
-        public List<Comment> Comments
+        private ObservableCollection<Comment> _comments = null;
+        public ObservableCollection<Comment> Comments
         {
             get { return _comments; }
             set { SetProperty(ref _comments, value); }

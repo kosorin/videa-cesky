@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using VideaCesky.Helpers;
 using VideaCesky.Models;
 using Windows.Graphics.Display;
@@ -22,7 +23,9 @@ namespace VideaCesky.Pages
 
         public Video Video { get; set; }
 
-        protected override async void OnNavigatedTo(MtNavigationEventArgs args)
+        public int? CurrentPage { get; set; }
+
+        protected override void OnNavigatedTo(MtNavigationEventArgs args)
         {
             base.OnNavigatedTo(args);
             DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
@@ -30,8 +33,6 @@ namespace VideaCesky.Pages
             if (args.Parameter != null && args.Parameter is Video)
             {
                 Video = args.Parameter as Video;
-                Video.Comments = await Downloader.GetComments(Video.Uri) ?? new List<Comment>();
-
                 DataContext = Video;
             }
             else
@@ -76,5 +77,71 @@ namespace VideaCesky.Pages
             }
         }
 
+        private async void MtPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (Video != null && Video.Comments == null)
+            {
+                await LoadMore();
+            }
+        }
+
+        private async void LoadMoreButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            await LoadMore();
+        }
+
+        private async Task LoadMore()
+        {
+            LoadMoreButton.Visibility = Visibility.Collapsed;
+            LoadingComments.IsActive = true;
+
+            if (Video != null)
+            {
+                Uri uri = Video.Uri;
+                if (CurrentPage != null && CurrentPage > 1)
+                {
+                    uri = new Uri(uri.ToString() + "/comment-page-" + (CurrentPage.Value - 1).ToString());
+                }
+
+                Tuple<List<Comment>, int?> tuple = await Downloader.GetComments(uri);
+                if (tuple != null)
+                {
+                    List<Comment> comments = tuple.Item1 ?? new List<Comment>();
+                    if (CurrentPage != null && CurrentPage > 1)
+                    {
+                        if (Video.Comments == null)
+                        {
+                            Video.Comments = new ObservableCollection<Comment>();
+                        }
+                        foreach (Comment comment in comments)
+                        {
+                            Video.Comments.Add(comment);
+                        }
+                    }
+                    else
+                    {
+                        Video.Comments = new ObservableCollection<Comment>(comments);
+                    }
+                    CurrentPage = tuple.Item2;
+                }
+                else
+                {
+                    CurrentPage = null;
+                }
+
+                LoadMoreButton.Visibility = (CurrentPage != null && CurrentPage > 1) ? Visibility.Visible : Visibility.Collapsed;
+                LoadingComments.IsActive = false;
+            }
+        }
+
+        private async void CommentsRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentPage = null;
+            if (Video != null)
+            {
+                Video.Comments = null;
+            }
+            await LoadMore();
+        }
     }
 }

@@ -287,7 +287,7 @@ namespace VideaCesky.Helpers
             return dataCollection;
         }
 
-        public static async Task<List<Comment>> GetComments(Uri pageUri)
+        public static async Task<Tuple<List<Comment>, int?>> GetComments(Uri pageUri)
         {
             try
             {
@@ -298,12 +298,24 @@ namespace VideaCesky.Helpers
 
                 if (contentNode != null)
                 {
+                    int? currentPage = null;
+                    HtmlNode paginationNode = contentNode.ChildNodes.FirstOrDefault(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "pagination commentPagination");
+                    if (paginationNode != default(HtmlNode))
+                    {
+                        HtmlNode currentPageNode = paginationNode.Descendants().FirstOrDefault(n => n.Attributes.Contains("class") && n.Attributes["class"].Value == "page-numbers current");
+                        if (currentPageNode != default(HtmlNode))
+                        {
+                            currentPage = int.Parse(currentPageNode.InnerText.Trim());
+                        }
+                    }
+
                     HtmlNode root = contentNode.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "ul");
                     if (root != null)
                     {
-                        return ParseComment(root);
+                        List<Comment> comments = GetCommentsFromHtmlNode(root);
+                        return new Tuple<List<Comment>, int?>(comments, currentPage);
                     }
-                    else if (root.Name == "p" && root.Attributes.Contains("class") && root.Attributes["class"].Value == "noComments")
+                    else if (contentNode.Name == "p" && root.Attributes.Contains("class") && root.Attributes["class"].Value == "noComments")
                     {
                         return null;
                     }
@@ -317,7 +329,7 @@ namespace VideaCesky.Helpers
             return null;
         }
 
-        private static List<Comment> ParseComment(HtmlNode root, int level = 0)
+        private static List<Comment> GetCommentsFromHtmlNode(HtmlNode root, int level = 0)
         {
             List<Comment> comments = new List<Comment>();
             foreach (HtmlNode node in root.ChildNodes.Where(n => n.NodeType == HtmlNodeType.Element && n.Name == "li"))
@@ -402,7 +414,7 @@ namespace VideaCesky.Helpers
                 HtmlNode childrenNode = node.ChildNodes.FirstOrDefault(n => n.NodeType == HtmlNodeType.Element && n.Name == "ul" && n.Attributes.Contains("class") && n.Attributes["class"].Value == "children");
                 if (childrenNode != default(HtmlNode))
                 {
-                    comments.AddRange(ParseComment(childrenNode, level + 1));
+                    comments.AddRange(GetCommentsFromHtmlNode(childrenNode, level + 1));
                 }
             }
             return comments;
