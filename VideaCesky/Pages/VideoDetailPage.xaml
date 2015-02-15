@@ -11,22 +11,15 @@
                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                mc:Ignorable="d"
-               Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-               Loaded="MtPage_Loaded">
+               Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <paging:MtPage.Resources>
-        <converters:CommentLevelConverter x:Key="CommentLevelConverter" />
-
         <Style x:Key="BaseDetailTextStyle"
                TargetType="TextBlock"
                BasedOn="{StaticResource BaseTextBlockStyle}">
             <Setter Property="TextWrapping"
                     Value="Wrap" />
         </Style>
-
-        <SolidColorBrush x:Key="CommentBackgroundBrush"
-                         Color="{ThemeResource PhoneDisabledColor}"
-                         Opacity="0.5" />
     </paging:MtPage.Resources>
 
     <paging:MtPage.BottomAppBar>
@@ -34,6 +27,14 @@
             <AppBarButton Label="přehrát"
                           Icon="Play"
                           Click="PlayButton_Click" />
+            <AppBarButton Label="komentáře"
+                          Click="CommentsButton_Click">
+                <AppBarButton.Icon>
+                    <PathIcon HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Data="M15.2402715682983,4.30370998382568L17.0930042266846,4.67772197723389 18.605936050415,5.6977014541626 19.6259670257568,7.21056270599365 20,9.06322193145752 19.387866973877,11.3955745697021 17.7735290527344,13.0877542495728 18.7020664215088,15.777491569519 16.0407161712646,13.7504138946533 15.2402715682983,13.8229475021362 13.3875398635864,13.4488983154297 11.8746089935303,12.428840637207 10.8545770645142,10.915904045105 10.4805450439453,9.06322193145752 10.8545770645142,7.21056270599365 11.8746089935303,5.6977014541626 13.3875398635864,4.67772197723389 15.2402715682983,4.30370998382568z M0,0L15.2402725219727,0 15.2402725219727,2.71610236167908 12.7720489501953,3.2156834602356 10.7542886734009,4.57724571228027 9.39274597167969,6.59501600265503 8.89317512512207,9.06322193145752 9.22721481323242,11.0968503952026 9.27644920349121,11.236367225647 5.2262225151062,11.236367225647 2.64513969421387,15.1121597290039 2.64513969421387,11.236367225647 0,11.236367225647 0,0z" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton Label="otevřít v prohlížeči"
                           Click="WebButton_Click"
                           Icon="World" />
@@ -41,8 +42,14 @@
     </paging:MtPage.BottomAppBar>
 
     <Grid>
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition />
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
         <ScrollViewer>
-            <StackPanel Margin="24,12,24,48">
+            <StackPanel Margin="19,12,19,48">
 
                 <!--Title-->
                 <TextBlock Style="{StaticResource BaseDetailTextStyle}"
@@ -51,7 +58,7 @@
                            LineHeight="26.667" />
 
                 <!--Datum + Hodnocení-->
-                <StackPanel Orientation="Horizontal">
+                <Grid>
                     <TextBlock Style="{StaticResource BaseDetailTextStyle}"
                                Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
                                Opacity="0.5"
@@ -60,13 +67,14 @@
                                Opacity="0.8"
                                FontSize="16"
                                FontFamily="Segoe UI Symbol"
-                               Margin="20,0,0,0">
+                               Margin="20,0,0,0"
+                               HorizontalAlignment="Right">
                         <Run Text="&#xe082;" />
                         <Run Text="{Binding Rating}" />
                         <Run Text="/10"
                              FontSize="13.333" />
                     </TextBlock>
-                </StackPanel>
+                </Grid>
 
                 <!--Detail-->
                 <TextBlock Style="{StaticResource BaseDetailTextStyle}"
@@ -105,139 +113,9 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!--Komentáře-->
-                <Grid Margin="0,20,0,5">
-                    <StackPanel Orientation="Horizontal">
-                        <Viewbox>
-                            <Path Data="M63.999996,18.073C75.039375,18.073 83.987999,27.021107 83.987999,38.060093 83.987999,45.185016 80.249702,51.420254 74.638161,54.960716L78.53746,66.255996 67.361382,57.743488C66.266457,57.929485 65.14843,58.048084 63.999996,58.048084 52.960621,58.048084 44.012001,49.098976 44.012001,38.060093 44.012001,27.021107 52.960621,18.073 63.999996,18.073z M0,0L64,0 64,11.406C49.302826,11.405999 37.346001,23.36313 37.346001,38.060093 37.346001,41.045597 37.839336,43.918018 38.748764,46.600113L38.955521,47.186001 21.946999,47.186001 11.108,63.462002 11.108,47.186001 0,47.186001z"
-                                  Stretch="Uniform"
-                                  Fill="{ThemeResource PhoneForegroundBrush}"
-                                  Width="24"
-                                  Height="24" />
-                        </Viewbox>
-                        <TextBlock Text="komentáře"
-                                   Margin="8,-2,0,0"
-                                   Style="{StaticResource BaseDetailTextStyle}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                    <Button Content="&#xe149; OBNOVIT"
-                            Background="Transparent"
-                            FontSize="12.667"
-                            FontFamily="Segoe UI Symbol"
-                            HorizontalAlignment="Right"
-                            Margin="0,0,-16,0"
-                            Click="CommentsRefreshButton_Click" />
-                </Grid>
-                <ListView ItemsSource="{Binding Comments}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Margin="{Binding Level, Converter={StaticResource CommentLevelConverter}}">
-                                <Grid Margin="0,16,0,8"
-                                      HorizontalAlignment="Left">
-                                    <Path x:Name="Path"
-                                          Data="m0,0 l12,0 l-12,-12 l0,12"
-                                          Fill="{ThemeResource CommentBackgroundBrush}"
-                                          Margin="4,0"
-                                          HorizontalAlignment="Left">
-                                        <i:Interaction.Behaviors>
-                                            <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                    Value="True"
-                                                                    ComparisonCondition="Equal">
-                                                <ic:ChangePropertyAction PropertyName="Fill"
-                                                                         Value="{ThemeResource PhoneAccentBrush}" />
-                                            </ic:DataTriggerBehavior>
-                                        </i:Interaction.Behaviors>
-                                    </Path>
-                                    <Border Padding="6,2,6,4"
-                                            Background="{ThemeResource CommentBackgroundBrush}">
-                                        <i:Interaction.Behaviors>
-                                            <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                    Value="True"
-                                                                    ComparisonCondition="Equal">
-                                                <ic:ChangePropertyAction PropertyName="Background"
-                                                                         Value="{ThemeResource PhoneAccentBrush}" />
-                                            </ic:DataTriggerBehavior>
-                                        </i:Interaction.Behaviors>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Author}"
-                                                       Style="{StaticResource BaseDetailTextStyle}"
-                                                       FontSize="16">
-                                                <i:Interaction.Behaviors>
-                                                    <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                            Value="True"
-                                                                            ComparisonCondition="Equal">
-                                                        <ic:ChangePropertyAction PropertyName="Foreground"
-                                                                                 Value="{ThemeResource ButtonPressedForegroundThemeBrush}" />
-                                                    </ic:DataTriggerBehavior>
-                                                </i:Interaction.Behaviors>
-                                            </TextBlock>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeConverter}}"
-                                                           Style="{StaticResource BaseDetailTextStyle}"
-                                                           Opacity="0.5"
-                                                           FontSize="14.667">
-                                                    <i:Interaction.Behaviors>
-                                                        <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                                Value="True"
-                                                                                ComparisonCondition="Equal">
-                                                            <ic:ChangePropertyAction PropertyName="Foreground"
-                                                                                     Value="{ThemeResource ButtonPressedForegroundThemeBrush}" />
-                                                        </ic:DataTriggerBehavior>
-                                                    </i:Interaction.Behaviors>
-                                                </TextBlock>
-                                                <TextBlock Style="{StaticResource BaseDetailTextStyle}"
-                                                           Opacity="0.8"
-                                                           FontSize="14.667"
-                                                           FontFamily="Segoe UI Symbol"
-                                                           Margin="20,0,0,0">
-                                                    <i:Interaction.Behaviors>
-                                                        <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                                Value="True"
-                                                                                ComparisonCondition="Equal">
-                                                            <ic:ChangePropertyAction PropertyName="Foreground"
-                                                                                     Value="{ThemeResource ButtonPressedForegroundThemeBrush}" />
-                                                        </ic:DataTriggerBehavior>
-                                                    </i:Interaction.Behaviors>
-                                                    <Run Text="&#xe19f;"
-                                                         Foreground="Green" />
-                                                    <Run Text="{Binding KarmaUp}" />
-                                                    <Run Text="  &#xe19e;"
-                                                         Foreground="Red" />
-                                                    <Run Text="{Binding KarmaDown}" />
-                                                </TextBlock>
-                                            </StackPanel>
-                                            <TextBlock models:Comment.CommentText="{Binding Text}"
-                                                       Style="{StaticResource BaseDetailTextStyle}"
-                                                       FontSize="16">
-                                                <i:Interaction.Behaviors>
-                                                    <ic:DataTriggerBehavior Binding="{Binding IsPopular}"
-                                                                            Value="True"
-                                                                            ComparisonCondition="Equal">
-                                                        <ic:ChangePropertyAction PropertyName="Foreground"
-                                                                                 Value="{ThemeResource ButtonPressedForegroundThemeBrush}" />
-                                                    </ic:DataTriggerBehavior>
-                                                </i:Interaction.Behaviors>
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <Grid Margin="0,20,0,40">
-                    <Button x:Name="LoadMoreButton"
-                            Visibility="Collapsed"
-                            Tapped="LoadMoreButton_Tapped"
-                            Content="Nahrát víc..."
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
-                    <ProgressRing x:Name="LoadingComments"
-                                  IsActive="False"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center" />
-                </Grid>
             </StackPanel>
         </ScrollViewer>
+
     </Grid>
 </paging:MtPage>
+

@@ -19,7 +19,6 @@
     </paging:MtPage.BottomAppBar>
 
     <Grid x:Name="LayoutRoot">
-
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition />

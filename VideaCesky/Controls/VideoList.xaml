@@ -115,37 +115,19 @@
     </UserControl.Resources>
 
     <Grid>
-        <ScrollViewer x:Name="ScrollViewer">
-            <Grid Margin="0,0,0,64">
-                <TextBlock x:Name="NoVideosTextBlock"
-                           Visibility="{Binding NoVideos, Converter={StaticResource BoolToVisibilityConverter}}"
-                           Text="Žádná videa"
-                           Style="{ThemeResource SubheaderTextBlockStyle}"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"
-                           Foreground="{ThemeResource PhoneDisabledBrush}" />
+        <TextBlock x:Name="NoVideosTextBlock"
+                   Visibility="{Binding NoVideos, Converter={StaticResource BoolToVisibilityConverter}}"
+                   Text="Žádná videa"
+                   Style="{ThemeResource SubheaderTextBlockStyle}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Foreground="{ThemeResource PhoneDisabledBrush}" />
 
-                <StackPanel>
-                    <ListView x:Name="VideoListView"
-                              ItemsSource="{Binding List}"
-                              ItemTemplate="{StaticResource PortraitVideoTemplate}"
-                              HorizontalContentAlignment="Stretch"
-                              SelectionChanged="VideoListView_SelectionChanged" />
-
-                    <Grid Margin="0,20,0,40">
-                        <Grid Visibility="{Binding IsError, Converter={StaticResource BoolNegationToVisibilityConverter}}">
-                            <Button Visibility="{Binding CanLoadMore, Converter={StaticResource BoolToVisibilityConverter}}"
-                                    Tapped="LoadMoreButton_Tapped"
-                                    Content="Nahrát víc..."
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center" />
-                            <ProgressRing IsActive="{Binding Loading}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                        </Grid>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-        </ScrollViewer>
+        <ListView x:Name="VideoListView"
+                  ItemsSource="{Binding List}"
+                  ItemTemplate="{StaticResource PortraitVideoTemplate}"
+                  HorizontalContentAlignment="Stretch"
+                  SelectionChanged="VideoListView_SelectionChanged"
+                  Loaded="VideoListView_Loaded" />
     </Grid>
 </UserControl>

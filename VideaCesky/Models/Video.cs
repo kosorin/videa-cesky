@@ -11,19 +11,9 @@ namespace VideaCesky.Models
 {
     public class Tag : BindableBase
     {
-        private string _feed = "";
-        public string Feed
-        {
-            get { return _feed; }
-            set { SetProperty(ref _feed, value); }
-        }
+        public string Feed { get; set; }
 
-        private string _name = "";
-        public string Name
-        {
-            get { return _name; }
-            set { SetProperty(ref _name, value); }
-        }
+        public string Name { get; set; }
 
         public Tag(string feed, string name)
         {
@@ -34,76 +24,18 @@ namespace VideaCesky.Models
 
     public class Video : BindableBase
     {
-        #region Uri
-        private Uri _uri;
-        public Uri Uri
-        {
-            get { return _uri; }
-            set { SetProperty(ref _uri, value); }
-        }
-        #endregion
+        public Uri Uri { get; set; }
 
-        #region Title
-        private string _title;
-        public string Title
-        {
-            get { return _title; }
-            set { SetProperty(ref _title, value); }
-        }
-        #endregion
+        public string Title { get; set; }
 
-        #region Detail
-        private string _detail;
-        public string Detail
-        {
-            get { return _detail; }
-            set { SetProperty(ref _detail, value); }
-        }
-        #endregion
+        public string Detail { get; set; }
 
-        #region ImageUri
-        private Uri _imageUri;
-        public Uri ImageUri
-        {
-            get { return _imageUri; }
-            set { SetProperty(ref _imageUri, value); }
-        }
-        #endregion
+        public Uri ImageUri { get; set; }
 
-        #region Date
-        private DateTime _date;
-        public DateTime Date
-        {
-            get { return _date; }
-            set { SetProperty(ref _date, value); }
-        }
-        #endregion
+        public DateTime Date { get; set; }
 
-        #region Tags
-        private List<Tag> _tags = null;
-        public List<Tag> Tags
-        {
-            get { return _tags; }
-            set { SetProperty(ref _tags, value); }
-        }
-        #endregion // end of Tags
+        public List<Tag> Tags { get; set; }
 
-        #region Comments
-        private ObservableCollection<Comment> _comments = null;
-        public ObservableCollection<Comment> Comments
-        {
-            get { return _comments; }
-            set { SetProperty(ref _comments, value); }
-        }
-        #endregion // end of Comments
-
-        #region Rating
-        private double _rating = 0;
-        public double Rating
-        {
-            get { return _rating; }
-            set { SetProperty(ref _rating, value); }
-        }
-        #endregion // end of Rating
+        public double Rating { get; set; }
     }
 }

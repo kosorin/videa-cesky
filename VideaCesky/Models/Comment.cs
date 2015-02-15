@@ -24,16 +24,9 @@ namespace VideaCesky.Models
 
         public int KarmaDown { get; set; }
 
-        public List<Comment> Children { get; set; }
-
         public bool IsPopular { get; set; }
 
         public int Level { get; set; }
-
-        public Comment()
-        {
-            Children = new List<Comment>();
-        }
 
         #region CommentText
         public static readonly DependencyProperty CommentTextProperty = DependencyProperty.RegisterAttached(

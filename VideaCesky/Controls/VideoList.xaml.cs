@@ -18,6 +18,7 @@ using VideaCesky.Pages;
 using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -62,6 +63,8 @@ namespace VideaCesky.Controls
         #endregion
 
         #region Private Fields
+
+        private ScrollViewer _scrollViever = null;
 
         private double _scrollPosition = 0;
 
@@ -199,6 +202,38 @@ namespace VideaCesky.Controls
                 }
             }
         }
+
+        private void VideoListView_Loaded(object sender, RoutedEventArgs e)
+        {
+            ScrollViewer sv = Utils.GetScrollViewer(sender as ListView);
+            if (sv != null)
+            {
+                _scrollViever = sv;
+                sv.ViewChanged -= sv_ViewChanged;
+                sv.ViewChanged += sv_ViewChanged;
+            }
+        }
+
+        private async void sv_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            ScrollViewer sv = sender as ScrollViewer;
+            if (sv != null)
+            {
+                if (e.IsIntermediate)
+                {
+                    double verticalOffset = sv.VerticalOffset;
+                    double maxVerticalOffset = sv.ScrollableHeight;
+
+                    if (maxVerticalOffset < 0 || verticalOffset == maxVerticalOffset)
+                    {
+                        if (CanLoadMore)
+                        {
+                            await LoadMore();
+                        }
+                    }
+                }
+            }
+        }
         #endregion // end of Event Handlers
 
         #region Public Methods
@@ -217,18 +252,28 @@ namespace VideaCesky.Controls
 
         public void SaveScrollPosition()
         {
-            _scrollPosition = ScrollViewer.VerticalOffset;
+            if (_scrollViever != null)
+            {
+                _scrollPosition = _scrollViever.VerticalOffset;
+            }
         }
 
         public void RefreshScrollPosition()
         {
-            ScrollViewer.ChangeView(null, _scrollPosition, null);
+            if (_scrollViever != null)
+            {
+                _scrollViever.ChangeView(null, _scrollPosition, null);
+            }
         }
         #endregion // end of Public Methods
 
         #region Private Methods
         private async Task LoadMore()
         {
+            StatusBar sb = StatusBar.GetForCurrentView();
+            sb.ProgressIndicator.Text = "Načítám videa...";
+            await sb.ProgressIndicator.ShowAsync();
+
             // Reset stavů
             IsError = false;
             CanLoadMore = false;
@@ -246,7 +291,7 @@ namespace VideaCesky.Controls
             // Stažení a přidání videí
             bool canLoadMore = false;
             List<Video> appendList = await Downloader.GetVideoList(new Uri(requestUri));
-            if (appendList!=null)
+            if (appendList != null)
             {
                 canLoadMore = appendList.Count > 0;
                 foreach (Video video in appendList)
@@ -272,6 +317,7 @@ namespace VideaCesky.Controls
                     NoVideos = true;
                 }
             }
+            await sb.ProgressIndicator.HideAsync();
         }
         #endregion // end of Private Methods
 
