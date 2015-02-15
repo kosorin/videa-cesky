@@ -1,10 +1,10 @@
-﻿<paging:MtApplication x:Class="VideaCesky.App"
+﻿<local:MyApp x:Class="VideaCesky.App"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:local="using:VideaCesky"
                       xmlns:converters="using:VideaCesky.Converters"
                       xmlns:paging="using:MyToolkit.Paging">
-    <paging:MtApplication.Resources>
+    <local:MyApp.Resources>
 
         <!--Region Konvertory-->
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
@@ -164,5 +164,5 @@
         </Style>
         <!--EndRegion Tlačítka-->
 
-    </paging:MtApplication.Resources>
-</paging:MtApplication>
+    </local:MyApp.Resources>
+</local:MyApp>
