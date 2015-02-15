@@ -9,19 +9,6 @@ using VideaCesky.Common;
 
 namespace VideaCesky.Models
 {
-    public class Tag : BindableBase
-    {
-        public string Feed { get; set; }
-
-        public string Name { get; set; }
-
-        public Tag(string feed, string name)
-        {
-            Feed = feed;
-            Name = name;
-        }
-    }
-
     public class Video : BindableBase
     {
         public Uri Uri { get; set; }

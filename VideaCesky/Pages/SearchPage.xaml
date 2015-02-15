@@ -32,15 +32,21 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0"
-                    Margin="19,0,0,0">
-            <TextBlock Text="VIDEA ČESKY"
-                       Style="{ThemeResource TitleTextBlockStyle}"
-                       Margin="0,12,0,0" />
-            <TextBlock Text="vyhledávání"
-                       Margin="0,-6.5,0,26.5"
-                       Style="{ThemeResource HeaderTextBlockStyle}"
-                       CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
-            <TextBlock Margin="0,-8,0,20"
+                    Margin="19,12,0,0">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox>
+                    <Path Data="M342.392,122.987C239.49,123.006 151.319,192.921 140.685,286.729 129.343,386.789 210.561,476.166 322.073,486.305 433.726,496.357 533.008,423.562 544.399,323.418 555.741,223.444 474.71,134.106 363.15,123.929 356.177,123.295 349.252,122.986 342.392,122.987z M340.78,4E-06C352.307,-0.001703 363.944,0.518666 375.661,1.58401 563.21,18.6332 699.556,168.869 680.651,337.114 673.881,396.629 648.395,450.326 610.166,494.346L838.748,738.109C867.595,768.799 863.114,814.838 828.805,840.765 794.543,866.563 743.291,862.542 714.304,831.844L482.736,584.564C429.618,606.553 369.17,616.354 306.764,610.781 119.305,593.649 -17.2717,443.415 1.77271,275.211 19.7129,117.518 167.869,0.025549 340.78,4E-06z"
+                          Stretch="Uniform"
+                          Fill="{ThemeResource PhoneForegroundBrush}"
+                          Width="24"
+                          Height="24" />
+                </Viewbox>
+                <TextBlock Text="VYHLEDÁVÁNÍ"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Margin="8,-2,0,0"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Margin="0,4,0,20"
                        Style="{ThemeResource BodyTextBlockStyle}">
                 <Run Foreground="{ThemeResource PhoneDisabledBrush}"
                      Text="Výsledky pro dotaz &#x201E;" />

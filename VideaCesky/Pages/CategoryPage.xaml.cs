@@ -27,8 +27,8 @@ namespace VideaCesky.Pages
 {
     public sealed partial class CategoryPage : VideoListBasePage
     {
-        private Category _category = null;
-        public Category Category
+        private ICategory _category = null;
+        public ICategory Category
         {
             get { return _category; }
             set { SetProperty(ref _category, value); }
@@ -47,10 +47,21 @@ namespace VideaCesky.Pages
 
         protected override void SetFeed(object parameter)
         {
-            if (parameter is Category)
+            if (parameter is ICategory)
             {
-                Category = parameter as Category;
+                Category = parameter as ICategory;
                 VideoList.Feed = Category.Feed;
+
+                if (Category is Category)
+                {
+                    HeaderPath.Style = Resources["CategoryPathStyle"] as Style;
+                    HeaderTextBlock.Text = "KATEGORIE";
+                }
+                else if (Category is Tag)
+                {
+                    HeaderPath.Style = Resources["TagPathStyle"] as Style;
+                    HeaderTextBlock.Text = "TAG";
+                }
             }
             else
             {

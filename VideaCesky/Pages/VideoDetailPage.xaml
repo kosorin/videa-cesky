@@ -30,9 +30,7 @@
             <AppBarButton Label="komentáře"
                           Click="CommentsButton_Click">
                 <AppBarButton.Icon>
-                    <PathIcon HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              Data="M15.2402715682983,4.30370998382568L17.0930042266846,4.67772197723389 18.605936050415,5.6977014541626 19.6259670257568,7.21056270599365 20,9.06322193145752 19.387866973877,11.3955745697021 17.7735290527344,13.0877542495728 18.7020664215088,15.777491569519 16.0407161712646,13.7504138946533 15.2402715682983,13.8229475021362 13.3875398635864,13.4488983154297 11.8746089935303,12.428840637207 10.8545770645142,10.915904045105 10.4805450439453,9.06322193145752 10.8545770645142,7.21056270599365 11.8746089935303,5.6977014541626 13.3875398635864,4.67772197723389 15.2402715682983,4.30370998382568z M0,0L15.2402725219727,0 15.2402725219727,2.71610236167908 12.7720489501953,3.2156834602356 10.7542886734009,4.57724571228027 9.39274597167969,6.59501600265503 8.89317512512207,9.06322193145752 9.22721481323242,11.0968503952026 9.27644920349121,11.236367225647 5.2262225151062,11.236367225647 2.64513969421387,15.1121597290039 2.64513969421387,11.236367225647 0,11.236367225647 0,0z" />
+                    <BitmapIcon UriSource="ms-appx:///Assets/AppBarComments.png" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="otevřít v prohlížeči"
@@ -48,8 +46,33 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <ScrollViewer>
-            <StackPanel Margin="19,12,19,48">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="19,12,0,8"
+                    Orientation="Horizontal">
+            <Viewbox>
+                <Path Data="M16.540001,8.8660004L16.540001,21.927 27.425001,15.39711z M0,0L42.667,0 42.667,4.5183251 38.59277,4.5183251 38.59277,9.1850302 42.667,9.1850302 42.667,13.185029 38.59277,13.185029 38.59277,17.851774 42.667,17.851774 42.667,21.777514 38.59277,21.777514 38.59277,26.44426 42.667,26.44426 42.667,30.667 0,30.667 0,26.44426 4.5925722,26.44426 4.5925722,21.777514 0,21.777514 0,17.851774 4.5925722,17.851774 4.5925722,13.185029 0,13.185029 0,9.1850302 4.5925722,9.1850302 4.5925722,4.5183251 0,4.5183251z"
+                      Width="24"
+                      Height="24"
+                      Stretch="Uniform"
+                      Fill="{ThemeResource PhoneForegroundBrush}" />
+            </Viewbox>
+            <TextBlock Text="VIDEO"
+                       Style="{ThemeResource TitleTextBlockStyle}"
+                       Margin="8,-2,0,0"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="19,4,19,48">
+                <StackPanel.ChildrenTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition />
+                    </TransitionCollection>
+                </StackPanel.ChildrenTransitions>
 
                 <!--Title-->
                 <TextBlock Style="{StaticResource BaseDetailTextStyle}"
@@ -91,9 +114,9 @@
                               Width="24"
                               Height="24" />
                     </Viewbox>
-                    <TextBlock Text="tagy"
+                    <TextBlock Text="TAGY"
+                               Style="{ThemeResource TitleTextBlockStyle}"
                                Margin="8,-2,0,0"
-                               Style="{StaticResource BaseDetailTextStyle}"
                                VerticalAlignment="Center" />
                 </StackPanel>
                 <ItemsControl ItemsSource="{Binding Tags}"

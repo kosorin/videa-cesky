@@ -97,8 +97,7 @@ namespace VideaCesky.Pages
             FrameworkElement fe = sender as FrameworkElement;
             if (fe != null)
             {
-                Tag tag = fe.DataContext as Tag;
-                await Frame.NavigateAsync(typeof(CategoryPage), new Category(tag.Name, "", tag.Feed));
+                await Frame.NavigateAsync(typeof(CategoryPage), fe.DataContext as Tag);
             }
         }
         #endregion // end of Tags

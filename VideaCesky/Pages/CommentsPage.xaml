@@ -70,12 +70,17 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="{Binding Level, Converter={StaticResource CommentLevelConverter}}">
-                        <Grid Margin="0,12"
+                        <Border.Transitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition />
+                            </TransitionCollection>
+                        </Border.Transitions>
+                        <Grid Margin="0,8,0,12"
                               HorizontalAlignment="Left">
                             <Path x:Name="Path"
-                                  Data="m0,0 l12,0 l-12,-12 l0,12"
+                                  Data="m0,0 l12,0 l-12,-8 l0,8"
                                   Fill="{ThemeResource CommentBackgroundBrush}"
-                                  Margin="4,0"
+                                  Margin="6,0"
                                   HorizontalAlignment="Left">
                                 <i:Interaction.Behaviors>
                                     <ic:DataTriggerBehavior Binding="{Binding IsPopular}"

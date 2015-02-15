@@ -12,9 +12,11 @@
         <DataTemplate x:Key="PortraitVideoTemplate">
             <Grid Margin="0,0,0,20"
                   Width="362">
+
                 <!--Obrázek + Title-->
                 <Grid Background="{ThemeResource VideoBackgroundBrush}"
                       IsHitTestVisible="False">
+
                     <!--Obrázek-->
                     <Border BorderThickness="1"
                             BorderBrush="{ThemeResource PhoneChromeBrush}"
@@ -121,7 +123,8 @@
                    Style="{ThemeResource SubheaderTextBlockStyle}"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
-                   Foreground="{ThemeResource PhoneDisabledBrush}" />
+                   Foreground="{ThemeResource PhoneDisabledBrush}"
+                   FontSize="24" />
 
         <ListView x:Name="VideoListView"
                   ItemsSource="{Binding List}"

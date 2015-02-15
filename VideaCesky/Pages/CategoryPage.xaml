@@ -12,6 +12,26 @@
 
     <paging:MtPage.Resources>
         <converters:CategoryNameConverter x:Key="CategoryNameConverter" />
+
+        <Style x:Key="TagPathStyle"
+               TargetType="Path">
+            <Setter Property="Width"
+                    Value="20" />
+            <Setter Property="Height"
+                    Value="20" />
+            <Setter Property="Data"
+                    Value="M16.783068,2.3459765C16.290865,2.3459763 15.798664,2.5337378 15.4232,2.9092609 14.672273,3.6603069 14.672273,4.8783817 15.4232,5.6294279 16.174128,6.3794736 17.392008,6.3794736 18.141935,5.6294279 18.893862,4.8783817 18.893862,3.6603069 18.142935,2.9092609 17.767471,2.5337378 17.275269,2.3459763 16.783068,2.3459765z M10.638992,0L21.278,0 21.278,10.33402 10.666992,21.167 0,10.584019z" />
+        </Style>
+        <Style x:Key="CategoryPathStyle"
+               TargetType="Path">
+            <Setter Property="Width"
+                    Value="24" />
+            <Setter Property="Height"
+                    Value="24" />
+            <Setter Property="Data"
+                    Value="M5.388822,5.0339882L22.943006,5.0339882 18.721215,15.256989 1.6100047,15.256989z M0,0L6.6660105,0 8.0000125,2.9348083 18.70703,2.9348083 18.70403,3.8337495 4.5530072,3.8337495 0.33200061,15.257004 0,15.257004z" />
+        </Style>
+
     </paging:MtPage.Resources>
 
     <paging:MtPage.BottomAppBar>
@@ -30,11 +50,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0"
-                    Margin="19,0,0,0">
-            <TextBlock Text="VIDEA ČESKY"
-                       Style="{ThemeResource TitleTextBlockStyle}"
-                       Margin="0,12,0,0" />
+        <StackPanel Margin="19,12,0,8">
+            <StackPanel Orientation="Horizontal">
+                <Viewbox>
+                    <Path x:Name="HeaderPath"
+                          Stretch="Uniform"
+                          Fill="{ThemeResource PhoneForegroundBrush}" />
+                </Viewbox>
+                <TextBlock x:Name="HeaderTextBlock"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Margin="8,-2,0,0"
+                           VerticalAlignment="Center" />
+            </StackPanel>
             <TextBlock Text="{Binding Category.Name, Converter={StaticResource CategoryNameConverter}}"
                        Margin="0,-6.5,0,26.5"
                        Style="{ThemeResource HeaderTextBlockStyle}"

@@ -9,7 +9,7 @@ using VideaCesky.Common;
 namespace VideaCesky.Models
 {
     [DataContract]
-    public class Category : BindableBase
+    public class Category : BindableBase, ICategory
     {
         private string _name = "";
         [DataMember]

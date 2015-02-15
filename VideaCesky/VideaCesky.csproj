@@ -92,7 +92,9 @@
     </Compile>
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\ICategory.cs" />
     <Compile Include="Models\SubRipSubtitles.cs" />
+    <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\XmlSubtitles.cs" />
     <Compile Include="Pages\CommentsPage.xaml.cs">
       <DependentUpon>CommentsPage.xaml</DependentUpon>
@@ -216,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LogoTransparent.png" />
+    <Content Include="Assets\AppBarComments.png" />
     <Content Include="Assets\Tile.scale-240.png" />
     <Content Include="Assets\LogoSmall.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
