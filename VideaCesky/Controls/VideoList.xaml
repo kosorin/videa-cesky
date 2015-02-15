@@ -10,8 +10,7 @@
 
     <UserControl.Resources>
         <DataTemplate x:Key="PortraitVideoTemplate">
-            <Grid Margin="0,0,0,20"
-                  Width="362">
+            <Grid Margin="0,0,0,20">
 
                 <!--Obrázek + Title-->
                 <Grid Background="{ThemeResource VideoBackgroundBrush}"
