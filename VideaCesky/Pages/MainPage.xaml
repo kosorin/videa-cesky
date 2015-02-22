@@ -10,70 +10,55 @@
                             Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <paging:MtPage.BottomAppBar>
-        <CommandBar />
+        <CommandBar>
+            <AppBarButton Label="přehrát později"
+                          Click="LaterAppBarButton_Click">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/Clock.png" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="uložené tagy"
+                          Click="TagsAppBarButton_Click">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/Tags.png" />
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </CommandBar>
     </paging:MtPage.BottomAppBar>
 
-    <Grid>
+    <Grid x:Name="LayoutRoot">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition />
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <Pivot Title="VIDEA ČESKY">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <Pivot.TitleTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Viewbox>
-                            <Path Data="M8.3570007,6.1859996L14.698,10.66649 8.3570007,15.146999z M10.6665,2.0871906C5.9268889,2.0871906 2.0858412,5.9283266 2.0858412,10.66655 2.0858412,15.404783 5.9268889,19.24583 10.6665,19.24583 15.403311,19.24583 19.244439,15.404783 19.244439,10.66655 19.244439,5.9283266 15.403311,2.0871906 10.6665,2.0871906z M10.6665,0C16.54649,0 21.332999,4.7850927 21.332999,10.66655 21.332999,16.547968 16.54649,21.333 10.6665,21.333 4.7837806,21.333 0,16.547968 0,10.66655 0,4.7850927 4.7837806,0 10.6665,0z"
-                                  Stretch="Uniform"
-                                  Fill="{ThemeResource PhoneForegroundBrush}"
-                                  Stroke="{ThemeResource PhoneForegroundBrush}"
-                                  StrokeThickness="1"
-                                  Width="24"
-                                  Height="24" />
-                        </Viewbox>
-                        <TextBlock Text="VIDEA ČESKY"
-                                   Style="{ThemeResource TitleTextBlockStyle}"
-                                   Margin="8,-2,0,0"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </DataTemplate>
-            </Pivot.TitleTemplate>
+        <StackPanel Margin="19,12,0,20"
+                    Orientation="Horizontal">
+            <Viewbox>
+                <Path Data="M8.3570007,6.1859996L14.698,10.66649 8.3570007,15.146999z M10.6665,2.0871906C5.9268889,2.0871906 2.0858412,5.9283266 2.0858412,10.66655 2.0858412,15.404783 5.9268889,19.24583 10.6665,19.24583 15.403311,19.24583 19.244439,15.404783 19.244439,10.66655 19.244439,5.9283266 15.403311,2.0871906 10.6665,2.0871906z M10.6665,0C16.54649,0 21.332999,4.7850927 21.332999,10.66655 21.332999,16.547968 16.54649,21.333 10.6665,21.333 4.7837806,21.333 0,16.547968 0,10.66655 0,4.7850927 4.7837806,0 10.6665,0z"
+                      Stretch="Uniform"
+                      Fill="{ThemeResource PhoneForegroundBrush}"
+                      Stroke="{ThemeResource PhoneForegroundBrush}"
+                      StrokeThickness="1"
+                      Width="24"
+                      Height="24" />
+            </Viewbox>
+            <TextBlock Text="VIDEA ČESKY"
+                       Style="{ThemeResource TitleTextBlockStyle}"
+                       Margin="8,-2,0,0"
+                       VerticalAlignment="Center" />
+        </StackPanel>
 
-            <PivotItem Header="nejnovější">
-                <controls:VideoList x:Name="VideoListControl" />
-            </PivotItem>
-
-            <PivotItem Header="kategorie">
-                <ListView ItemsSource="{Binding Categories}"
-                          SelectionChanged="CategoriesListView_SelectionChanged">
-                    <ListView.Resources>
-                        <ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
-                            <ItemsStackPanel Orientation="Vertical"
-                                             Margin="0,0,0,64" />
-                        </ItemsPanelTemplate>
-                    </ListView.Resources>
-                    <ListView.ItemsPanel>
-                        <StaticResource ResourceKey="ItemsPanelTemplate1" />
-                    </ListView.ItemsPanel>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,10">
-                                <TextBlock Text="{Binding Name}"
-                                           Style="{ThemeResource ListViewItemTextBlockStyle}"
-                                           Margin="2,0,0,0" />
-                                <TextBlock Text="{Binding Description}"
-                                           Style="{ThemeResource ListViewItemSubheaderTextBlockStyle}"
-                                           TextWrapping="WrapWholeWords" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </PivotItem>
-
-        </Pivot>
-
+        <Grid Grid.Row="1"
+              Margin="19,9.5,19,0">
+            <controls:VideoList x:Name="VideoListControl" />
+        </Grid>
     </Grid>
+
 </controls:VideoListBasePage>

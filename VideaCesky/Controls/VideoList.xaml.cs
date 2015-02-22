@@ -2,6 +2,7 @@
 using MyToolkit.Networking;
 using MyToolkit.Paging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -78,6 +79,18 @@ namespace VideaCesky.Controls
             set { SetProperty(ref _feed, value); }
         }
         #endregion // end of Feed
+
+        #region OfflineData
+        public IList<Video> OfflineData { get; set; }
+
+        public bool UseOfflineData
+        {
+            get
+            {
+                return OfflineData != null;
+            }
+        }
+        #endregion // end of OfflineData
 
         #region Search
         private string _search = null;
@@ -279,29 +292,47 @@ namespace VideaCesky.Controls
             CanLoadMore = false;
             Loading = true;
             NoVideos = false;
-
-            // Poskládání stránky, ze které se bude stahovat
-            Page++;
-            string requestUri = string.Format("{0}/page/{1}", Feed, Page);
-            if (!string.IsNullOrEmpty(Search))
-            {
-                requestUri += "?s=" + Search;
-            }
-
-            // Stažení a přidání videí
             bool canLoadMore = false;
-            List<Video> appendList = await Downloader.GetVideoList(new Uri(requestUri));
-            if (appendList != null)
+
+            try
             {
-                canLoadMore = appendList.Count > 0;
-                foreach (Video video in appendList)
+                if (UseOfflineData)
                 {
-                    List.Add(video);
+                    // Načtení videí "Přehrát později"
+                    foreach (Video video in OfflineData)
+                    {
+                        List.Add(video);
+                    }
+                }
+                else
+                {
+                    // Poskládání stránky, ze které se bude stahovat
+                    Page++;
+                    string requestUri = string.Format("{0}/page/{1}", Feed, Page);
+                    if (!string.IsNullOrEmpty(Search))
+                    {
+                        requestUri += "?s=" + Search;
+                    }
+
+                    // Stažení a přidání videí
+                    List<Video> appendList = await Downloader.GetVideoList(new Uri(requestUri));
+                    if (appendList != null)
+                    {
+                        canLoadMore = appendList.Count > 0;
+                        foreach (Video video in appendList)
+                        {
+                            List.Add(video);
+                        }
+                    }
+                    else
+                    {
+                        IsError = true;
+                    }
                 }
             }
-            else
+            catch (Exception e)
             {
-                IsError = true;
+                Debug.WriteLine("LoadMore ERROR: {0}", e.Message);
             }
 
             // Nastavení nových stavů

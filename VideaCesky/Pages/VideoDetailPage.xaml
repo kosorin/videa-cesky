@@ -27,10 +27,16 @@
             <AppBarButton Label="přehrát"
                           Icon="Play"
                           Click="PlayButton_Click" />
+            <AppBarButton x:Name="WatchLaterAppBarButton"
+                          Label="přehrát později">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/Clock.png" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton Label="komentáře"
                           Click="CommentsButton_Click">
                 <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Assets/AppBarComments.png" />
+                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/Comments.png" />
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton Label="otevřít v prohlížeči"
@@ -128,10 +134,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Name}"
-                                    Click="TagButton_Click"
-                                    Margin="0,0,5,5">
-                            </Button>
+                            <controls:TagControl />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

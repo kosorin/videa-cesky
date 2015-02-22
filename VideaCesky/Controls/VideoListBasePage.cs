@@ -48,13 +48,14 @@ namespace VideaCesky.Controls
         {
             base.OnNavigatedTo(e);
             VideoList = GetVideListControl();
-            AddAppBarButtons();
+            SetFeed(e.Parameter);
 
+            AddAppBarButtons();
             DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
 
-            SetFeed(e.Parameter);
             if (e.NavigationMode == NavigationMode.New || e.NavigationMode == NavigationMode.Refresh
-                || VideoList.List.Count == 0)
+                || VideoList.List.Count == 0
+                || VideoList.UseOfflineData)
             {
                 await VideoList.Refresh();
             }
@@ -130,7 +131,7 @@ namespace VideaCesky.Controls
                     }
                 }
 
-                if (!isRefresh)
+                if (!isRefresh && !VideoList.UseOfflineData)
                 {
                     AppBarButton refreshButton = new AppBarButton();
                     refreshButton.Label = "obnovit";

@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 using VideaCesky.Helpers;
 using VideaCesky.Models;
 using Windows.Graphics.Display;
+using Windows.Storage;
 using Windows.System;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -63,9 +65,61 @@ namespace VideaCesky.Pages
             {
                 Video = null;
             }
+
+            UpdateWatchLaterButton(null);
         }
 
         #region AppBar
+        private void UpdateWatchLaterButton(Action action)
+        {
+            if (Video != null)
+            {
+                WatchLaterAppBarButton.Click -= AddWatchLater_Click;
+                WatchLaterAppBarButton.Click -= RemoveWatchLater_Click;
+
+                if (action != null)
+                {
+                    action();
+                }
+
+                if (Settings.Current.WatchLaterList.Contains(Video))
+                {
+                    WatchLaterAppBarButton.Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:///Assets/AppBar/ClockRemove.png") };
+                    WatchLaterAppBarButton.Click += RemoveWatchLater_Click;
+                }
+                else
+                {
+                    WatchLaterAppBarButton.Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:///Assets/AppBar/ClockAdd.png") };
+                    WatchLaterAppBarButton.Click += AddWatchLater_Click;
+                }
+
+                AppBarButton button = WatchLaterAppBarButton;
+                ((CommandBar)BottomAppBar).PrimaryCommands.Remove(button);
+                ((CommandBar)BottomAppBar).PrimaryCommands.Insert(1, button);
+            }
+        }
+        private void AddWatchLater_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateWatchLaterButton(async () =>
+            {
+                if (!Settings.Current.WatchLaterList.Contains(Video))
+                {
+                    await Settings.Current.AddVideo(Video);
+                }
+            });
+        }
+
+        private void RemoveWatchLater_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateWatchLaterButton(async () =>
+            {
+                if (Settings.Current.WatchLaterList.Contains(Video))
+                {
+                    await Settings.Current.RemoveVideo(Video);
+                }
+            });
+        }
+
         private async void PlayButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             if (Video != null)
@@ -90,16 +144,5 @@ namespace VideaCesky.Pages
             }
         }
         #endregion // end of AppBar
-
-        #region Tags
-        private async void TagButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            FrameworkElement fe = sender as FrameworkElement;
-            if (fe != null)
-            {
-                await Frame.NavigateAsync(typeof(CategoryPage), fe.DataContext as Tag);
-            }
-        }
-        #endregion // end of Tags
     }
 }

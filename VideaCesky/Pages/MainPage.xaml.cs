@@ -16,7 +16,6 @@ namespace VideaCesky.Pages
         public MainPage()
         {
             this.InitializeComponent();
-            DataContext = this;
             IsSuspendable = false;
         }
 
@@ -44,42 +43,16 @@ namespace VideaCesky.Pages
             App.Current.Exit();
         }
 
-        #region Kategorie
-        private ObservableCollection<Category> _categories = null;
-        public ObservableCollection<Category> Categories
+        #region AppBar
+        private void LaterAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            get
-            {
-                if (_categories == null)
-                {
-                    _categories = new ObservableCollection<Category>();
-                    //_categories.Add(new Category("Články", "Novinky, články a soutěže o ceny na webu VideaCesky.cz", "http://www.videacesky.cz/category/clanky-novinky-souteze"));
-                    _categories.Add(new Category("Krátké filmy", "Krátké filmy s českými titulky pro vás zdarma. Pohádky online zdarma", "http://www.videacesky.cz/category/kratke-filmy-online-zdarma"));
-                    _categories.Add(new Category("Legendární videa", "Do této kategorie je video zařazeno, jakmile je na našich stránkách déle než 3 měsíce, má více než 1500 hodnocení a známku aspoň 9,20 z 10.", "http://www.videacesky.cz/category/legendarni-videa"));
-                    _categories.Add(new Category("Naučná", "Dokumentární videa, návody, pokusy a mnoho dalšího.", "http://www.videacesky.cz/category/navody-dokumenty-pokusy"));
-                    _categories.Add(new Category("Ostatní", "Nezařaditelná cizojazyčná videa ze serveru VideaČesky s českými titulky.", "http://www.videacesky.cz/category/ostatni-zabavna-videa"));
-                    _categories.Add(new Category("Parodie", "Parodie na seriály, filmy a populární hudební videoklipy. Funny parody song", "http://www.videacesky.cz/category/parodie-parody-youtube"));
-                    _categories.Add(new Category("Reklamy", "Zábavné reklamní spoty. Reklamní slogany", "http://www.videacesky.cz/category/reklamy-reklamni-spot-video"));
-                    _categories.Add(new Category("Rozhovory", "Talkshow a rozhovory se slavnými hvězdami.", "http://www.videacesky.cz/category/talk-show-rozhovory"));
-                    _categories.Add(new Category("Seriály", "VideaČesky přináší krátké online seriály zdarma.", "http://www.videacesky.cz/category/serialy-online-zdarma"));
-                    _categories.Add(new Category("Skeče", "Filmové zábavné scénky. Vtipné skeče na serveru VideaCesky.cz", "http://www.videacesky.cz/category/skece"));
-                    _categories.Add(new Category("Trailery", "Trailery k filmům. Recenze populárních filmů.", "http://www.videacesky.cz/category/trailery-recenze-filmy"));
-                    _categories.Add(new Category("Videoklipy", "Videoklipy zahraničních skupin z youtube. Parodie na nejznámější hudební klipy.", "http://www.videacesky.cz/category/hudebni-klipy-videoklipy-hudba"));
-                }
-                return _categories;
-            }
+            Frame.Navigate(typeof(WatchLaterPage));
         }
 
-        private void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TagsAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            ListView lw = (ListView)sender;
-            if (lw.SelectedItem != null)
-            {
-                Category category = (Category)lw.SelectedItem;
-                lw.SelectedItem = null;
-                Frame.NavigateAsync(typeof(CategoryPage), category);
-            }
+            Frame.Navigate(typeof(SavedTagsPage));
         }
-        #endregion // end of Kategorie
+        #endregion // end of AppBar
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using VideaCesky.Models;
 using VideaCesky.Pages;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -16,14 +17,17 @@ namespace VideaCesky
             get { return typeof(MainPage); }
         }
 
-        public override Task OnInitializedAsync(MtFrame frame, ApplicationExecutionState args)
-        {
-            return null;
-        }
-
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
+            Debug.WriteLine("____ ON LAUNCHED");
+            await Settings.LoadAsync();
             await InitializeFrameAsync(args.PreviousExecutionState);
+        }
+
+        public override Task OnInitializedAsync(MtFrame frame, ApplicationExecutionState args)
+        {
+            Debug.WriteLine("____ INITIALIZED");
+            return null;
         }
     }
 
