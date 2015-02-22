@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using VideaCesky.Pages;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -26,22 +27,32 @@ namespace VideaCesky.Controls
             this.InitializeComponent();
         }
 
-        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async Task Search()
         {
+            Hide();
             MtFrame frame = Window.Current.Content as MtFrame;
             if (frame != null)
             {
-                frame.NavigateAsync(typeof(SearchPage), SearchTextBox.Text);
+                await frame.NavigateAsync(typeof(SearchPage), SearchTextBox.Text);
             }
         }
 
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            await Search();
         }
 
         private void ContentDialog_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
             SearchTextBox.Focus(FocusState.Programmatic);
+        }
+
+        private async void SearchTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                await Search();
+            }
         }
     }
 }

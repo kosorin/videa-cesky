@@ -10,12 +10,12 @@
                PrimaryButtonText="vyhledat"
                SecondaryButtonText="storno"
                PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-               SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
                Opened="ContentDialog_Opened">
 
     <StackPanel VerticalAlignment="Stretch"
                 HorizontalAlignment="Stretch">
         <TextBox x:Name="SearchTextBox"
-                 PlaceholderText="Zadej výraz" />
+                 PlaceholderText="Zadej výraz"
+                 KeyDown="SearchTextBox_KeyDown" />
     </StackPanel>
 </ContentDialog>

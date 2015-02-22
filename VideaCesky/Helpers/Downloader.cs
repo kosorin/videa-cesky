@@ -70,7 +70,7 @@ namespace VideaCesky.Helpers
                                 {
                                     if (tagNode.Attributes.Contains("href"))
                                     {
-                                        tags.Add(new Tag(tagNode.Attributes["href"].Value, tagNode.InnerText));
+                                        tags.Add(new Tag(tagNode.Attributes["href"].Value, WebUtility.HtmlDecode(tagNode.InnerText)));
                                     }
                                 }
                             }
