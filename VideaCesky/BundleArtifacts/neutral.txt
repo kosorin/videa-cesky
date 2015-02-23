@@ -1,0 +1,4 @@
+MainPackage=C:\Users\David\Documents\Visual Studio 2013\Projects\videa-cesky\VideaCesky\bin\Debug\VideaCesky_4.2.0.22_Bundle\VideaCesky_4.2.0.22_AnyCPU_Debug.appx
+SymbolPackage=C:\Users\David\Documents\Visual Studio 2013\Projects\videa-cesky\VideaCesky\AppPackages\VideaCesky_4.2.0.22_Debug_Test\VideaCesky_4.2.0.22_AnyCPU_Debug.appxsym
+ResourcePack=C:\Users\David\Documents\Visual Studio 2013\Projects\videa-cesky\VideaCesky\bin\Debug\VideaCesky_4.2.0.22_Bundle\VideaCesky_4.2.0.22_scale-100.appx
+ResourcePack=C:\Users\David\Documents\Visual Studio 2013\Projects\videa-cesky\VideaCesky\bin\Debug\VideaCesky_4.2.0.22_Bundle\VideaCesky_4.2.0.22_scale-140.appx

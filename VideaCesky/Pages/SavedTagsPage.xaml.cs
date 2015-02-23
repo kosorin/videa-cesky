@@ -67,7 +67,18 @@ namespace VideaCesky.Pages
 
         void SavedTags_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            UpdateAppBar();
             NoTags = (Settings.Current.SavedTags.Count == 0) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void UpdateAppBar()
+        {
+            ReorderButton.IsEnabled = Settings.Current.SavedTags.Count > 1;
+            bool isEnabled = (TagsListView.ReorderMode == ListViewReorderMode.Disabled);
+            AppBar.ClosedDisplayMode
+                = (ReorderButton.IsEnabled && isEnabled)
+                ? AppBarClosedDisplayMode.Compact
+                : AppBarClosedDisplayMode.Minimal;
         }
 
         private async void DeleteAllAppBarButton_Click(object sender, RoutedEventArgs e)
@@ -84,12 +95,15 @@ namespace VideaCesky.Pages
             {
                 if (SetProperty(ref _reorderMode, value))
                 {
+                    UpdateAppBar();
+
                     bool isEnabled = (TagsListView.ReorderMode == ListViewReorderMode.Disabled);
-                    AppBar.ClosedDisplayMode = isEnabled ? AppBarClosedDisplayMode.Compact : AppBarClosedDisplayMode.Minimal;
                     foreach (Tag tag in TagsListView.Items)
                     {
                         tag.IsEnabled = isEnabled;
                     }
+
+                    Settings.Current.SaveAsync();
                 }
             }
         }
@@ -98,7 +112,7 @@ namespace VideaCesky.Pages
         {
             if (Settings.Current.SavedTags.Count > 1)
             {
-                TagsListView.ReorderMode = ListViewReorderMode.Enabled;
+                ReorderMode = ListViewReorderMode.Enabled;
             }
         }
         #endregion // end of Reorder

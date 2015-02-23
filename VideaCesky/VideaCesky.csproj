@@ -85,9 +85,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CategoriesDialog.xaml.cs">
-      <DependentUpon>CategoriesDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\TagControl.xaml.cs">
       <DependentUpon>TagControl.xaml</DependentUpon>
     </Compile>
@@ -169,10 +166,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\CategoriesDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Controls\TagControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

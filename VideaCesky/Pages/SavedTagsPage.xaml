@@ -36,7 +36,7 @@
 
     <paging:MtPage.BottomAppBar>
         <CommandBar x:Name="AppBar">
-            <AppBarButton Label="řadit"
+            <AppBarButton x:Name="ReorderButton" Label="řadit"
                           Click="ReorderAppBarButton_Click">
                 <AppBarButton.Icon>
                     <BitmapIcon UriSource="ms-appx:///Assets/AppBar/Sort.png" />
